@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yhzdys.myosotis.database.mapper.MyosotisUserMapper">
+    <resultMap id="BaseResultMap" type="com.yhzdys.myosotis.database.object.MyosotisUserDO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="salt" column="salt" jdbcType="VARCHAR"/>
+        <result property="userRole" column="user_role" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, username, password, salt, user_role, create_time
+    </sql>
+
+    <sql id="Table_Name">
+        myosotis_user
+    </sql>
+
+    <insert id="insert" parameterType="com.yhzdys.myosotis.database.object.MyosotisConfigDO">
+        insert into
+        <include refid="Table_Name"/>
+        (username, password, salt, user_role, create_time, update_time)
+        values
+        (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR},
+        #{userRole,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <select id="count" parameterType="java.lang.String" resultType="java.lang.Long">
+        select count(*)
+        from
+        <include refid="Table_Name"/>
+        <if test="keyword != null">
+            where username like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+        </if>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        <if test="keyword != null">
+            where username like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+        </if>
+        limit #{offset,jdbcType=INTEGER}, #{length,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where username = #{username,jdbcType=VARCHAR}
+    </select>
+
+    <update id="update" parameterType="com.yhzdys.myosotis.database.object.MyosotisUserDO">
+        update
+        <include refid="Table_Name"/>
+        set update_time = #{updateTime,jdbcType=TIMESTAMP}
+        <if test="username != null">
+            ,username = #{username,jdbcType=VARCHAR}
+        </if>
+        <if test="password != null">
+            ,password = #{password,jdbcType=VARCHAR}
+        </if>
+        <if test="salt != null">
+            ,salt = #{salt,jdbcType=VARCHAR}
+        </if>
+        <if test="userRole != null">
+            ,user_role = #{userRole,jdbcType=VARCHAR}
+        </if>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="listByIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id,jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from
+        <include refid="Table_Name"/>
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+</mapper>

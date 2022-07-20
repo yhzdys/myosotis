@@ -1,0 +1,24 @@
+{
+  "type": "array",
+  "items": {
+    "name": "pollingData",
+    "type": "record",
+    "fields": [
+      {
+        "name": "isAll",
+        "type": "boolean"
+      },
+      {
+        "name": "namespace",
+        "type": "string"
+      },
+      {
+        "name": "data",
+        "type": {
+          "type": "map",
+          "values": "int"
+        }
+      }
+    ]
+  }
+}

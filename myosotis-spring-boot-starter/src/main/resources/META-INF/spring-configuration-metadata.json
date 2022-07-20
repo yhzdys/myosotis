@@ -1,0 +1,56 @@
+{
+  "groups": [
+    {
+      "name": "myosotis.server"
+    },
+    {
+      "name": "myosotis.client"
+    }
+  ],
+  "properties": [
+    {
+      "name": "myosotis.server.address",
+      "type": "java.lang.String",
+      "defaultValue": "http://127.0.0.1:7777"
+    },
+    {
+      "name": "myosotis.client.namespace",
+      "type": "java.lang.String",
+      "defaultValue": "myosotis"
+    }
+  ],
+  "hints": [
+    {
+      "name": "myosotis.server.address",
+      "values": [
+        {
+          "value": "http://127.0.0.1:7777",
+          "description": "example of local deployment."
+        },
+        {
+          "value": "http://myosotis.com:7777",
+          "description": "example of remote deployment."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "myosotis.client.namespace",
+      "values": [
+        {
+          "value": "myosotis",
+          "description": "example of namespace."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    }
+  ]
+}

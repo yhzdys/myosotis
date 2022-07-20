@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/ASSEMBLY/2.1.1"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1 http://maven.apache.org/xsd/assembly-2.1.1.xsd">
+
+    <id>assembly</id>
+
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+
+    <fileSets>
+        <fileSet>
+            <directory>./bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>./config</directory>
+            <outputDirectory>config</outputDirectory>
+            <includes>
+                <include>*.conf</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>./support</directory>
+            <outputDirectory>support</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>./database</directory>
+            <outputDirectory>database</outputDirectory>
+            <includes>
+                <include>*.db</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../myosotis-console/target</directory>
+            <outputDirectory>application</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../myosotis-server/target</directory>
+            <outputDirectory>application</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../</directory>
+            <outputDirectory>./</outputDirectory>
+            <includes>
+                <include>README.md</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+</assembly>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yhzdys.myosotis.database.mapper.MyosotisAuthorityMapper">
+    <resultMap id="BaseResultMap" type="com.yhzdys.myosotis.database.object.MyosotisAuthorityDO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="namespace" column="namespace" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, username, namespace
+    </sql>
+
+    <sql id="Table_Name">
+        myosotis_authority
+    </sql>
+
+    <insert id="insert" parameterType="com.yhzdys.myosotis.database.object.MyosotisSessionDO">
+        insert into
+        <include refid="Table_Name"/>
+        (username, namespace, create_time, update_time)
+        values
+        (#{username,jdbcType=VARCHAR}, #{namespace,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="batchInsert" parameterType="com.yhzdys.myosotis.database.object.MyosotisAuthorityDO">
+        insert into
+        <include refid="Table_Name"/>
+        (username, namespace, create_time, update_time)
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{item.username,jdbcType=VARCHAR}, #{item.namespace,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <select id="listByNamespace" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where namespace = #{namespace,jdbcType=VARCHAR}
+        order by id
+    </select>
+
+    <select id="listByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where username = #{username,jdbcType=VARCHAR}
+        order by id
+    </select>
+
+    <delete id="deleteByUsername" parameterType="java.lang.String">
+        delete from
+        <include refid="Table_Name"/>
+        where username = #{username,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteByNamespace" parameterType="java.lang.String">
+        delete from
+        <include refid="Table_Name"/>
+        where namespace = #{namespace,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteByNamespaces" parameterType="java.lang.String">
+        delete from
+        <include refid="Table_Name"/>
+        where username = #{username,jdbcType=VARCHAR}
+        and namespace in
+        <foreach collection="namespaces" open="(" close=")" separator="," item="namespace">
+            #{namespace,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByUsernames" parameterType="java.lang.String">
+        delete from
+        <include refid="Table_Name"/>
+        where namespace = #{namespace,jdbcType=VARCHAR}
+        and username in
+        <foreach collection="usernames" open="(" close=")" separator="," item="username">
+            #{username,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+</mapper>

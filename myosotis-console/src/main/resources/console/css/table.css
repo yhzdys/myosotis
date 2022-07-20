@@ -1,0 +1,131 @@
+.option_wrapper {
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+    position: relative;
+    float: right;
+    text-align: right;
+}
+
+.search_rapper {
+    width: calc(100% - 70px);
+    float: right;
+}
+
+.add_wrapper, .reload_wrapper {
+    width: 60px;
+    height: 30px;
+    margin-left: 10px;
+    float: right;
+}
+
+.add_button, .reload_button {
+    width: 60px;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    background-color: orange;
+    border: none;
+}
+
+.add_button:hover, .reload_button:hover {
+    color: lightgray;
+    background-color: orangered;
+}
+
+.add_button:active, .reload_button:active {
+    color: lightgray;
+    background-color: red;
+}
+
+.search_input {
+    height: 30px;
+    float: right;
+    background-color: rgba(211, 211, 211, 0.2);
+    border: lightgray solid 1px;
+}
+
+.search_input::placeholder {
+    color: darkgray;
+}
+
+.search_input:hover {
+    border: darkgray solid 1px;
+}
+
+table {
+    color: #555555;
+    font-size: 12px;
+    border-left: rgba(211, 211, 211, 0.2) solid 1px;
+    border-right: rgba(211, 211, 211, 0.2) solid 1px;
+    border-collapse: collapse;
+    overflow: hidden;
+}
+
+thead {
+    width: 100%;
+    padding: 5px 0;
+    background-color: aliceblue;
+    border-radius: 3px;
+    box-shadow: 0 1px 5px 0 lightgray;
+}
+
+th {
+    font-weight: normal;
+    text-align: left;
+    height: 30px;
+}
+
+.table_wrapper {
+    width: 100%;
+}
+
+.table_data {
+    width: 100%;
+    height: 80px;
+    border-bottom: lightgray dotted 1px;
+}
+
+.table_data:hover {
+    background-color: ghostwhite;
+}
+
+.table {
+    width: 100%;
+}
+
+.data_button {
+    margin: 0 5px 0 0;
+}
+
+.data_button:hover {
+    color: cornflowerblue;
+}
+
+.data_button:active {
+    color: lightskyblue;
+}
+
+.delete_button {
+    color: orange;
+}
+
+.delete_button:hover {
+    color: orangered;
+}
+
+.delete_button:active {
+    color: red;
+}
+
+.page_wrapper {
+    width: 100%;
+    height: 30px;
+    margin: 10px 0 0 0;
+    padding-left: calc(100% - 260px);
+    float: bottom;
+}
+
+.page_button {
+    margin-left: 5px;
+    float: right;
+}

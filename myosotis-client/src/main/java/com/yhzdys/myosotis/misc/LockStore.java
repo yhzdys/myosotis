@@ -1,0 +1,21 @@
+package com.yhzdys.myosotis.misc;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * the factory to provide Lock object
+ */
+public final class LockStore {
+
+    private static final Map<String, Lock> lockMap = new ConcurrentHashMap<>(2);
+
+    public static Lock get(String key) {
+        return lockMap.computeIfAbsent(
+                key, k -> new Lock()
+        );
+    }
+
+    private static class Lock {
+    }
+}

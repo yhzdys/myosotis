@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <contextName>logback-spring</contextName>
+    <property name="log_dir" value="${myosotis.log.dir}"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date %level [Myosotis]%message%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="myosotis" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${log_dir}/server.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log_dir}/server.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date %level [Myosotis]%message%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="async-myosotis" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>512</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="myosotis"/>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="console"/>
+        <appender-ref ref="async-myosotis"/>
+    </root>
+</configuration>

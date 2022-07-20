@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.yhzdys</groupId>
+        <artifactId>myosotis</artifactId>
+        <version>1.0.0-Beta</version>
+    </parent>
+    <artifactId>myosotis-console</artifactId>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yhzdys</groupId>
+            <artifactId>myosotis-infra</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>myosotis-console</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.primefaces.extensions</groupId>
+                <artifactId>resources-optimizer-maven-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+                    <execution>
+                        <id>optimize</id>
+                        <goals>
+                            <goal>optimize</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <inputDir>${project.build.directory}/classes/console</inputDir>
+                    <languageIn>STABLE</languageIn>
+                    <languageOut>STABLE</languageOut>
+                    <includes>
+                        <include>**/*.css</include>
+                        <include>**/*.js</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*.min.css</exclude>
+                        <exclude>**/*.min.js</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

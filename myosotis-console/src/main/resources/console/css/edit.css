@@ -1,0 +1,111 @@
+.edit_container {
+    width: 100%;
+    color: #555555;
+}
+
+div {
+    color: #555555;
+    font-size: 13px;
+}
+
+input {
+    margin-top: 5px;
+}
+
+.editor_wrapper {
+    width: 100%;
+    float: top;
+}
+
+.namespace_wrapper {
+    width: 100%;
+    height: 55px;
+    margin-bottom: 15px;
+}
+
+.namespace_search {
+    width: 300px;
+    height: 100%;
+}
+
+#namespace_input {
+    width: 100%;
+    height: 30px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.name_wrapper {
+    width: 100%;
+    height: 55px;
+    margin-bottom: 15px;
+}
+
+#name_input {
+    width: 100%;
+    height: 30px;
+}
+
+.description_wrapper {
+    width: 100%;
+    height: 85px;
+    margin-bottom: 15px;
+}
+
+#description_input {
+    height: 60px;
+}
+
+.value_wrapper {
+    width: 100%;
+    height: 225px;
+    margin-bottom: 15px;
+}
+
+#value_input {
+    height: 200px;
+}
+
+.button_wrapper {
+    width: 100%;
+}
+
+textarea {
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+#owners_input {
+    height: 60px;
+}
+
+#username_input {
+    width: 100%;
+    height: 30px;
+}
+
+.roles_wrapper {
+    width: 100%;
+    height: 45px;
+    margin-bottom: 15px;
+}
+
+.role_wrapper {
+    width: 100%;
+    height: 20px;
+    padding-left: 10px;
+    float: left;
+    color: orangered;
+    font-size: 15px;
+}
+
+.namespaces_wrapper {
+    width: 100%;
+    height: 85px;
+    margin-bottom: 15px;
+}
+
+#namespaces_input {
+    height: 60px;
+}

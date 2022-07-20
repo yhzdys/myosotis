@@ -1,0 +1,247 @@
+/* confirm container */
+.confirm_container {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 100;
+}
+
+.confirm_wrapper {
+    width: 300px;
+    height: 200px;
+    margin-top: 15%;
+    margin-left: calc(50% - 150px);
+    background-color: white;
+    border-radius: 3px;
+}
+
+.confirm_data {
+    width: 100%;
+    height: 0;
+    float: top;
+}
+
+.confirm_message {
+    width: 100%;
+    height: 80%;
+    padding-top: 25%;
+    text-align: center;
+    overflow: hidden;
+    color: orangered;
+}
+
+.confirm_button_wrapper {
+    width: 100%;
+    height: 20%;
+    border-style: none;
+    border-top: rgba(211, 211, 211, 0.6) solid 1px;
+}
+
+.confirm_button {
+    width: 50%;
+    height: 100%;
+    border: none;
+}
+
+#ok_button {
+    font-size: 12px;
+    float: left;
+    border-right: rgba(211, 211, 211, 0.6) solid 1px;
+}
+
+#cancel_button {
+    font-size: 12px;
+    float: right;
+}
+
+#ok_button:hover {
+    color: lightgray;
+    background-color: orangered;
+}
+
+#cancel_button:hover {
+    background-color: lightsteelblue;
+}
+
+/* top bar */
+.top_container {
+    width: 100%;
+    height: 50px;
+    padding: 0 0 0 0;
+    float: top;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background-color: aliceblue;
+    box-shadow: 0 1px 5px 0 lightgray;
+}
+
+.logo_wrapper {
+    width: 100px;
+    height: 50px;
+    padding-left: 10px;
+    float: left;
+}
+
+#logo {
+    width: 100%;
+    height: 100%;
+    color: cornflowerblue;
+    font-size: 18px;
+    font-style: italic;
+    text-align: center;
+    line-height: 50px;
+}
+
+.error_wrapper {
+    width: 40%;
+    height: 30px;
+    margin: 0 30%;
+    padding-top: 3px;
+    color: white;
+    text-align: center;
+    float: top;
+    position: fixed;
+    background-color: orangered;
+    z-index: 20;
+    border-style: none;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.user_info_wrapper {
+    width: 120px;
+    height: 50px;
+    float: right;
+}
+
+.username_wrapper {
+    width: 200px;
+    height: 50px;
+    padding: 14px 10px;
+    float: right;
+    text-align: right;
+    font-size: 15px;
+}
+
+#username {
+    color: cornflowerblue;
+}
+
+#username:hover {
+    color: mediumblue;
+}
+
+#username:active {
+    color: lightskyblue;
+}
+
+.user_menu_wrapper {
+    width: 80px;
+    height: 70px;
+    margin-right: 5px;
+    padding: 10px 0 0 0;
+    background-color: aliceblue;
+    position: fixed;
+    right: 0;
+    top: 50px;
+    font-size: 12px;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    border-color: lightgray;
+    border-top-style: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    box-shadow: 0 1px 5px 0 lightgray;
+}
+
+.user_menu {
+    width: 100%;
+    height: 30px;
+}
+
+.user_menu:hover {
+    color: cornflowerblue;
+}
+
+.user_menu:active {
+    color: lightskyblue;
+}
+
+/* bottom content */
+.bottom_container {
+    width: 100%;
+    height: calc(100% - 50px);
+    float: bottom;
+    position: absolute;
+    top: 50px;
+}
+
+/* side bar */
+.menu_wrapper {
+    width: 100px;
+    height: 100%;
+    float: left;
+    position: fixed;
+    background-color: aliceblue;
+    box-shadow: 2px 0 5px 0 lightgray;
+    z-index: 5;
+}
+
+.navigation {
+    height: 20px;
+    margin-top: 5px;
+    color: darkgray;
+    text-align: center;
+    font-size: 10px;
+}
+
+.menu_item {
+    width: 100%;
+    height: 50px;
+    margin: 5px 0;
+    padding: 16px 10px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.menu_item:hover {
+    color: cornflowerblue;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
+}
+
+.menu_item:active {
+    color: lightskyblue;
+}
+
+/* content */
+.content_title {
+    width: 100%;
+    height: 40px;
+    padding-left: 110px;
+    padding-top: 14px;
+    background-color: rgba(248, 248, 255, 0.8);
+    box-shadow: 0 1px 5px 1px lightgray;
+    font-size: 12px;
+    color: darkgray;
+}
+
+.content_wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding: 10px 0 0 120px;
+    z-index: 0;
+}
+
+#content_frame {
+    width: 100%;
+    height: 100%;
+    padding-top: 20px;
+    border-style: none;
+    scroll-behavior: smooth;
+}

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yhzdys.myosotis.database.mapper.MyosotisConfigMapper">
+    <resultMap id="BaseResultMap" type="com.yhzdys.myosotis.database.object.MyosotisConfigDO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="namespace" column="namespace" jdbcType="VARCHAR"/>
+        <result property="configKey" column="config_key" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="configValue" column="config_value" jdbcType="VARCHAR"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, namespace, config_key, description, config_value, version
+    </sql>
+
+    <sql id="Table_Name">
+        myosotis_config
+    </sql>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where namespace = #{namespace,jdbcType=VARCHAR}
+        and config_key = #{configKey,jdbcType=VARCHAR}
+    </select>
+
+    <select id="count" parameterType="java.lang.String" resultType="java.lang.Long">
+        select count(*)
+        from
+        <include refid="Table_Name"/>
+        where 1=1
+        <if test="namespaces != null">
+            and namespace in
+            <foreach collection="namespaces" open="(" close=")" separator="," item="namespace">
+                #{namespace,jdbcType=VARCHAR}
+            </foreach>
+        </if>
+        <if test="namespace != null">
+            and namespace = #{namespace,jdbcType=VARCHAR}
+        </if>
+        <if test="keyword != null">
+            and config_key like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+        </if>
+    </select>
+
+    <select id="countByNamespace" parameterType="java.lang.String" resultType="java.lang.Long">
+        select count(*)
+        from
+        <include refid="Table_Name"/>
+        where namespace = #{namespace,jdbcType=VARCHAR}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where 1=1
+        <if test="namespaces != null">
+            and namespace in
+            <foreach collection="namespaces" open="(" close=")" separator="," item="namespace">
+                #{namespace,jdbcType=VARCHAR}
+            </foreach>
+        </if>
+        <if test="namespace != null">
+            and namespace = #{namespace,jdbcType=VARCHAR}
+        </if>
+        <if test="keyword != null">
+            and config_key like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+        </if>
+        limit #{offset,jdbcType=INTEGER}, #{length,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="com.yhzdys.myosotis.database.object.MyosotisConfigDO">
+        insert into
+        <include refid="Table_Name"/>
+        (namespace, config_key, description, config_value, version, create_time, update_time)
+        values
+        (#{namespace,jdbcType=VARCHAR}, #{configKey,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+        #{configValue,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.yhzdys.myosotis.database.object.MyosotisConfigDO">
+        update
+        <include refid="Table_Name"/>
+        set
+        description = #{description,jdbcType=VARCHAR},
+        config_value = #{configValue,jdbcType=VARCHAR},
+        version = version + 1,
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from
+        <include refid="Table_Name"/>
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <select id="listByNamespace" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where namespace = #{namespace,jdbcType=VARCHAR}
+    </select>
+
+    <select id="listByIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id,jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <select id="listByKeys" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where namespace = #{namespace,jdbcType=VARCHAR}
+        and config_key in
+        <foreach collection="configKeys" open="(" close=")" separator="," item="configKey">
+            #{configKey,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+</mapper>

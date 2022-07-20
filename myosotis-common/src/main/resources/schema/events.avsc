@@ -1,0 +1,45 @@
+{
+  "type": "array",
+  "items": {
+    "type": "record",
+    "name": "event",
+    "fields": [
+      {
+        "name": "id",
+        "type": "long"
+      },
+      {
+        "name": "namespace",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      {
+        "name": "configKey",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      {
+        "name": "configValue",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      {
+        "name": "version",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "type",
+        "type": "string"
+      }
+    ]
+  }
+}

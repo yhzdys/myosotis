@@ -1,0 +1,69 @@
+package com.yhzdys.myosotis.test;
+
+import com.alibaba.fastjson2.JSON;
+import com.yhzdys.myosotis.MyosotisClient;
+import com.yhzdys.myosotis.MyosotisClientManager;
+import com.yhzdys.myosotis.entity.MyosotisEvent;
+import com.yhzdys.myosotis.event.listener.ConfigListener;
+import com.yhzdys.myosotis.event.listener.NamespaceListener;
+import org.junit.Test;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+public class ClientTest {
+
+    @Test
+    public void testClient() throws Exception {
+
+        MyosotisClientManager clientManager = new MyosotisClientManager("http://127.0.0.1:7777");
+//        MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
+//        customizer.setSerializeType(SerializeType.JSON);
+//        customizer.setEnableCompress(false);
+//        customizer.setCompressThreshold(0);
+//        MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
+
+        MyosotisClient client = clientManager.getClient("test_namespace");
+
+        clientManager.addNamespaceListener(new NamespaceListener() {
+            @Override
+            public String namespace() {
+                return "test_namespace";
+            }
+
+            @Override
+            public void handle(MyosotisEvent event) {
+                System.out.println("g event: " + JSON.toJSONString(event));
+            }
+        });
+        clientManager.addConfigListener(new ConfigListener() {
+            @Override
+            public String configKey() {
+                return "test_key12";
+            }
+
+            @Override
+            public String namespace() {
+                return "test_namespace";
+            }
+
+            @Override
+            public void handle(MyosotisEvent event) {
+                System.out.println("s event: " + JSON.toJSONString(event));
+            }
+        });
+
+        Random random = new Random();
+        for (; ; ) {
+            System.out.println("--------------------------------");
+            String key1 = "test_key" + (random.nextInt(20) + 1);
+//            String key1 = "test_key" + 12;
+            String config1 = client.getConfig(key1);
+            System.out.println("##### " + key1 + ":" + config1);
+            String key2 = "test_key" + (random.nextInt(100) + 1);
+            String config2 = client.getConfig(key2);
+            System.out.println("##### " + key2 + ":" + config2);
+            TimeUnit.MILLISECONDS.sleep(random.nextInt(5000) + 1);
+        }
+    }
+}

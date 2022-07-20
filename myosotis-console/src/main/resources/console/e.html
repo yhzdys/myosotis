@@ -1,0 +1,71 @@
+<link href="./css/common.css" rel="stylesheet" type="text/css">
+<link href="./css/edit.css" rel="stylesheet" type="text/css">
+
+<div class="content_container">
+    <div class="editor_wrapper">
+        <div class="namespace_wrapper" id="namespace_wrapper" style="display: none">
+            命名空间：
+            <div class="namespace_search" id="namespace_search">
+                <label>
+                    <input class="namespace_input" id="namespace_input" list="namespace_option" placeholder="按回车进行搜索"
+                           type="text">
+                </label>
+                <datalist class="namespace_option" id="namespace_option">
+                </datalist>
+            </div>
+        </div>
+        <div class="name_wrapper" id="name_wrapper" style="display: none">
+            <label>
+                名称：
+                <input id="name_input" placeholder="名称">
+            </label>
+        </div>
+        <div class="description_wrapper" id="description_wrapper" style="display: none">
+            <label>
+                描述：
+                <textarea id="description_input" placeholder="描述信息"></textarea>
+            </label>
+        </div>
+        <div class="value_wrapper" id="value_wrapper" style="display: none">
+            <label>
+                值：
+                <textarea id="value_input" placeholder=""></textarea>
+            </label>
+        </div>
+        <div class="owners_wrapper" id="owners_wrapper" style="display: none">
+            <label>
+                权限用户（多项使用","分隔）：
+                <textarea id="owners_input" placeholder="权限用户"></textarea>
+            </label>
+        </div>
+        <div class="name_wrapper" id="username_wrapper" style="display: none">
+            <label>
+                用户名：
+                <input id="username_input" placeholder="名称">
+            </label>
+        </div>
+        <div class="roles_wrapper" id="roles_wrapper" style="display: none">
+            <label>
+                用户角色：
+                <br>
+                <div class="role_wrapper" id="role_wrapper">
+                    <input class="role_input" name="role" type="radio" value="superuser">超级管理员
+                    <input class="role_input" name="role" type="radio" value="developer">开发者
+                </div>
+            </label>
+        </div>
+        <div class="namespaces_wrapper" id="namespaces_wrapper" style="display: none">
+            <label>
+                命名空间权限（多项使用","分隔）：
+                <textarea id="namespaces_input" placeholder="命名空间权限"></textarea>
+            </label>
+        </div>
+    </div>
+    <div class="button_wrapper">
+        <button class="confirm_button" id="ok_button">确认</button>
+        <button class="confirm_button" id="cancel_button">返回</button>
+    </div>
+</div>
+
+<script src="./js/common.js" type="text/javascript"></script>
+<script src="./js/edit.js" type="text/javascript"></script>

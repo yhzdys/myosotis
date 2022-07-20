@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yhzdys.myosotis.database.mapper.MyosotisSessionMapper">
+    <resultMap id="BaseResultMap" type="com.yhzdys.myosotis.database.object.MyosotisSessionDO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="sessionKey" column="session_key" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="privateKey" column="private_key" jdbcType="VARCHAR"/>
+        <result property="expireTime" column="expire_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, session_key, username, private_key, expire_time
+    </sql>
+
+    <sql id="Table_Name">
+        myosotis_session
+    </sql>
+
+    <insert id="insert" parameterType="com.yhzdys.myosotis.database.object.MyosotisSessionDO">
+        insert into
+        <include refid="Table_Name"/>
+        (session_key, username, private_key, expire_time, create_time, update_time)
+        values
+        (#{sessionKey,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{privateKey,jdbcType=VARCHAR},
+        #{expireTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <select id="selectByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where username = #{username,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectBySessionKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="Table_Name"/>
+        where session_key = #{sessionKey,jdbcType=VARCHAR}
+    </select>
+
+    <update id="update" parameterType="com.yhzdys.myosotis.database.object.MyosotisSessionDO">
+        update
+        <include refid="Table_Name"/>
+        <set>
+            <if test="sessionKey != null">
+                session_key = #{sessionKey,jdbcType=VARCHAR},
+            </if>
+            <if test="privateKey != null">
+                private_key = #{privateKey,jdbcType=VARCHAR},
+            </if>
+            <if test="expireTime != null">
+                expire_time = #{expireTime,jdbcType=TIMESTAMP},
+            </if>
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from
+        <include refid="Table_Name"/>
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteByUsername" parameterType="java.lang.String">
+        delete from
+        <include refid="Table_Name"/>
+        where username = #{username,jdbcType=VARCHAR}
+    </delete>
+</mapper>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link href="./img/favicon.ico" rel="shortcut icon"/>
+    <title>Myosotis</title>
+
+    <link href="./css/common.css" rel="stylesheet" type="text/css">
+    <link href="./css/index.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="container">
+    <div class="error_wrapper" id="error_wrapper" style="display: none">
+    </div>
+    <div class="top_container">
+        <div class="logo_wrapper">
+            <a href="index.html" id="logo">Myosotis</a>
+        </div>
+        <div class="user_wrapper" id="user_wrapper">
+            <div class="username_wrapper" id="username_wrapper">
+                Hello,
+                <a href="javascript:" id="username">...</a>
+            </div>
+            <div class="user_menu_wrapper" id="user_menu_wrapper" style="display: none">
+                <div class="user_menu">
+                    <a href="javascript:" id="password_button">修改密码</a>
+                </div>
+                <div class="user_menu">
+                    <a href="javascript:" id="logout_button">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirm_container" id="confirm_container" style="display: none">
+        <div class="confirm_wrapper" id="confirm_wrapper">
+            <div class="confirm_data" style="display: none"></div>
+            <div class="confirm_message"></div>
+            <div class="confirm_button_wrapper">
+                <button class="confirm_button" id="ok_button">确认</button>
+                <button class="confirm_button" id="cancel_button">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom_container">
+        <div class="menu_wrapper" id="menu_wrapper">
+            <div class="navigation">
+                导航
+            </div>
+            <div class="menu_item" id="namespace_manage_wrapper" style="display: none">
+                <a href="javascript:" id="namespace_manage">命名空间</a>
+            </div>
+            <div class="menu_item" id="config_manage_wrapper" style="display: none">
+                <a href="javascript:" id="config_manage">配置管理</a>
+            </div>
+            <div class="menu_item" id="server_manage_wrapper" style="display: none">
+                <a href="javascript:" id="server_manage">服务监测</a>
+            </div>
+            <div class="menu_item" id="user_manage_wrapper" style="display: none">
+                <a href="javascript:" id="user_manage">用户管理</a>
+            </div>
+        </div>
+        <div class="content_title" id="content_title">
+        </div>
+        <div class="content_wrapper">
+            <iframe id="content_frame" src=""></iframe>
+        </div>
+    </div>
+</div>
+</body>
+<script src="./js/common.js" type="text/javascript"></script>
+<script src="./js/menu.js" type="text/javascript"></script>
+<script src="./js/index.js" type="text/javascript"></script>
+<script src="./js/confirm.js" type="text/javascript"></script>
+</html>
