@@ -321,6 +321,7 @@ public final class MyosotisClientManager {
     }
 
     private void doStart() {
+        LoggerFactory.getLogger().info("Myosotis starting...");
         this.pollingScheduledPool.scheduleAtFixedRate(() -> {
             try {
                 this.fetchLocalConfigs();
@@ -340,6 +341,7 @@ public final class MyosotisClientManager {
                 LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
             }
         }, 1, 10, TimeUnit.SECONDS);
+        LoggerFactory.getLogger().info("Myosotis start completed...");
     }
 
     private void fetchLocalConfigs() {

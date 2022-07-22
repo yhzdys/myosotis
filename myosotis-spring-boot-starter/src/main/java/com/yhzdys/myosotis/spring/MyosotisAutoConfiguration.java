@@ -4,6 +4,7 @@ import com.yhzdys.myosotis.MyosotisClient;
 import com.yhzdys.myosotis.MyosotisClientManager;
 import com.yhzdys.myosotis.MyosotisCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -41,5 +42,11 @@ public class MyosotisAutoConfiguration {
     @Bean
     public MyosotisClient myosotisClient(MyosotisClientManager clientManager) {
         return clientManager.getClient(clientProperties.getNamespace());
+    }
+
+    @Bean
+    @ConditionalOnBean(MyosotisClientManager.class)
+    public MyosotisValueAutoConfiguration myosotisValueAutoConfiguration () {
+        return new MyosotisValueAutoConfiguration();
     }
 }
