@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.yhzdys</groupId>
             <artifactId>myosotis-spring</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 

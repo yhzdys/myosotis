@@ -21,8 +21,8 @@ public class ClientTest {
 //        MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
         MyosotisCustomizer customizer = new MyosotisCustomizer("http://127.0.0.1:7777");
         customizer.setSerializeType(SerializeType.JSON);
-        customizer.setEnableCompress(false);
-        customizer.setCompressThreshold(0);
+        customizer.setEnableCompress(true);
+        customizer.setCompressThreshold(10);
         MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
 
         MyosotisClient client = clientManager.getClient("default");

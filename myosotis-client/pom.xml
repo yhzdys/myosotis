@@ -13,6 +13,7 @@
         <dependency>
             <groupId>com.yhzdys</groupId>
             <artifactId>myosotis-common</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>

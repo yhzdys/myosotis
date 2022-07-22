@@ -56,24 +56,11 @@
         </developer>
     </developers>
 
-    <organization>
-        <name>project myosotis</name>
-        <url>https://yhzdys.com/</url>
-    </organization>
+    <contributors>
+    </contributors>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.yhzdys</groupId>
-                <artifactId>myosotis-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yhzdys</groupId>
-                <artifactId>myosotis-infra</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>

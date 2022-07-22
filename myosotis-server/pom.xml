@@ -17,6 +17,7 @@
         <dependency>
             <groupId>com.yhzdys</groupId>
             <artifactId>myosotis-infra</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 
