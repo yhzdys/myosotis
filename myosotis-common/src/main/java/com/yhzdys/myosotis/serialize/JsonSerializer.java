@@ -1,41 +1,49 @@
 package com.yhzdys.myosotis.serialize;
 
-import com.alibaba.fastjson2.JSON;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.entity.PollingData;
+import com.yhzdys.myosotis.misc.JsonUtil;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public final class JsonSerializer implements Serializer {
+
+    private final TypeReference<List<PollingData>> polling_list_ref = new TypeReference<List<PollingData>>() {
+    };
+    private final TypeReference<List<MyosotisEvent>> events_ref = new TypeReference<List<MyosotisEvent>>() {
+    };
+    private final TypeReference<List<MyosotisConfig>> configs_ref = new TypeReference<List<MyosotisConfig>>() {
+    };
+
     @Override
     public byte[] serializePollingData(List<PollingData> list) {
-        return JSON.toJSONString(list).getBytes(StandardCharsets.UTF_8);
+        return JsonUtil.toBytes(list);
     }
 
     @Override
     public List<PollingData> deserializePollingData(byte[] data) {
-        return JSON.parseArray(new String(data, StandardCharsets.UTF_8), PollingData.class);
+        return JsonUtil.toList(data, polling_list_ref);
     }
 
     @Override
     public byte[] serializeEvents(List<MyosotisEvent> list) {
-        return JSON.toJSONString(list).getBytes(StandardCharsets.UTF_8);
+        return JsonUtil.toBytes(list);
     }
 
     @Override
     public List<MyosotisEvent> deserializeEvents(byte[] data) {
-        return JSON.parseArray(new String(data, StandardCharsets.UTF_8), MyosotisEvent.class);
+        return JsonUtil.toList(data, events_ref);
     }
 
     @Override
     public byte[] serializeConfigs(List<MyosotisConfig> list) {
-        return JSON.toJSONString(list).getBytes(StandardCharsets.UTF_8);
+        return JsonUtil.toBytes(list);
     }
 
     @Override
     public List<MyosotisConfig> deserializeConfigs(byte[] data) {
-        return JSON.parseArray(new String(data, StandardCharsets.UTF_8), MyosotisConfig.class);
+        return JsonUtil.toList(data, configs_ref);
     }
 }

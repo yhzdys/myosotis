@@ -1,4 +1,5 @@
 # Myosotis
+
 ![GitHub last commit](https://img.shields.io/github/last-commit/yhzdys/myosotis) ![GitHub](https://img.shields.io/github/license/yhzdys/myosotis) ![GitHub branch checks state](https://img.shields.io/github/checks-status/yhzdys/myosotis/main) ![GitHub language count](https://img.shields.io/github/languages/count/yhzdys/myosotis) ![GitHub top language](https://img.shields.io/github/languages/top/yhzdys/myosotis) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/yhzdys/myosotis) ![GitHub repo size](https://img.shields.io/github/repo-size/yhzdys/myosotis)
 
 Myosotis（勿忘我)是一款基于java的高性能、轻量化的动态配置中心，资源开销较小，适用于各种中小型系统
@@ -100,14 +101,14 @@ public class Constant {
     @MyosotisValue
     public static String configKey1;
 
+    @MyosotisValue
+    public static User user;
+
     @MyosotisValue(configKey = "config_key2")
     public static Map<String, String> configKey2;
 
     @MyosotisValue(namespace = "default", configKey = "config_key2")
     public static Long configKey3;
-
-    @MyosotisValue(defaultValue = "{\"key\":\"value\"}")
-    public JSONObject configKey4;
 
     @MyosotisValue(defaultValue = "[1,2,3]")
     public List<Long> configKey5;

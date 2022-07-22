@@ -3,8 +3,8 @@ package com.yhzdys.myosotis.processor;
 import com.yhzdys.myosotis.constant.SystemConst;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
+import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.util.FileUtil;
-import com.yhzdys.myosotis.util.JsonUtil;
 
 import java.io.File;
 import java.util.List;

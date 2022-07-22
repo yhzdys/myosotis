@@ -6,8 +6,8 @@ import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
 import com.yhzdys.myosotis.event.publish.executor.ConfigListenerExecutorFactory;
 import com.yhzdys.myosotis.event.publish.executor.NamespaceListenerExecutorFactory;
+import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
-import com.yhzdys.myosotis.util.JsonUtil;
 import com.yhzdys.myosotis.util.ObjectUtil;
 import org.apache.commons.collections4.CollectionUtils;
 

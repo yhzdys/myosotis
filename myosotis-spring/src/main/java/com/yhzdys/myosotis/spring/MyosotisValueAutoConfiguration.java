@@ -1,14 +1,11 @@
 package com.yhzdys.myosotis.spring;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.util.TypeUtils;
 import com.yhzdys.myosotis.MyosotisClient;
 import com.yhzdys.myosotis.MyosotisClientManager;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.exception.MyosotisException;
+import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.spring.annotation.Myosotis;
 import com.yhzdys.myosotis.spring.annotation.MyosotisValue;
 import org.apache.commons.lang3.StringUtils;
@@ -54,21 +51,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         if (type == String.class) {
             return configValue;
         }
-        // fastjson1
-        if (type.isAssignableFrom(com.alibaba.fastjson.JSONObject.class)) {
-            return com.alibaba.fastjson.JSON.parseObject(configValue);
-        }
-        if (type.isAssignableFrom(com.alibaba.fastjson.JSONArray.class)) {
-            return com.alibaba.fastjson.JSON.parseArray(configValue);
-        }
-        // fastjson2
-        if (type.isAssignableFrom(JSONObject.class)) {
-            return JSON.parseObject(configValue);
-        }
-        if (type.isAssignableFrom(JSONArray.class)) {
-            return JSON.parseArray(configValue);
-        }
-        return TypeUtils.cast(configValue, type);
+        return JsonUtil.toObject(configValue, type);
     }
 
     public void onApplicationEvent(ContextRefreshedEvent event) {
