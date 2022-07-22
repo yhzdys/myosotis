@@ -28,10 +28,6 @@ public final class ConfigListenerExecutorFactory {
      * get singleton executor of configListenerId
      */
     public Executor getExecutor(Integer listenerId) {
-        InnerExecutor executor = executorMap.get(listenerId);
-        if (executor != null) {
-            return executor;
-        }
         return executorMap.computeIfAbsent(
                 listenerId, id -> new InnerExecutor(this.sharedPool)
         );

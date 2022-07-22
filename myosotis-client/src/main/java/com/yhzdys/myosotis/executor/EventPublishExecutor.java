@@ -15,7 +15,7 @@ public final class EventPublishExecutor extends ThreadPoolExecutor {
                 Runtime.getRuntime().availableProcessors(),
                 60L,
                 TimeUnit.SECONDS,
-                new SynchronousQueue<>(true),
+                new SynchronousQueue<>(false),
                 new EventPublishThreadFactory());
     }
 
