@@ -75,7 +75,6 @@ public final class MyosotisClientManager {
      * threadPool of event publish
      */
     private final EventPublishExecutor eventPublishSharedPool;
-    private final EventMulticaster eventMulticaster;
 
     /**
      * config fetch processor
@@ -102,7 +101,6 @@ public final class MyosotisClientManager {
 
         this.pollingScheduledPool = new LongPollingExecutor();
         this.eventPublishSharedPool = new EventPublishExecutor();
-        this.eventMulticaster = new EventMulticaster();
 
         if (customizer.isEnableLocalFile()) {
             this.localProcessor = new LocalProcessor(cachedConfigData);
