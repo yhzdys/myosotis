@@ -68,7 +68,7 @@ public final class MyosotisHttpClient {
                     try {
                         // 90%
                         return Long.parseLong(value) * 1000 * 90 / 100;
-                    } catch (final Exception ignore) {
+                    } catch (Exception ignore) {
                     }
                 }
             }

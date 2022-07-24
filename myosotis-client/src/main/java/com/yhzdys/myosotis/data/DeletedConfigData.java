@@ -1,4 +1,4 @@
-package com.yhzdys.myosotis.metadata;
+package com.yhzdys.myosotis.data;
 
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import org.apache.commons.collections4.MapUtils;
@@ -12,30 +12,30 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @see com.yhzdys.myosotis.MyosotisClientManager#addConfigListener(ConfigListener)
  */
-public final class DeletedConfigMetadata {
+public final class DeletedConfigData {
 
     /**
      * <namespace, <configKey , id>>
      */
-    private final Map<String, Map<String, Long>> cacheMap = new ConcurrentHashMap<>(0);
+    private final Map<String, Map<String, Long>> configMap = new ConcurrentHashMap<>(0);
 
     public void add(Long id, String namespace, String configKey) {
-        Map<String, Long> keyIdMap = cacheMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
+        Map<String, Long> keyIdMap = configMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
         keyIdMap.put(configKey, id);
     }
 
     public void remove(String namespace, String configKey) {
-        Map<String, Long> keyMap = cacheMap.get(namespace);
+        Map<String, Long> keyMap = configMap.get(namespace);
         if (keyMap == null) {
             return;
         }
         keyMap.remove(configKey);
         if (MapUtils.isEmpty(keyMap)) {
-            cacheMap.remove(namespace);
+            configMap.remove(namespace);
         }
     }
 
     public Map<String, Map<String, Long>> getMap() {
-        return Collections.unmodifiableMap(cacheMap);
+        return Collections.unmodifiableMap(configMap);
     }
 }

@@ -1,11 +1,13 @@
 package com.yhzdys.myosotis.test;
 
-import com.alibaba.fastjson2.JSON;
 import com.yhzdys.myosotis.MyosotisClient;
 import com.yhzdys.myosotis.MyosotisClientManager;
+import com.yhzdys.myosotis.MyosotisCustomizer;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
+import com.yhzdys.myosotis.enums.SerializeType;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
+import com.yhzdys.myosotis.misc.JsonUtil;
 import org.junit.Test;
 
 import java.util.Random;
@@ -16,14 +18,14 @@ public class ClientTest {
     @Test
     public void testClient() throws Exception {
 
-        MyosotisClientManager clientManager = new MyosotisClientManager("http://127.0.0.1:7777");
-//        MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
-//        customizer.setSerializeType(SerializeType.JSON);
-//        customizer.setEnableCompress(false);
-//        customizer.setCompressThreshold(0);
-//        MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
+        MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
+//        MyosotisCustomizer customizer = new MyosotisCustomizer("http://127.0.0.1:7777");
+        customizer.setSerializeType(SerializeType.JSON);
+        customizer.setEnableCompress(true);
+        customizer.setCompressThreshold(10);
+        MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
 
-        MyosotisClient client = clientManager.getClient("test_namespace");
+        MyosotisClient client = clientManager.getClient("default");
 
         clientManager.addNamespaceListener(new NamespaceListener() {
             @Override
@@ -33,7 +35,7 @@ public class ClientTest {
 
             @Override
             public void handle(MyosotisEvent event) {
-                System.out.println("g event: " + JSON.toJSONString(event));
+                System.out.println("g event: " + JsonUtil.toString(event));
             }
         });
         clientManager.addConfigListener(new ConfigListener() {
@@ -49,15 +51,14 @@ public class ClientTest {
 
             @Override
             public void handle(MyosotisEvent event) {
-                System.out.println("s event: " + JSON.toJSONString(event));
+                System.out.println("s event: " + JsonUtil.toString(event));
             }
         });
 
         Random random = new Random();
         for (; ; ) {
             System.out.println("--------------------------------");
-            String key1 = "test_key" + (random.nextInt(20) + 1);
-//            String key1 = "test_key" + 12;
+            String key1 = "123";
             String config1 = client.getConfig(key1);
             System.out.println("##### " + key1 + ":" + config1);
             String key2 = "test_key" + (random.nextInt(100) + 1);

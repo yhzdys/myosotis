@@ -1,6 +1,4 @@
-package com.yhzdys.myosotis.util;
-
-import com.yhzdys.myosotis.misc.LoggerFactory;
+package com.yhzdys.myosotis.misc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,7 +8,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-public final class FileUtil {
+public final class FileTool {
 
     public static String read(File file) {
         try (FileInputStream fis = new FileInputStream(file); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {

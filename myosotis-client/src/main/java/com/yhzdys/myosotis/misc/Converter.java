@@ -1,10 +1,10 @@
-package com.yhzdys.myosotis.util;
+package com.yhzdys.myosotis.misc;
 
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.enums.EventType;
 
-public final class TransUtil {
+public final class Converter {
 
     public static MyosotisEvent config2Event(MyosotisConfig config, EventType type) {
         MyosotisEvent event = new MyosotisEvent();

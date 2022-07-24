@@ -10,13 +10,11 @@
   "properties": [
     {
       "name": "myosotis.server.address",
-      "type": "java.lang.String",
-      "defaultValue": "http://127.0.0.1:7777"
+      "type": "java.lang.String"
     },
     {
       "name": "myosotis.client.namespace",
-      "type": "java.lang.String",
-      "defaultValue": "myosotis"
+      "type": "java.lang.String"
     }
   ],
   "hints": [

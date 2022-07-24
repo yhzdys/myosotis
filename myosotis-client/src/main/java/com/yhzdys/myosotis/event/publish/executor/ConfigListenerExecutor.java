@@ -1,6 +1,6 @@
 package com.yhzdys.myosotis.event.publish.executor;
 
-import com.yhzdys.myosotis.event.publish.MyosotisEventMulticaster;
+import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,28 +12,24 @@ import java.util.concurrent.ThreadPoolExecutor;
  * executor of configListener to handle myosotis config change event
  *
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
- * @see MyosotisEventMulticaster
+ * @see com.yhzdys.myosotis.event.publish.EventMulticaster
  */
-public final class ConfigListenerExecutorFactory {
+public final class ConfigListenerExecutor {
 
-    private final ConcurrentMap<Integer, InnerExecutor> executorMap = new ConcurrentHashMap<>(0);
+    private final ConcurrentMap<ConfigListener, InnerExecutor> executorMap = new ConcurrentHashMap<>(0);
 
     private final ThreadPoolExecutor sharedPool;
 
-    public ConfigListenerExecutorFactory(ThreadPoolExecutor sharedPool) {
+    public ConfigListenerExecutor(ThreadPoolExecutor sharedPool) {
         this.sharedPool = sharedPool;
     }
 
     /**
      * get singleton executor of configListenerId
      */
-    public Executor getExecutor(Integer listenerId) {
-        InnerExecutor executor = executorMap.get(listenerId);
-        if (executor != null) {
-            return executor;
-        }
+    public Executor getExecutor(ConfigListener configListener) {
         return executorMap.computeIfAbsent(
-                listenerId, id -> new InnerExecutor(this.sharedPool)
+                configListener, k -> new InnerExecutor(this.sharedPool)
         );
     }
 

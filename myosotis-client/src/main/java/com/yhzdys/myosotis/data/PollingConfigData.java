@@ -1,4 +1,4 @@
-package com.yhzdys.myosotis.metadata;
+package com.yhzdys.myosotis.data;
 
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.entity.PollingData;
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * metadata of long polling config (the configuration used in the program)
  */
-public final class PollingConfigMetadata {
+public final class PollingConfigData {
 
     private final AtomicLong modifiedVersion = new AtomicLong(1);
 

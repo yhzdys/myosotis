@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.yhzdys.myosotis.spring.MyosotisAutoConfiguration,\
-  com.yhzdys.myosotis.spring.MyosotisValueAutoConfiguration
+  com.yhzdys.myosotis.spring.MyosotisAutoConfiguration

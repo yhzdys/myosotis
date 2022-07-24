@@ -25,18 +25,12 @@ public interface Processor {
     void init(String namespace);
 
     /**
-     * fetch config change events from local
+     * fetch config change events
      *
-     * @see com.yhzdys.myosotis.processor.LocalProcessor#fetchEvents(Map, String)
+     * @see com.yhzdys.myosotis.processor.LocalProcessor#fetchEvents()
+     * @see com.yhzdys.myosotis.processor.ServerProcessor#fetchEvents()
      */
-    List<MyosotisEvent> fetchEvents(Map<String, String> cachedConfigs, String namespace);
-
-    /**
-     * fetch config change events from server
-     *
-     * @see com.yhzdys.myosotis.processor.ServerProcessor#pollingEvents()
-     */
-    List<MyosotisEvent> pollingEvents();
+    List<MyosotisEvent> fetchEvents();
 
     /**
      * query config

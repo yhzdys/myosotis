@@ -1,6 +1,6 @@
 package com.yhzdys.myosotis.web.interceptor;
 
-import com.alibaba.fastjson2.JSON;
+import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.service.domain.Menu;
 import com.yhzdys.myosotis.service.domain.Permission;
 import com.yhzdys.myosotis.web.entity.SessionContextHolder;
@@ -27,7 +27,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
         List<Menu> menus = SessionContextHolder.getUserMenus();
         if (menus == null || !menus.contains(permission.value())) {
             try {
-                response.getWriter().write(JSON.toJSONString(WebResponse.fail("How dare you!")));
+                response.getWriter().write(JsonUtil.toString(WebResponse.fail("How dare you!")));
             } catch (Exception ignored) {
             }
             return false;

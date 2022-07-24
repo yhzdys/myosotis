@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.yhzdys</groupId>
         <artifactId>myosotis</artifactId>
-        <version>1.0.0-Beta</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>myosotis-infra</artifactId>
 
@@ -26,6 +26,12 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.yhzdys</groupId>
+            <artifactId>myosotis-common</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -63,21 +69,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql-jdbc.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.yhzdys</groupId>
-            <artifactId>myosotis-common</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 

@@ -4,18 +4,55 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yhzdys</groupId>
     <artifactId>myosotis</artifactId>
-    <version>1.0.0-Beta</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>project myosotis.</description>
 
-    <properties>
-        <fastjson.version>2.0.9</fastjson.version>
-        <fastjson2.version>2.0.9</fastjson2.version>
-        <slf4j.version>1.7.36</slf4j.version>
-        <lz4.version>1.3.0</lz4.version>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
 
+    <developers>
+        <developer>
+            <name>yhzdys</name>
+            <email>yhzdys@foxmail.com</email>
+        </developer>
+    </developers>
+
+    <contributors>
+    </contributors>
+
+    <scm>
+        <connection>scm:git:https://github.com/yhzdys/myosotis.git</connection>
+        <developerConnection>scm:git:https://github.com/yhzdys/myosotis.git</developerConnection>
+        <url>https://github.com/yhzdys/myosotis</url>
+    </scm>
+
+    <issueManagement>
+        <system>Github Issues</system>
+        <url>https://github.com/yhzdys/myosotis/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <properties>
+        <jackson.version>2.12.7</jackson.version>
         <commons-lang.version>3.12.0</commons-lang.version>
         <commons-collections.version>4.4</commons-collections.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <lz4.version>1.3.0</lz4.version>
         <apache-httpclient.version>4.5.13</apache-httpclient.version>
         <apache-avro.version>1.11.0</apache-avro.version>
         <protostuff.version>1.8.0</protostuff.version>
@@ -51,52 +88,8 @@
         <module>assembly</module>
     </modules>
 
-    <developers>
-        <developer>
-            <name>yhzdys</name>
-            <email>yhzdys@foxmail.com</email>
-        </developer>
-    </developers>
-
-    <organization>
-        <name>project myosotis</name>
-        <url>https://yhzdys.com/</url>
-    </organization>
-
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.yhzdys</groupId>
-                <artifactId>myosotis-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yhzdys</groupId>
-                <artifactId>myosotis-infra</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba.fastjson2</groupId>
-                <artifactId>fastjson2</artifactId>
-                <version>${fastjson2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.jpountz.lz4</groupId>
-                <artifactId>lz4</artifactId>
-                <version>${lz4.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -108,6 +101,21 @@
                 <version>${commons-collections.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.jpountz.lz4</groupId>
+                <artifactId>lz4</artifactId>
+                <version>${lz4.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${apache-httpclient.version}</version>
@@ -117,7 +125,6 @@
                 <artifactId>avro</artifactId>
                 <version>${apache-avro.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>io.protostuff</groupId>
                 <artifactId>protostuff-core</artifactId>
@@ -151,6 +158,7 @@
 
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
@@ -158,6 +166,19 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -169,5 +190,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

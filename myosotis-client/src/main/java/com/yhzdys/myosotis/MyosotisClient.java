@@ -2,8 +2,8 @@ package com.yhzdys.myosotis;
 
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
-import com.yhzdys.myosotis.event.publish.executor.ConfigListenerExecutorFactory;
-import com.yhzdys.myosotis.event.publish.executor.NamespaceListenerExecutorFactory;
+import com.yhzdys.myosotis.event.publish.executor.ConfigListenerExecutor;
+import com.yhzdys.myosotis.event.publish.executor.NamespaceListenerExecutor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
 import java.util.List;
@@ -21,36 +21,36 @@ public final class MyosotisClient {
 
     private final MyosotisClientManager clientManager;
 
-    private final ConfigListenerExecutorFactory configListenerExecutorFactory;
+    private final ConfigListenerExecutor configListenerExecutor;
 
-    private final NamespaceListenerExecutorFactory namespaceListenerExecutorFactory;
+    private final NamespaceListenerExecutor namespaceListenerExecutor;
     /**
      * <configKey, ConfigListener.class>
      */
-    private final ConcurrentMap<String, CopyOnWriteArrayList<ConfigListener>> configListenersMap = new ConcurrentHashMap<>(0);
+    private final ConcurrentMap<String, List<ConfigListener>> configListenersMap = new ConcurrentHashMap<>(0);
     private NamespaceListener namespaceListener;
 
-    MyosotisClient(final String namespace,
-                   final MyosotisClientManager clientManager,
-                   final ThreadPoolExecutor sharedPool) {
+    MyosotisClient(String namespace,
+                   MyosotisClientManager clientManager,
+                   ThreadPoolExecutor sharedPool) {
         this.namespace = namespace;
         this.clientManager = clientManager;
-        this.configListenerExecutorFactory = new ConfigListenerExecutorFactory(sharedPool);
-        this.namespaceListenerExecutorFactory = new NamespaceListenerExecutorFactory(sharedPool);
+        this.configListenerExecutor = new ConfigListenerExecutor(sharedPool);
+        this.namespaceListenerExecutor = new NamespaceListenerExecutor(sharedPool);
     }
 
-    public String getConfig(final String configKey) {
+    public String getConfig(String configKey) {
         return clientManager.getConfig(namespace, configKey);
     }
 
-    public String getConfig(final String configKey, final String defaultValue) {
+    public String getConfig(String configKey, String defaultValue) {
         String configValue = clientManager.getConfig(namespace, configKey);
         return configValue == null ? defaultValue : configValue;
     }
 
     void addConfigListener(ConfigListener configListener) {
         String configKey = configListener.configKey();
-        CopyOnWriteArrayList<ConfigListener> configListeners = configListenersMap.computeIfAbsent(
+        List<ConfigListener> configListeners = configListenersMap.computeIfAbsent(
                 configKey, ck -> new CopyOnWriteArrayList<>()
         );
         configListeners.add(configListener);
@@ -64,7 +64,7 @@ public final class MyosotisClient {
         return namespaceListener;
     }
 
-    void setNamespaceListener(final NamespaceListener namespaceListener) {
+    void setNamespaceListener(NamespaceListener namespaceListener) {
         if (this.namespaceListener != null) {
             LoggerFactory.getLogger().error("Listener of namespace: {} already exists", namespace);
             return;
@@ -82,11 +82,11 @@ public final class MyosotisClient {
         return configListenersMap.get(configKey);
     }
 
-    ConfigListenerExecutorFactory getConfigListenerExecutorFactory() {
-        return configListenerExecutorFactory;
+    ConfigListenerExecutor getConfigListenerExecutor() {
+        return configListenerExecutor;
     }
 
-    NamespaceListenerExecutorFactory getNamespaceListenerExecutorFactory() {
-        return namespaceListenerExecutorFactory;
+    NamespaceListenerExecutor getNamespaceListenerExecutor() {
+        return namespaceListenerExecutor;
     }
 }

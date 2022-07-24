@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "myosotis.server")
 public class ServerProperty {
 
-    private String address = "http://127.0.0.1:7777";
+    private String address;
 
     public String getAddress() {
         return address;

@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "myosotis.client")
 public class ClientProperty {
 
-    private String namespace = "default";
+    private String namespace;
 
     public String getNamespace() {
         return namespace;
