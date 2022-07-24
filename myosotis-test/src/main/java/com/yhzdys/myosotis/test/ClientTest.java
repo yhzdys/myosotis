@@ -18,8 +18,8 @@ public class ClientTest {
     @Test
     public void testClient() throws Exception {
 
-//        MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
-        MyosotisCustomizer customizer = new MyosotisCustomizer("http://127.0.0.1:7777");
+        MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
+//        MyosotisCustomizer customizer = new MyosotisCustomizer("http://127.0.0.1:7777");
         customizer.setSerializeType(SerializeType.JSON);
         customizer.setEnableCompress(true);
         customizer.setCompressThreshold(10);

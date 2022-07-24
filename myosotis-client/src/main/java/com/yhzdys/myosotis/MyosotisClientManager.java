@@ -1,30 +1,29 @@
 package com.yhzdys.myosotis;
 
+import com.yhzdys.myosotis.data.AbsentConfigData;
+import com.yhzdys.myosotis.data.CachedConfigData;
+import com.yhzdys.myosotis.data.DeletedConfigData;
+import com.yhzdys.myosotis.data.PollingConfigData;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.entity.PollingData;
 import com.yhzdys.myosotis.enums.EventType;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
-import com.yhzdys.myosotis.event.publish.MyosotisEventMulticaster;
+import com.yhzdys.myosotis.event.publish.EventMulticaster;
 import com.yhzdys.myosotis.executor.EventPublishExecutor;
 import com.yhzdys.myosotis.executor.LongPollingExecutor;
-import com.yhzdys.myosotis.metadata.AbsentConfigMetadata;
-import com.yhzdys.myosotis.metadata.DeletedConfigMetadata;
-import com.yhzdys.myosotis.metadata.PollingConfigMetadata;
+import com.yhzdys.myosotis.misc.Converter;
 import com.yhzdys.myosotis.misc.LockStore;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 import com.yhzdys.myosotis.processor.LocalProcessor;
 import com.yhzdys.myosotis.processor.Processor;
 import com.yhzdys.myosotis.processor.ServerProcessor;
 import com.yhzdys.myosotis.processor.SnapshotProcessor;
-import com.yhzdys.myosotis.processor.UselessProcessor;
-import com.yhzdys.myosotis.util.TransUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,17 +55,16 @@ public final class MyosotisClientManager {
     private final ConcurrentMap<String, MyosotisClient> clientMap = new ConcurrentHashMap<>(2);
 
     /**
-     * local config cache
-     * <namespace, <configKey, configValue>>
+     * cached configs
      */
-    private final ConcurrentMap<String, ConcurrentMap<String, String>> configCacheMap = new ConcurrentHashMap<>(2);
+    private final CachedConfigData cachedConfigData;
 
     /**
      * cached config metadata
      */
-    private final PollingConfigMetadata pollingConfigMetaData;
-    private final DeletedConfigMetadata deletedConfigMetadata;
-    private final AbsentConfigMetadata absentConfigMetaData;
+    private final PollingConfigData pollingConfigData;
+    private final DeletedConfigData deletedConfigData;
+    private final AbsentConfigData absentConfigData;
 
     /**
      * scheduled threadPool of long polling
@@ -77,11 +75,12 @@ public final class MyosotisClientManager {
      * threadPool of event publish
      */
     private final EventPublishExecutor eventPublishSharedPool;
+    private final EventMulticaster eventMulticaster;
 
     /**
      * config fetch processor
      */
-    private final Processor localFileProcessor;
+    private final Processor localProcessor;
     private final Processor serverProcessor;
     private final Processor snapshotProcessor;
 
@@ -96,33 +95,35 @@ public final class MyosotisClientManager {
     }
 
     public MyosotisClientManager(MyosotisCustomizer customizer) {
-        this.pollingConfigMetaData = new PollingConfigMetadata();
-        this.deletedConfigMetadata = new DeletedConfigMetadata();
-        this.absentConfigMetaData = new AbsentConfigMetadata();
+        this.cachedConfigData = new CachedConfigData();
+        this.pollingConfigData = new PollingConfigData();
+        this.deletedConfigData = new DeletedConfigData();
+        this.absentConfigData = new AbsentConfigData();
 
         this.pollingScheduledPool = new LongPollingExecutor();
         this.eventPublishSharedPool = new EventPublishExecutor();
+        this.eventMulticaster = new EventMulticaster();
 
         if (customizer.isEnableLocalFile()) {
-            this.localFileProcessor = new LocalProcessor();
+            this.localProcessor = new LocalProcessor(cachedConfigData);
         } else {
-            this.localFileProcessor = new UselessProcessor();
+            this.localProcessor = null;
         }
-        this.serverProcessor = new ServerProcessor(customizer, pollingConfigMetaData, absentConfigMetaData);
         if (customizer.isEnableSnapshotFile()) {
             this.snapshotProcessor = new SnapshotProcessor();
         } else {
-            this.snapshotProcessor = new UselessProcessor();
+            this.snapshotProcessor = null;
         }
+        this.serverProcessor = new ServerProcessor(customizer, pollingConfigData, absentConfigData);
     }
 
     public MyosotisClient getClient(String namespace) {
         return this.getClient(namespace, null, null);
     }
 
-    public MyosotisClient getClient(final String namespace,
-                                    final NamespaceListener namespaceListener,
-                                    final List<ConfigListener> configListeners) {
+    public MyosotisClient getClient(String namespace,
+                                    NamespaceListener namespaceListener,
+                                    List<ConfigListener> configListeners) {
         MyosotisClient client = clientMap.get(namespace);
         if (client != null) {
             return client;
@@ -133,10 +134,13 @@ public final class MyosotisClientManager {
                 return client;
             }
             // init
-            localFileProcessor.init(namespace);
-            snapshotProcessor.init(namespace);
-            configCacheMap.put(namespace, new ConcurrentHashMap<>(2));
-
+            if (localProcessor != null) {
+                localProcessor.init(namespace);
+            }
+            if (snapshotProcessor != null) {
+                snapshotProcessor.init(namespace);
+            }
+            cachedConfigData.add(namespace);
             client = new MyosotisClient(namespace, this, eventPublishSharedPool);
             clientMap.put(namespace, client);
         }
@@ -167,7 +171,7 @@ public final class MyosotisClientManager {
             return;
         }
         client.setNamespaceListener(namespaceListener);
-        pollingConfigMetaData.setAll(namespace, true);
+        pollingConfigData.setAll(namespace, true);
 
         // to init local cache
         if (haveLocalCache(namespace)) {
@@ -204,7 +208,7 @@ public final class MyosotisClientManager {
         // automatically add to polling metadata
         String value = this.getConfig(namespace, configKey);
         if (value == null) {
-            deletedConfigMetadata.add(0L, namespace, configKey);
+            deletedConfigData.add(0L, namespace, configKey);
         }
     }
 
@@ -224,55 +228,45 @@ public final class MyosotisClientManager {
      */
     String getConfig(String namespace, String configKey) {
         // step.1 get from local cache
-        Map<String, String> configs = configCacheMap.get(namespace);
-        String configValue = configs.get(configKey);
+        String configValue = cachedConfigData.get(namespace, configKey);
         if (configValue != null) {
             return configValue;
         }
         synchronized (LockStore.get(namespace + ":" + configKey)) {
-            configValue = configs.get(configKey);
+            configValue = cachedConfigData.get(namespace, configKey);
             if (configValue != null) {
                 return configValue;
             }
 
             // step.2 get from local file
-            MyosotisConfig config = localFileProcessor.getConfig(namespace, configKey);
-            if (config != null) {
-                configs.put(configKey, config.getConfigValue());
-                absentConfigMetaData.remove(namespace, configKey);
+            MyosotisConfig config;
+            if (localProcessor != null && (config = localProcessor.getConfig(namespace, configKey)) != null) {
+                cachedConfigData.add(namespace, configKey, config.getConfigValue());
+                absentConfigData.remove(namespace, configKey);
                 return config.getConfigValue();
             }
-            if (absentConfigMetaData.isAbsent(namespace, configKey)) {
-                return null;
-            }
-
             // step.3 get from server
             config = serverProcessor.getConfig(namespace, configKey);
-            // 服务端获取,返回空数据,有两种情况,这里需要单独区分开来 1.和服务端通信失败 2.配置在服务端不存在.
-            if (absentConfigMetaData.isAbsent(namespace, configKey)) {
+            if (absentConfigData.isAbsent(namespace, configKey)) {
                 return null;
             }
             if (config != null) {
-                pollingConfigMetaData.add(config.getId(), namespace, configKey, config.getVersion());
-                absentConfigMetaData.remove(namespace, configKey);
+                pollingConfigData.add(config.getId(), namespace, configKey, config.getVersion());
+                absentConfigData.remove(namespace, configKey);
                 if (config.getConfigValue() != null) {
-                    configs.put(configKey, config.getConfigValue());
-                    snapshotProcessor.save(config);
+                    cachedConfigData.add(namespace, configKey, config.getConfigValue());
+                    if (snapshotProcessor != null) {
+                        snapshotProcessor.save(config);
+                    }
                     return config.getConfigValue();
                 }
             }
 
             // step.4 get from local snapshot file
-            try {
-                // 从服务端获取仍然为空(服务端重启、宕机等异常情况)尝试从本地snapshot文件加载配置
-                config = snapshotProcessor.getConfig(namespace, configKey);
-                if (config != null) {
-                    configs.put(configKey, config.getConfigValue());
-                    pollingConfigMetaData.add(config.getId(), namespace, configKey, config.getVersion());
-                    return configs.get(configKey);
-                }
-            } catch (Throwable e) {
-                LoggerFactory.getLogger().error("Get config from local snapshot file failed", e);
+            if (snapshotProcessor != null && (config = snapshotProcessor.getConfig(namespace, configKey)) != null) {
+                cachedConfigData.add(namespace, configKey, config.getConfigValue());
+                pollingConfigData.add(config.getId(), namespace, configKey, config.getVersion());
+                return config.getConfigValue();
             }
         }
         return null;
@@ -282,11 +276,11 @@ public final class MyosotisClientManager {
      * 本地数据不为空 返回true
      */
     private boolean haveLocalCache(String namespace) {
-        PollingData pollingData = pollingConfigMetaData.getPollingMap().get(namespace);
+        PollingData pollingData = pollingConfigData.getPollingMap().get(namespace);
         if (pollingData == null) {
             return false;
         }
-        return MapUtils.isNotEmpty(configCacheMap.get(namespace));
+        return !cachedConfigData.isEmpty(namespace);
     }
 
     /**
@@ -305,17 +299,17 @@ public final class MyosotisClientManager {
     private void initLocalConfig(MyosotisConfig config) {
         String namespace = config.getNamespace();
         String configKey = config.getConfigKey();
-        absentConfigMetaData.remove(namespace, configKey);
+        absentConfigData.remove(namespace, configKey);
 
-        MyosotisConfig localConfig = localFileProcessor.getConfig(namespace, configKey);
+        MyosotisConfig localConfig = localProcessor.getConfig(namespace, configKey);
         if (localConfig != null) {
-            configCacheMap.get(namespace).put(configKey, localConfig.getConfigValue());
-            absentConfigMetaData.remove(namespace, configKey);
+            cachedConfigData.add(namespace, configKey, localConfig.getConfigValue());
+            absentConfigData.remove(namespace, configKey);
             return;
         }
-        pollingConfigMetaData.add(config.getId(), namespace, configKey, config.getVersion());
+        pollingConfigData.add(config.getId(), namespace, configKey, config.getVersion());
         if (config.getConfigValue() != null) {
-            configCacheMap.get(namespace).put(configKey, config.getConfigValue());
+            cachedConfigData.add(namespace, configKey, config.getConfigValue());
             snapshotProcessor.save(config);
         }
     }
@@ -345,17 +339,14 @@ public final class MyosotisClientManager {
     }
 
     private void fetchLocalConfigs() {
-        if (localFileProcessor instanceof UselessProcessor) {
+        if (localProcessor == null) {
             return;
         }
-        Collection<MyosotisClient> clients = clientMap.values();
-        for (MyosotisClient client : clients) {
-            String namespace = client.getNamespace();
-            List<MyosotisEvent> events = localFileProcessor.fetchEvents(configCacheMap.get(namespace), namespace);
-            for (MyosotisEvent event : events) {
-                absentConfigMetaData.remove(namespace, event.getConfigKey());
-                this.publishLocalEvent(client, event);
-            }
+        List<MyosotisEvent> events = localProcessor.fetchEvents();
+        for (MyosotisEvent event : events) {
+            String namespace = event.getNamespace();
+            absentConfigData.remove(namespace, event.getConfigKey());
+            this.publishLocalEvent(clientMap.get(namespace), event);
         }
     }
 
@@ -368,16 +359,16 @@ public final class MyosotisClientManager {
             return;
         }
         lastCheckTimestamp = now;
-        absentConfigMetaData.clear();
+        absentConfigData.clear();
     }
 
     private void fetchServerConfigs() {
-        Map<String, PollingData> map = pollingConfigMetaData.getPollingMap();
+        Map<String, PollingData> map = pollingConfigData.getPollingMap();
         if (MapUtils.isEmpty(map)) {
             LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(1));
             return;
         }
-        List<MyosotisEvent> events = serverProcessor.pollingEvents();
+        List<MyosotisEvent> events = serverProcessor.fetchEvents();
         if (CollectionUtils.isEmpty(events)) {
             return;
         }
@@ -393,104 +384,99 @@ public final class MyosotisClientManager {
     /**
      * local config file events
      */
-    private void publishLocalEvent(final MyosotisClient client, MyosotisEvent event) {
+    private void publishLocalEvent(MyosotisClient client, MyosotisEvent event) {
         String namespace = client.getNamespace();
         String configKey = event.getConfigKey();
-
-        ConcurrentMap<String, String> configs = configCacheMap.get(namespace);
+        String configValue = event.getConfigValue();
         switch (event.getType()) {
             case ADD:
-                Long id = pollingConfigMetaData.getConfigId(namespace, configKey);
+                Long id = pollingConfigData.getConfigId(namespace, configKey);
                 if (id == null) {
                     return;
                 }
-                pollingConfigMetaData.remove(namespace, configKey);
+                pollingConfigData.remove(namespace, configKey);
                 event.setId(id).setType(EventType.UPDATE);
                 break;
             case UPDATE:
-                if (Objects.equals(configs.get(configKey), event.getConfigValue())) {
+                // not really update
+                if (Objects.equals(cachedConfigData.get(namespace, configKey), configValue)) {
                     return;
                 }
-                configs.put(configKey, event.getConfigValue());
+                cachedConfigData.add(namespace, configKey, configValue);
                 break;
             case DELETE:
                 MyosotisConfig config = serverProcessor.getConfig(namespace, configKey);
                 if (config == null) {
-                    id = pollingConfigMetaData.getConfigId(namespace, configKey);
+                    id = pollingConfigData.getConfigId(namespace, configKey);
                     if (id == null) {
                         config = snapshotProcessor.getConfig(namespace, configKey);
                         id = config == null ? null : config.getId();
                     }
                     if (id != null && id > 0L) {
-                        pollingConfigMetaData.add(id, namespace, configKey, 0);
+                        pollingConfigData.add(id, namespace, configKey, 0);
                     }
                     return;
                 }
-                pollingConfigMetaData.add(config.getId(), namespace, config.getConfigKey(), config.getVersion());
-                if (config.getConfigValue() == null || Objects.equals(config.getConfigValue(), configs.get(configKey))) {
+                pollingConfigData.add(config.getId(), namespace, config.getConfigKey(), config.getVersion());
+                if (config.getConfigValue() == null ||
+                        Objects.equals(cachedConfigData.get(namespace, configKey), config.getConfigValue())) {
                     return;
                 }
-                configs.put(configKey, config.getConfigValue());
+                cachedConfigData.add(namespace, configKey, config.getConfigValue());
                 event.setConfigValue(config.getConfigValue()).setVersion(config.getVersion()).setType(EventType.UPDATE);
                 break;
             default:
                 return;
         }
-        triggerListener(client, event);
+        this.triggerListener(client, event);
     }
 
     /**
      * myosotis server config events
      */
-    private void publishServerEvents(final MyosotisClient client, final MyosotisEvent event) {
-        boolean needPublish = false;
-        MyosotisConfig config = TransUtil.event2Config(event);
-
-        ConcurrentMap<String, String> configs = configCacheMap.get(client.getNamespace());
+    private void publishServerEvents(MyosotisClient client, MyosotisEvent event) {
+        String namespace = client.getNamespace();
+        String configKey = event.getConfigKey();
+        String configValue = event.getConfigValue();
         switch (event.getType()) {
             case ADD:
-                configs.put(event.getConfigKey(), event.getConfigValue());
-                pollingConfigMetaData.add(event);
-                snapshotProcessor.save(config);
-                needPublish = true;
+                cachedConfigData.add(namespace, configKey, configValue);
+                pollingConfigData.add(event);
+                snapshotProcessor.save(Converter.event2Config(event));
                 break;
             case UPDATE:
-                String configValue = configs.get(event.getConfigKey());
-                if (!Objects.equals(configValue, event.getConfigValue())) {
-                    configs.put(event.getConfigKey(), event.getConfigValue());
-                    needPublish = true;
+                // not really update
+                if (Objects.equals(cachedConfigData.get(namespace, configKey), configValue)) {
+                    return;
                 }
-                pollingConfigMetaData.update(event);
-                snapshotProcessor.save(config);
+                cachedConfigData.add(namespace, configKey, configValue);
+                pollingConfigData.update(event);
+                snapshotProcessor.save(Converter.event2Config(event));
                 break;
             case DELETE:
-                String namespace = event.getNamespace();
-                String configKey = pollingConfigMetaData.getConfigKey(event.getId(), namespace);
-                configs.remove(configKey);
+                configKey = pollingConfigData.getConfigKey(event.getId(), namespace);
                 event.setConfigKey(configKey);
-                pollingConfigMetaData.remove(event.getId());
+                cachedConfigData.remove(namespace, configKey);
+                pollingConfigData.remove(event.getId());
                 if (CollectionUtils.isNotEmpty(clientMap.get(namespace).getConfigListeners(configKey))) {
-                    deletedConfigMetadata.add(event.getId(), namespace, configKey);
+                    deletedConfigData.add(event.getId(), namespace, configKey);
                 }
-                needPublish = true;
                 break;
             default:
                 return;
         }
-        if (needPublish) {
-            this.triggerListener(client, event);
-        }
+        this.triggerListener(client, event);
     }
 
-    private void triggerListener(final MyosotisClient client, final MyosotisEvent event) {
+    private void triggerListener(MyosotisClient client, MyosotisEvent event) {
         NamespaceListener namespaceListener = client.getNamespaceListener();
-        MyosotisEventMulticaster.triggerNamespaceListeners(
-                client.getNamespaceListenerExecutorFactory(), namespaceListener, event
+        EventMulticaster.triggerNamespaceListeners(
+                client.getNamespaceListenerExecutor(), namespaceListener, event
         );
 
         List<ConfigListener> configListeners = client.getConfigListeners(event.getConfigKey());
-        MyosotisEventMulticaster.triggerConfigListeners(
-                client.getConfigListenerExecutorFactory(), configListeners, event
+        EventMulticaster.triggerConfigListeners(
+                client.getConfigListenerExecutor(), configListeners, event
         );
     }
 
@@ -498,7 +484,7 @@ public final class MyosotisClientManager {
      * 查询被configListener订阅的不存在的配置
      */
     private void fetchDeletedConfigs() {
-        Map<String, Map<String, Long>> deletedMap = deletedConfigMetadata.getMap();
+        Map<String, Map<String, Long>> deletedMap = deletedConfigData.getMap();
         if (MapUtils.isEmpty(deletedMap)) {
             return;
         }
@@ -508,15 +494,15 @@ public final class MyosotisClientManager {
             return;
         }
         for (MyosotisConfig config : configs) {
-            pollingConfigMetaData.add(config.getId(), config.getNamespace(), config.getConfigKey(), config.getVersion());
-            deletedConfigMetadata.remove(config.getNamespace(), config.getConfigKey());
-            absentConfigMetaData.remove(config.getNamespace(), config.getConfigKey());
+            pollingConfigData.add(config.getId(), config.getNamespace(), config.getConfigKey(), config.getVersion());
+            deletedConfigData.remove(config.getNamespace(), config.getConfigKey());
+            absentConfigData.remove(config.getNamespace(), config.getConfigKey());
             String configValue = config.getConfigValue();
             if (configValue != null) {
-                configCacheMap.get(config.getNamespace()).put(config.getConfigKey(), configValue);
+                cachedConfigData.add(config.getNamespace(), config.getConfigKey(), configValue);
                 snapshotProcessor.save(config);
             }
-            MyosotisEvent event = TransUtil.config2Event(config, EventType.ADD);
+            MyosotisEvent event = Converter.config2Event(config, EventType.ADD);
             this.triggerListener(clientMap.get(config.getNamespace()), event);
         }
     }

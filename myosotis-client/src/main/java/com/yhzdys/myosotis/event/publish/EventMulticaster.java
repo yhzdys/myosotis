@@ -1,14 +1,12 @@
 package com.yhzdys.myosotis.event.publish;
 
 import com.yhzdys.myosotis.entity.MyosotisEvent;
-import com.yhzdys.myosotis.event.Listener;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
-import com.yhzdys.myosotis.event.publish.executor.ConfigListenerExecutorFactory;
-import com.yhzdys.myosotis.event.publish.executor.NamespaceListenerExecutorFactory;
+import com.yhzdys.myosotis.event.publish.executor.ConfigListenerExecutor;
+import com.yhzdys.myosotis.event.publish.executor.NamespaceListenerExecutor;
 import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
-import com.yhzdys.myosotis.util.ObjectUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
@@ -16,23 +14,23 @@ import java.util.List;
 /**
  * publish config change event
  *
- * @see Listener
- * @see NamespaceListener
- * @see ConfigListener
+ * @see com.yhzdys.myosotis.event.listener.Listener
+ * @see com.yhzdys.myosotis.event.listener.NamespaceListener
+ * @see com.yhzdys.myosotis.event.listener.ConfigListener
  */
-public final class MyosotisEventMulticaster {
+public final class EventMulticaster {
 
     /**
      * trigger namespaceListener
      */
-    public static void triggerNamespaceListeners(final NamespaceListenerExecutorFactory executor,
+    public static void triggerNamespaceListeners(final NamespaceListenerExecutor executor,
                                                  final NamespaceListener namespaceListener,
                                                  final MyosotisEvent event) {
         if (namespaceListener == null) {
             return;
         }
         executor.execute(
-                new NamespaceListenerExecutorFactory.Task(
+                new NamespaceListenerExecutor.Task(
                         event.getConfigKey(), () -> triggerNamespaceListeners(namespaceListener, event)
                 )
         );
@@ -41,14 +39,14 @@ public final class MyosotisEventMulticaster {
     /**
      * trigger configListeners
      */
-    public static void triggerConfigListeners(final ConfigListenerExecutorFactory executor,
+    public static void triggerConfigListeners(final ConfigListenerExecutor executor,
                                               final List<ConfigListener> configListeners,
                                               final MyosotisEvent event) {
         if (CollectionUtils.isEmpty(configListeners)) {
             return;
         }
         for (ConfigListener configListener : configListeners) {
-            executor.getExecutor(ObjectUtil.getId(configListener))
+            executor.getExecutor(configListener)
                     .execute(
                             () -> triggerConfigListener(configListener, event)
                     );

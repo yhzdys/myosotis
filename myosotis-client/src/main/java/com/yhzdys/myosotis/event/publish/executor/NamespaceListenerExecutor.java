@@ -1,6 +1,5 @@
 package com.yhzdys.myosotis.event.publish.executor;
 
-import com.yhzdys.myosotis.event.publish.MyosotisEventMulticaster;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
 import java.util.LinkedList;
@@ -11,9 +10,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  * executor of namespaceListener to handle myosotis config change event
  *
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
- * @see MyosotisEventMulticaster
+ * @see com.yhzdys.myosotis.event.publish.EventMulticaster
  */
-public final class NamespaceListenerExecutorFactory {
+public final class NamespaceListenerExecutor {
 
     private final LinkedList<Task> tasks = new LinkedList<>();
 
@@ -23,7 +22,7 @@ public final class NamespaceListenerExecutorFactory {
 
     private boolean running;
 
-    public NamespaceListenerExecutorFactory(ThreadPoolExecutor sharedPool) {
+    public NamespaceListenerExecutor(ThreadPoolExecutor sharedPool) {
         this.sharedPool = sharedPool;
         this.runner = () -> {
             for (; ; ) {

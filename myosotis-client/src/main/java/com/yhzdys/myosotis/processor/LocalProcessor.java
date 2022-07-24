@@ -1,10 +1,11 @@
 package com.yhzdys.myosotis.processor;
 
 import com.yhzdys.myosotis.constant.SystemConst;
+import com.yhzdys.myosotis.data.CachedConfigData;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.enums.EventType;
-import com.yhzdys.myosotis.util.FileUtil;
+import com.yhzdys.myosotis.misc.FileTool;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -28,11 +30,16 @@ public final class LocalProcessor implements Processor {
     private final String config_dir = SystemConst.myosotis_dir + SystemConst.separator + "%s";
     private final String config_file = config_dir + SystemConst.separator + "%s";
 
+    private final CachedConfigData cachedConfigData;
     /**
      * 每个key的本地配置文件最近修改时间
      * <namespace, <configKey, timestamp>>
      */
     private final ConcurrentMap<String, ConcurrentMap<String, Long>> fileModifiedMap = new ConcurrentHashMap<>(2);
+
+    public LocalProcessor(CachedConfigData cachedConfigData) {
+        this.cachedConfigData = cachedConfigData;
+    }
 
     @Override
     public void init(String namespace) {
@@ -43,14 +50,54 @@ public final class LocalProcessor implements Processor {
         boolean result = configDir.mkdirs();
     }
 
+    @Override
+    public List<MyosotisEvent> fetchEvents() {
+        List<MyosotisEvent> events = new ArrayList<>();
+        Set<String> namespaces = cachedConfigData.getNamespaces();
+        for (String namespace : namespaces) {
+            events.addAll(
+                    this.fetchNamespaceEvents(namespace)
+            );
+        }
+        return events;
+    }
+
+    @Override
+    public MyosotisConfig getConfig(String namespace, String configKey) {
+        File configFile = getConfigFile(namespace, configKey);
+        String configValue = null;
+        if (configFile.exists() && configFile.isFile()) {
+            // 记录当前key的最后修改时间
+            fileModifiedMap.get(namespace).put(configKey, configFile.lastModified());
+            configValue = FileTool.read(configFile);
+        }
+        if (StringUtils.isEmpty(configValue)) {
+            return null;
+        }
+        return new MyosotisConfig(namespace, configKey, configValue);
+    }
+
+    @Override
+    public List<MyosotisConfig> getConfigs(String namespace) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<MyosotisConfig> getConfigs(Map<String, Map<String, Long>> namespaceKeyMap) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void save(MyosotisConfig config) {
+    }
+
     /**
      * 获取本地配置文件变更事件
      */
-    @Override
-    public List<MyosotisEvent> fetchEvents(Map<String, String> cachedConfigs, String namespace) {
+    private List<MyosotisEvent> fetchNamespaceEvents(String namespace) {
         List<MyosotisEvent> events = new ArrayList<>();
         // 关注的本地key文件最新一次修改时间
-        Map<String, Long> localFileLastModified = getLocalFileLastModified(namespace, cachedConfigs);
+        Map<String, Long> localFileLastModified = getLocalFileLastModified(namespace);
         // 本地key文件缓存的上次读取的修改时间
         ConcurrentMap<String, Long> cachedLastModified = fileModifiedMap.get(namespace);
 
@@ -75,7 +122,7 @@ public final class LocalProcessor implements Processor {
             cachedLastModified.put(configKey, realModified);
             String configValue = getConfigValue(namespace, configKey);
             // no changes
-            if (StringUtils.isEmpty(configValue) || configValue.equals(cachedConfigs.get(configKey))) {
+            if (StringUtils.isEmpty(configValue) || configValue.equals(cachedConfigData.get(namespace, configKey))) {
                 continue;
             }
             events.add(new MyosotisEvent(namespace, configKey, configValue, EventType.UPDATE));
@@ -92,45 +139,10 @@ public final class LocalProcessor implements Processor {
         return events;
     }
 
-    @Override
-    public List<MyosotisEvent> pollingEvents() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public MyosotisConfig getConfig(String namespace, String configKey) {
-        File configFile = getConfigFile(namespace, configKey);
-        String configValue = null;
-        if (configFile.exists() && configFile.isFile()) {
-            // 记录当前key的最后修改时间
-            fileModifiedMap.get(namespace).put(configKey, configFile.lastModified());
-            configValue = FileUtil.read(configFile);
-        }
-        if (StringUtils.isEmpty(configValue)) {
-            return null;
-        }
-        return new MyosotisConfig(namespace, configKey, configValue);
-    }
-
-    @Override
-    public List<MyosotisConfig> getConfigs(String namespace) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<MyosotisConfig> getConfigs(Map<String, Map<String, Long>> namespaceKeyMap) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void save(MyosotisConfig config) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * 获取本地配置文件的最后修改时间
      */
-    private Map<String, Long> getLocalFileLastModified(String namespace, Map<String, String> configs) {
+    private Map<String, Long> getLocalFileLastModified(String namespace) {
         File configDir = new File(MessageFormat.format(config_dir, namespace));
         if (!configDir.exists() || !configDir.isDirectory()) {
             return Collections.emptyMap();
@@ -141,7 +153,7 @@ public final class LocalProcessor implements Processor {
         }
         Map<String, Long> localFileLastModified = new HashMap<>(files.length);
         for (File file : files) {
-            if (configs.containsKey(file.getName())) {
+            if (cachedConfigData.get(namespace, file.getName()) != null) {
                 localFileLastModified.put(file.getName(), file.lastModified());
             }
         }
@@ -159,7 +171,7 @@ public final class LocalProcessor implements Processor {
 
     private String getConfigValue(File configFile) {
         if (configFile.exists() && configFile.isFile()) {
-            return FileUtil.read(configFile);
+            return FileTool.read(configFile);
         }
         return null;
     }
