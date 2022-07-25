@@ -1,6 +1,6 @@
 # Myosotis
 
-![GitHub last commit](https://img.shields.io/github/last-commit/yhzdys/myosotis) ![GitHub](https://img.shields.io/github/license/yhzdys/myosotis) ![GitHub branch checks state](https://img.shields.io/github/checks-status/yhzdys/myosotis/main) ![GitHub language count](https://img.shields.io/github/languages/count/yhzdys/myosotis) ![GitHub top language](https://img.shields.io/github/languages/top/yhzdys/myosotis) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/yhzdys/myosotis) ![GitHub repo size](https://img.shields.io/github/repo-size/yhzdys/myosotis)
+![GitHub last commit](https://img.shields.io/github/last-commit/yhzdys/myosotis) ![JAVA](https://img.shields.io/badge/JAVA-1.8+-green.svg) ![GitHub](https://img.shields.io/github/license/yhzdys/myosotis) ![GitHub language count](https://img.shields.io/github/languages/count/yhzdys/myosotis) ![GitHub top language](https://img.shields.io/github/languages/top/yhzdys/myosotis) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/yhzdys/myosotis) ![GitHub repo size](https://img.shields.io/github/repo-size/yhzdys/myosotis)
 
 Myosotis（勿忘我)是一款基于java的高性能、轻量化的动态配置中心，资源开销较小，适用于各种中小型系统
 客户端本可不依赖任何框架，支持jdk8及以上的java环境，同时对spring和springboot有较好的支持
