@@ -1,8 +1,6 @@
 package com.yhzdys.myosotis.data;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,10 +36,6 @@ public final class CachedData {
             return null;
         }
         return configs.get(configKey);
-    }
-
-    public Set<String> getNamespaces() {
-        return Collections.unmodifiableSet(configMap.keySet());
     }
 
     public boolean containsNamespaceConfig(String namespace) {

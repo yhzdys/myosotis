@@ -212,13 +212,8 @@ public final class MyosotisApplication {
             if (configValue != null) {
                 return configValue;
             }
-
-            MyosotisConfig config;
             // step.2 get from server
-            config = serverProcessor.getConfig(namespace, configKey);
-            if (absentMetadata.isAbsent(namespace, configKey)) {
-                return null;
-            }
+            MyosotisConfig config = serverProcessor.getConfig(namespace, configKey);
             if (config != null) {
                 pollingMetadata.add(config.getId(), namespace, configKey, config.getVersion());
                 absentMetadata.remove(namespace, configKey);
@@ -230,7 +225,9 @@ public final class MyosotisApplication {
                     return config.getConfigValue();
                 }
             }
-
+            if (absentMetadata.isAbsent(namespace, configKey)) {
+                return null;
+            }
             // step.3 get from local snapshot file
             if (snapshotProcessor != null && (config = snapshotProcessor.getConfig(namespace, configKey)) != null) {
                 cachedData.add(namespace, configKey, config.getConfigValue());
