@@ -30,7 +30,7 @@ public class ClientTest {
         clientManager.addNamespaceListener(new NamespaceListener() {
             @Override
             public String namespace() {
-                return "test_namespace";
+                return "default";
             }
 
             @Override

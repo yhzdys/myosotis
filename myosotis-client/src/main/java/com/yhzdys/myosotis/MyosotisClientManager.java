@@ -319,7 +319,7 @@ public final class MyosotisClientManager {
                 LoggerFactory.getLogger().error("Polling config(s) error", e);
                 LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
             }
-        }, 0, 1, TimeUnit.MILLISECONDS);
+        }, TimeUnit.SECONDS.toMillis(10), 1, TimeUnit.MILLISECONDS);
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
@@ -328,7 +328,7 @@ public final class MyosotisClientManager {
                 LoggerFactory.getLogger().error("Fetch deleted config(s) error", e);
                 LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
             }
-        }, 1, 10, TimeUnit.SECONDS);
+        }, TimeUnit.SECONDS.toMillis(20), TimeUnit.SECONDS.toMillis(10), TimeUnit.MILLISECONDS);
         LoggerFactory.getLogger().info("Myosotis start completed...");
     }
 
@@ -354,7 +354,6 @@ public final class MyosotisClientManager {
     private void fetchServerConfigs() {
         Map<String, PollingData> map = pollingConfigData.getPollingMap();
         if (MapUtils.isEmpty(map)) {
-            LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(1));
             return;
         }
         List<MyosotisEvent> events = serverProcessor.fetchEvents();
