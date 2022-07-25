@@ -1,6 +1,6 @@
 # Myosotis
 
-[![OSCS Status](https://www.oscs1024.com/platform/badge/yhzdys/myosotis.svg?size=small)](https://www.oscs1024.com/project/yhzdys/myosotis?ref=badge_small) ![GitHub last commit](https://img.shields.io/github/last-commit/yhzdys/myosotis) ![JAVA](https://img.shields.io/badge/JAVA-1.8+-green.svg) ![GitHub](https://img.shields.io/github/license/yhzdys/myosotis) ![GitHub language count](https://img.shields.io/github/languages/count/yhzdys/myosotis) ![GitHub top language](https://img.shields.io/github/languages/top/yhzdys/myosotis) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/yhzdys/myosotis) ![GitHub repo size](https://img.shields.io/github/repo-size/yhzdys/myosotis)
+[![OSCS](https://www.oscs1024.com/platform/badge/yhzdys/myosotis.svg?size=small)](https://www.oscs1024.com/project/yhzdys/myosotis?ref=badge_small) ![LC](https://img.shields.io/github/last-commit/yhzdys/myosotis) ![JAVA](https://img.shields.io/badge/JAVA-1.8+-green.svg) ![GitHub](https://img.shields.io/github/license/yhzdys/myosotis) ![GitHub top language](https://img.shields.io/github/languages/top/yhzdys/myosotis) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/yhzdys/myosotis)
 
 Myosotis（勿忘我)是一款基于java的高性能、轻量化的动态配置中心，资源开销较小，适用于各种中小型系统
 客户端本可不依赖任何框架，支持jdk8及以上的java环境，同时对spring和springboot有较好的支持
