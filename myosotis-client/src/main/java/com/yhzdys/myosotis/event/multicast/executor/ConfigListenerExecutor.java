@@ -1,12 +1,8 @@
 package com.yhzdys.myosotis.event.multicast.executor;
 
-import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * executor of configListener to handle myosotis config change event
@@ -16,69 +12,47 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public final class ConfigListenerExecutor implements ListenerExecutor {
 
-    private final ConcurrentMap<ConfigListener, InnerExecutor> executorMap = new ConcurrentHashMap<>(0);
+    private final Object lock = new Object();
 
-    private final ThreadPoolExecutor sharedPool;
+    private final Executor sharedPool;
+    private final Runnable runner;
 
-    public ConfigListenerExecutor(ThreadPoolExecutor sharedPool) {
+    private Runnable task;
+    private boolean running;
+
+    public ConfigListenerExecutor(Executor sharedPool) {
         this.sharedPool = sharedPool;
-    }
-
-    /**
-     * get singleton executor of configListenerId
-     */
-    public Executor getExecutor(ConfigListener configListener) {
-        return executorMap.computeIfAbsent(
-                configListener, k -> new InnerExecutor(this.sharedPool)
-        );
-    }
-
-    /**
-     * new event overwrites old event
-     */
-    private static final class InnerExecutor implements Executor {
-
-        private final Object lock = new Object();
-
-        private final Executor executor;
-
-        private final Runnable runner;
-
-        private Runnable task;
-
-        private boolean running;
-
-        public InnerExecutor(Executor executor) {
-            this.executor = executor;
-            this.runner = () -> {
-                for (; ; ) {
-                    Runnable currentTask;
-                    synchronized (this.lock) {
-                        currentTask = this.task;
-                        if (currentTask == null) {
-                            this.running = false;
-                            return;
-                        }
-                        this.task = null;
+        this.runner = () -> {
+            for (; ; ) {
+                Runnable currentTask;
+                synchronized (lock) {
+                    currentTask = task;
+                    if (currentTask == null) {
+                        running = false;
+                        return;
                     }
-                    try {
-                        currentTask.run();
-                    } catch (Throwable t) {
-                        LoggerFactory.getLogger().error(t.getMessage(), t);
-                    }
+                    task = null;
                 }
-            };
-        }
-
-        public void execute(Runnable command) {
-            synchronized (this.lock) {
-                this.task = command;
-                if (this.running) return;
-
-                this.running = true;
-                this.executor.execute(this.runner);
+                try {
+                    currentTask.run();
+                } catch (Throwable t) {
+                    LoggerFactory.getLogger().error(t.getMessage(), t);
+                }
             }
-        }
+        };
     }
 
+    /**
+     * new event will overwrites old event
+     */
+    public void execute(EventCommand command) {
+        synchronized (lock) {
+            task = command.getCommand();
+            if (running) {
+                return;
+            }
+            running = true;
+            sharedPool.execute(runner);
+        }
+    }
 }

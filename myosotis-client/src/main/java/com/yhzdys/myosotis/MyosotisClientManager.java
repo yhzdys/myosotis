@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
@@ -51,7 +50,7 @@ public final class MyosotisClientManager {
      *
      * @see com.yhzdys.myosotis.MyosotisClient
      */
-    private final ConcurrentMap<String, MyosotisClient> clientMap = new ConcurrentHashMap<>(2);
+    private final Map<String, MyosotisClient> clientMap = new ConcurrentHashMap<>(2);
 
     /**
      * cached configs

@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * read local config file and fetch config change events
@@ -35,7 +34,7 @@ public final class NativeProcessor implements Processor {
      * 每个key的本地配置文件最近修改时间
      * <namespace, <configKey, timestamp>>
      */
-    private final ConcurrentMap<String, ConcurrentMap<String, Long>> fileModifiedMap = new ConcurrentHashMap<>(2);
+    private final Map<String, Map<String, Long>> fileModifiedMap = new ConcurrentHashMap<>(2);
 
     public NativeProcessor(CachedConfigData cachedConfigData) {
         this.cachedConfigData = cachedConfigData;
@@ -99,7 +98,7 @@ public final class NativeProcessor implements Processor {
         // 关注的本地key文件最新一次修改时间
         Map<String, Long> localFileLastModified = getLocalFileLastModified(namespace);
         // 本地key文件缓存的上次读取的修改时间
-        ConcurrentMap<String, Long> cachedLastModified = fileModifiedMap.get(namespace);
+        Map<String, Long> cachedLastModified = fileModifiedMap.get(namespace);
 
         for (Map.Entry<String, Long> entry : cachedLastModified.entrySet()) {
             String configKey = entry.getKey();

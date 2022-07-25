@@ -3,7 +3,6 @@ package com.yhzdys.myosotis.event.multicast.executor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -14,10 +13,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public final class NamespaceListenerExecutor implements ListenerExecutor {
 
-    private final LinkedList<Task> tasks = new LinkedList<>();
+    private final LinkedList<EventCommand> commands = new LinkedList<>();
 
     private final ThreadPoolExecutor sharedPool;
-
     private final Runnable runner;
 
     private boolean running;
@@ -26,9 +24,9 @@ public final class NamespaceListenerExecutor implements ListenerExecutor {
         this.sharedPool = sharedPool;
         this.runner = () -> {
             for (; ; ) {
-                final Task task;
-                synchronized (tasks) {
-                    task = tasks.poll();
+                final EventCommand task;
+                synchronized (commands) {
+                    task = commands.poll();
                     if (task == null) {
                         running = false;
                         return;
@@ -43,59 +41,19 @@ public final class NamespaceListenerExecutor implements ListenerExecutor {
         };
     }
 
-    public void execute(Task task) {
-        synchronized (tasks) {
-            int index = tasks.indexOf(task);
+    @Override
+    public void execute(EventCommand command) {
+        synchronized (commands) {
+            int index = commands.indexOf(command);
             if (index == -1) {
-                tasks.add(task);
+                commands.add(command);
             } else {
-                tasks.get(index).setCommand(task.getCommand());
+                commands.get(index).setCommand(command.getCommand());
             }
             if (!running) {
                 running = true;
                 sharedPool.execute(runner);
             }
-        }
-    }
-
-    public static final class Task {
-
-        private final String key;
-
-        private Runnable command;
-
-        public Task(String key, Runnable command) {
-            this.key = key;
-            this.command = command;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public Runnable getCommand() {
-            return command;
-        }
-
-        public void setCommand(Runnable command) {
-            this.command = command;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            Task task = (Task) o;
-            return key.equals(task.getKey());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(key);
         }
     }
 }
