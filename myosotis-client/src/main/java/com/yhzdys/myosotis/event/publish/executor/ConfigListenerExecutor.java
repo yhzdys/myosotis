@@ -1,6 +1,8 @@
 package com.yhzdys.myosotis.event.publish.executor;
 
 import com.yhzdys.myosotis.event.listener.ConfigListener;
+import com.yhzdys.myosotis.event.publish.MyosotisEventMulticaster;
+import com.yhzdys.myosotis.executor.ListenerExecutor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,9 +14,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  * executor of configListener to handle myosotis config change event
  *
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
- * @see com.yhzdys.myosotis.event.publish.EventMulticaster
+ * @see MyosotisEventMulticaster
  */
-public final class ConfigListenerExecutor {
+public final class ConfigListenerExecutor implements ListenerExecutor {
 
     private final ConcurrentMap<ConfigListener, InnerExecutor> executorMap = new ConcurrentHashMap<>(0);
 

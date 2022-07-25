@@ -4,6 +4,7 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * metadata of absent config (the configuration that does not exist in the server)
@@ -12,12 +13,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class AbsentConfigData {
 
-    private final Object emptyObject = new Object();
-
     /**
      * <namespace, <configKey, Object.class>>
      */
     private final Map<String, Map<String, Object>> configMap = new ConcurrentHashMap<>(0);
+
+    private final Object emptyObject = new Object();
+    /**
+     * threshold of clear absent config cache (ms.)
+     */
+    private final long threshold = TimeUnit.MINUTES.toMillis(1);
+    private long lastClearTime = 0L;
 
     public boolean isAbsent(String namespace, String configKey) {
         Map<String, Object> absentConfigMap = configMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
@@ -38,6 +44,11 @@ public final class AbsentConfigData {
     }
 
     public void clear() {
+        long now = System.currentTimeMillis();
+        if ((now - lastClearTime) < threshold) {
+            return;
+        }
+        lastClearTime = now;
         configMap.clear();
     }
 

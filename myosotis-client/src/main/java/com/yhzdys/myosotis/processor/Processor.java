@@ -12,7 +12,6 @@ import java.util.Map;
  * @see com.yhzdys.myosotis.processor.LocalProcessor
  * @see com.yhzdys.myosotis.processor.ServerProcessor
  * @see com.yhzdys.myosotis.processor.SnapshotProcessor
- * @see com.yhzdys.myosotis.processor.UselessProcessor
  */
 public interface Processor {
 

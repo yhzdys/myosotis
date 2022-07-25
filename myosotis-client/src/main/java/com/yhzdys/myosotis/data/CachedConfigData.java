@@ -44,8 +44,8 @@ public final class CachedConfigData {
         return Collections.unmodifiableSet(configMap.keySet());
     }
 
-    public boolean isEmpty(String namespace) {
+    public boolean containsNamespaceConfig(String namespace) {
         Map<String, String> configs = configMap.get(namespace);
-        return configs == null || configs.isEmpty();
+        return configs != null && !configs.isEmpty();
     }
 }

@@ -48,7 +48,7 @@ public final class MyosotisHttpClient {
         return null;
     }
 
-    public CloseableHttpResponse execute(final HttpUriRequest request) throws Exception {
+    public CloseableHttpResponse execute(HttpUriRequest request) throws Exception {
         return httpClient.execute(request);
     }
 
