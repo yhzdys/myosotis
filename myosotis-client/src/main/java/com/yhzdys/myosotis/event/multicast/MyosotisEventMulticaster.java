@@ -1,14 +1,13 @@
-package com.yhzdys.myosotis.event.publish;
+package com.yhzdys.myosotis.event.multicast;
 
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
-import com.yhzdys.myosotis.event.publish.executor.ConfigListenerExecutor;
-import com.yhzdys.myosotis.event.publish.executor.NamespaceListenerExecutor;
-import com.yhzdys.myosotis.executor.EventPublishExecutor;
+import com.yhzdys.myosotis.event.multicast.executor.ConfigListenerExecutor;
+import com.yhzdys.myosotis.event.multicast.executor.NamespaceListenerExecutor;
+import com.yhzdys.myosotis.executor.EventMulticasterExecutor;
 import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * publish config change event
+ * multicast config change event
  *
  * @see com.yhzdys.myosotis.event.listener.Listener
  * @see com.yhzdys.myosotis.event.listener.NamespaceListener
@@ -25,9 +24,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class MyosotisEventMulticaster {
 
     /**
-     * threadPool for event publish
+     * threadPool for multicast event
      */
-    private final EventPublishExecutor sharedPool = new EventPublishExecutor();
+    private final EventMulticasterExecutor sharedPool = new EventMulticasterExecutor();
 
     private final Map<String, NamespaceListenerExecutor> namespaceExecutors = new ConcurrentHashMap<>(0);
     private final Map<String, NamespaceListener> namespaceListeners = new ConcurrentHashMap<>(0);
@@ -53,40 +52,17 @@ public final class MyosotisEventMulticaster {
 
     public void addNamespaceListener(NamespaceListener listener) {
         String namespace = listener.namespace();
-        if (StringUtils.isEmpty(namespace)) {
-            LoggerFactory.getLogger().warn("NamespaceListener namespace may not be null");
-            return;
-        }
-        if (namespaceListeners.containsKey(namespace)) {
-            LoggerFactory.getLogger().error("Listener of namespace: {} already exists", namespace);
-            return;
-        }
-        synchronized (namespaceListeners) {
-            if (namespaceListeners.containsKey(namespace)) {
-                LoggerFactory.getLogger().error("Listener of namespace: {} already exists", namespace);
-                return;
-            }
-            namespaceExecutors.put(namespace, new NamespaceListenerExecutor(sharedPool));
-            namespaceListeners.put(namespace, listener);
-        }
+        namespaceExecutors.computeIfAbsent(namespace, k -> new NamespaceListenerExecutor(sharedPool));
+        namespaceListeners.putIfAbsent(namespace, listener);
     }
 
     public void addConfigListener(ConfigListener listener) {
         String namespace = listener.namespace();
         String configKey = listener.configKey();
-        if (StringUtils.isEmpty(namespace)) {
-            LoggerFactory.getLogger().warn("Listener namespace may not be null");
-            return;
-        }
-        if (StringUtils.isEmpty(configKey)) {
-            LoggerFactory.getLogger().warn("Listener config may not be null");
-            return;
-        }
-        synchronized (configListeners) {
-            configExecutors.computeIfAbsent(namespace, k -> new ConfigListenerExecutor(sharedPool));
-            Map<String, List<ConfigListener>> listenerMap = configListeners.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2));
-            listenerMap.computeIfAbsent(configKey, k -> new CopyOnWriteArrayList<>()).add(listener);
-        }
+        configExecutors.computeIfAbsent(namespace, k -> new ConfigListenerExecutor(sharedPool));
+        configListeners.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2))
+                .computeIfAbsent(configKey, k -> new CopyOnWriteArrayList<>())
+                .add(listener);
     }
 
     public boolean containsConfigListener(String namespace, String configKey) {

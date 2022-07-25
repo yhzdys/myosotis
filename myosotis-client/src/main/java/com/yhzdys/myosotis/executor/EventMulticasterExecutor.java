@@ -6,25 +6,25 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * shared thread pool of myosotis event publish
+ * shared thread pool for multicast myosotis event
  */
-public final class EventPublishExecutor extends ThreadPoolExecutor {
+public final class EventMulticasterExecutor extends ThreadPoolExecutor {
 
-    public EventPublishExecutor() {
+    public EventMulticasterExecutor() {
         super(2,
                 Runtime.getRuntime().availableProcessors(),
                 60L,
                 TimeUnit.SECONDS,
                 new SynchronousQueue<>(false),
-                new EventPublishThreadFactory());
+                new InnerThreadFactory());
     }
 
-    public static final class EventPublishThreadFactory implements ThreadFactory {
+    public static final class InnerThreadFactory implements ThreadFactory {
 
         @Override
         public Thread newThread(Runnable runnable) {
             Thread thread = new Thread(runnable);
-            thread.setName("myosotis-event-publish");
+            thread.setName("myosotis-multicaster");
             thread.setDaemon(true);
             return thread;
         }

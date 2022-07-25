@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @see com.yhzdys.myosotis.processor.Processor
  */
-public final class LocalProcessor implements Processor {
+public final class NativeProcessor implements Processor {
 
     private final String config_dir = SystemConst.myosotis_dir + SystemConst.separator + "%s";
     private final String config_file = config_dir + SystemConst.separator + "%s";
@@ -37,7 +37,7 @@ public final class LocalProcessor implements Processor {
      */
     private final ConcurrentMap<String, ConcurrentMap<String, Long>> fileModifiedMap = new ConcurrentHashMap<>(2);
 
-    public LocalProcessor(CachedConfigData cachedConfigData) {
+    public NativeProcessor(CachedConfigData cachedConfigData) {
         this.cachedConfigData = cachedConfigData;
     }
 

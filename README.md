@@ -124,9 +124,9 @@ MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.y
 // 自定义序列化协议，目前可支持JSON、AVRO、PROTOSTUFF(默认JSON)
 customizer.setSerializeType(SerializeType.PROTOSTUFF);
 // 开启本地文件调试(默认开启)
-customizer.setEnableLocalFile(true);
+customizer.setEnableNative(true);
 // 开启本地快照保存(默认开启)
-customizer.setEnableSnapshotFile(true);
+customizer.setEnableSnapshot(true);
 // 开启数据压缩(默认开启)
 customizer.setEnableCompress(true);
 // 数据压缩阈值，当数据流长度大于该值时使用LZ4压缩算法对数据进行压缩处理(默认2048)

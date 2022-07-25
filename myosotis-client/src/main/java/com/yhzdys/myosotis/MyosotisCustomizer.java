@@ -11,12 +11,12 @@ public class MyosotisCustomizer {
     /**
      * 开启本地文件配置，本地配置优先级高于远程配置
      */
-    private boolean enableLocalFile = true;
+    private boolean enableNative = true;
 
     /**
      * 开启本地快照
      */
-    private boolean enableSnapshotFile = true;
+    private boolean enableSnapshot = true;
 
     /**
      * 启用数据压缩
@@ -48,20 +48,20 @@ public class MyosotisCustomizer {
         this.serializeType = serializeType;
     }
 
-    public boolean isEnableLocalFile() {
-        return enableLocalFile;
+    public boolean isEnableNative() {
+        return enableNative;
     }
 
-    public void setEnableLocalFile(boolean enableLocalFile) {
-        this.enableLocalFile = enableLocalFile;
+    public void setEnableNative(boolean enableNative) {
+        this.enableNative = enableNative;
     }
 
-    public boolean isEnableSnapshotFile() {
-        return enableSnapshotFile;
+    public boolean isEnableSnapshot() {
+        return enableSnapshot;
     }
 
-    public void setEnableSnapshotFile(boolean enableSnapshotFile) {
-        this.enableSnapshotFile = enableSnapshotFile;
+    public void setEnableSnapshot(boolean enableSnapshot) {
+        this.enableSnapshot = enableSnapshot;
     }
 
     public boolean isEnableCompress() {
