@@ -59,7 +59,7 @@ public class ClientTest {
         for (; ; ) {
             System.out.println("--------------------------------");
             String key1 = "123";
-            String config1 = client.getConfig(key1);
+            String config1 = client.getConfig("test_key11");
             System.out.println("##### " + key1 + ":" + config1);
             String key2 = "test_key" + (random.nextInt(100) + 1);
             String config2 = client.getConfig(key2);

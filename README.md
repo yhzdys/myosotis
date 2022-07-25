@@ -138,10 +138,10 @@ MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
 
 ~~~
 使用customizer.setEnableLocalFile(true)开启本地文件调试功能(默认开启)
-本地调试开启后，可针对指定配置项进行本地配置，客户端会优先加载本地配置，适用于本地调试或功能灰度等场景
+本地调试开启后，可针对指定配置项进行本地配置，当服务端配置不存在时，客户端会尝试加载本地配置，适用于本地调试或功能灰度等场景
 默认读取文件路径为：{user.home}/.myosotis/{namespace}/{configKey}
 
-{configKey}文本内容使用JSON格式存储，程序会优先读取文件中的文本内容作为配置值优先加载到客户端
+{configKey}文本内容使用文本格式存储，程序会优先读取文件中的文本内容作为配置值优先加载到客户端
 ~~~
 
 #### 本地快照备份
@@ -151,14 +151,12 @@ MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
 使用customizer.setEnableSnapshotFile(true)开启本地快照备份功能(默认开启)
 本地快照备份开启后，当服务端不可用时，会降级读取快照文件中的配置值，配置值为最后一次从服务端获取的有效配置
 默认读取文件路径为：{user.home}/.myosotis/snapshot/{namespace}/{configKey}.snapshot
-
-{configKey}.snapshot文本内容使用JSON格式存储，程序会在服务端不可用时读取文件中的文本内容作为配置值优先加载到客户端
 ~~~
 
 #### 配置加载优先级
 
 ~~~
-从高到低：本地配置 > 服务端配置 > 配置快照
+从高到低：服务端配置 > 本地配置 > 配置快照
 ~~~
 
 ### 客户端事件订阅

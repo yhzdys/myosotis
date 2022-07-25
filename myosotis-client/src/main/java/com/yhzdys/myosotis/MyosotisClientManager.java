@@ -429,7 +429,7 @@ public final class MyosotisClientManager {
         switch (event.getType()) {
             case ADD:
                 cachedConfigData.add(namespace, configKey, configValue);
-                pollingConfigData.add(event);
+                pollingConfigData.add(event.getId(), namespace, configKey, event.getVersion());
                 snapshotProcessor.save(Converter.event2Config(event));
                 break;
             case UPDATE:

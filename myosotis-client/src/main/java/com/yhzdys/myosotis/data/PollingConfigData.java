@@ -48,10 +48,6 @@ public final class PollingConfigData {
         modifiedVersion.incrementAndGet();
     }
 
-    public void add(MyosotisEvent event) {
-        this.add(event.getId(), event.getNamespace(), event.getConfigKey(), event.getVersion());
-    }
-
     public void add(Long id, String namespace, String configKey, Integer version) {
         this.getPollingData(namespace).getData().put(id, version);
         idNamespaceMap.put(id, namespace);
