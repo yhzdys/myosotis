@@ -297,25 +297,25 @@ mvn clean package -Dmaven.test.skip
 
 ### datasource.conf
 
-| 参数                      | 释义                    | 默认值   | 参考值                       |
-|-------------------------|-----------------------|-------|---------------------------|
-| myosotis.sqlite3.path   | sqlite3文件，推荐仅在本地部署时使用 | 内置数据库 | /opt/myosotis/myosotis.db |
-| myosotis.mysql.url      | mysql数据库url           |       | mysql.com:3306/myosotis   |
-| myosotis.mysql.username | mysql用户名              |       |                           |
-| myosotis.mysql.password | mysql密码               |       |                           |
+| 参数                      | 释义                         | 默认值   | 参考值                       |
+|-------------------------|----------------------------|-------|---------------------------|
+| myosotis.sqlite3.path   | sqlite3文件（绝对路径）推荐仅在本地部署时使用 | 内置数据库 | /opt/myosotis/myosotis.db |
+| myosotis.mysql.url      | mysql数据库url                |       | mysql.com:3306/myosotis   |
+| myosotis.mysql.username | mysql用户名                   |       |                           |
+| myosotis.mysql.password | mysql密码                    |       |                           |
 
 ### console.conf
 
-| 参数                    | 释义              | 默认值   | 参考值  |
-|-----------------------|-----------------|-------|------|
-| myosotis.log.dir      | 日志路径            | ./log |      |
-| myosotis.console.port | 内置tomcat端口      | 7776  | 7776 |
+| 参数                    | 释义         | 默认值   | 参考值  |
+|-----------------------|------------|-------|------|
+| myosotis.log.dir      | 日志目录（绝对路径） | ./log |      |
+| myosotis.console.port | 内置tomcat端口 | 7776  | 7776 |
 
 ### server.conf
 
 | 参数                                | 释义              | 默认值    | 参考值  |
 |-----------------------------------|-----------------|--------|------|
-| myosotis.log.dir                  | 日志路径            | ./log  |      |
+| myosotis.log.dir                  | 日志目录（绝对路径）            | ./log  |      |
 | myosotis.server.port              | 内置tomcat端口      | 7777   | 7777 |
 | myosotis.server.minThreads        | 内置tomcat最小线程数   | cpu核心数 | 8    |
 | myosotis.server.maxThreads        | 内置tomcat最大线程数   | 1024   | 32   |
