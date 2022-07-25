@@ -218,7 +218,7 @@ public final class MyosotisClientManager {
 
     /**
      * get config
-     * fetch order: local cache > local file > server > snapshot
+     * fetch order: local cache > server > native > snapshot
      */
     String getConfig(String namespace, String configKey) {
         // step.1 get from local cache
@@ -232,14 +232,8 @@ public final class MyosotisClientManager {
                 return configValue;
             }
 
-            // step.2 get from local file
             MyosotisConfig config;
-            if (nativeProcessor != null && (config = nativeProcessor.getConfig(namespace, configKey)) != null) {
-                cachedConfigData.add(namespace, configKey, config.getConfigValue());
-                absentConfigData.remove(namespace, configKey);
-                return config.getConfigValue();
-            }
-            // step.3 get from server
+            // step.2 get from server
             config = serverProcessor.getConfig(namespace, configKey);
             if (absentConfigData.isAbsent(namespace, configKey)) {
                 return null;
@@ -254,6 +248,13 @@ public final class MyosotisClientManager {
                     }
                     return config.getConfigValue();
                 }
+            }
+
+            // step.3 get from native file
+            if (nativeProcessor != null && (config = nativeProcessor.getConfig(namespace, configKey)) != null) {
+                cachedConfigData.add(namespace, configKey, config.getConfigValue());
+                absentConfigData.remove(namespace, configKey);
+                return config.getConfigValue();
             }
 
             // step.4 get from local snapshot file
