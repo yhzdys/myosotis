@@ -158,7 +158,7 @@ public final class MyosotisClientManager {
         }
         MyosotisClient client = clientMap.get(namespace);
         if (client == null) {
-            LoggerFactory.getLogger().warn("Add namespaceListener failed, there is no the client of namespace: {}", namespace);
+            LoggerFactory.getLogger().warn("Add namespaceListener failed, there is no client of namespace: {}", namespace);
             return;
         }
         eventMulticaster.addNamespaceListener(listener);
@@ -194,7 +194,7 @@ public final class MyosotisClientManager {
         }
         MyosotisClient client = clientMap.get(namespace);
         if (client == null) {
-            LoggerFactory.getLogger().warn("Add configListener failed, there is no the client of namespace: {}", namespace);
+            LoggerFactory.getLogger().warn("Add configListener failed, there is no client of namespace: {}", namespace);
             return;
         }
         eventMulticaster.addConfigListener(listener);

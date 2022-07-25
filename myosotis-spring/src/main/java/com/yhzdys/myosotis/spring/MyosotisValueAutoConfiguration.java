@@ -113,7 +113,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         }
         MyosotisClient client = clientManager.getClient(namespaceForInit);
         if (client == null) {
-            logger.warn("There is no the client of namespace: {}", namespaceForInit);
+            logger.warn("There is no client of namespace: {}", namespaceForInit);
             return;
         }
         // add config listener
