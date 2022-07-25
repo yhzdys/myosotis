@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * cached configs from local file & server
  */
-public final class CachedConfigData {
+public final class CachedData {
 
     /**
      * <namespace, <configKey, configValue>>

@@ -1,8 +1,8 @@
 package com.yhzdys.myosotis.test;
 
+import com.yhzdys.myosotis.Config;
+import com.yhzdys.myosotis.MyosotisApplication;
 import com.yhzdys.myosotis.MyosotisClient;
-import com.yhzdys.myosotis.MyosotisClientManager;
-import com.yhzdys.myosotis.MyosotisCustomizer;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.enums.SerializeType;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
@@ -18,16 +18,16 @@ public class ClientTest {
     @Test
     public void testClient() throws Exception {
 
-        MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
-//        MyosotisCustomizer customizer = new MyosotisCustomizer("http://127.0.0.1:7777");
-        customizer.serializeType(SerializeType.JSON);
-        customizer.enableCompress(true);
-        customizer.compressThreshold(10);
-        MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
+        Config config = new Config("http://myosotis-server.yhzdys.com");
+//        Config config = new Config("http://127.0.0.1:7777");
+        config.serializeType(SerializeType.JSON);
+        config.enableCompress(true);
+        config.compressThreshold(10);
+        MyosotisApplication application = new MyosotisApplication(config);
 
-        MyosotisClient client = clientManager.getClient("default");
+        MyosotisClient client = application.getClient("default");
 
-        clientManager.addNamespaceListener(new NamespaceListener() {
+        application.addNamespaceListener(new NamespaceListener() {
             @Override
             public String namespace() {
                 return "default";
@@ -38,7 +38,7 @@ public class ClientTest {
                 System.out.println("g event: " + JsonUtil.toString(event));
             }
         });
-        clientManager.addConfigListener(new ConfigListener() {
+        application.addConfigListener(new ConfigListener() {
             @Override
             public String configKey() {
                 return "123";

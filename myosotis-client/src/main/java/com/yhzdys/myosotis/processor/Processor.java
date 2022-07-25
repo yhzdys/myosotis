@@ -4,7 +4,6 @@ import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * config processor
@@ -42,14 +41,6 @@ public interface Processor {
      * @see com.yhzdys.myosotis.processor.ServerProcessor#getConfigs(String)
      */
     List<MyosotisConfig> getConfigs(String namespace);
-
-    /**
-     * query configs
-     *
-     * @param namespaceKeyMap <namespace, <configKey, id>>
-     * @see com.yhzdys.myosotis.processor.ServerProcessor#getConfigs(Map)
-     */
-    List<MyosotisConfig> getConfigs(Map<String, Map<String, Long>> namespaceKeyMap);
 
     /**
      * save config

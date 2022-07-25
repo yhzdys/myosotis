@@ -4,10 +4,10 @@ import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.Listener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
-import com.yhzdys.myosotis.event.multicast.executor.ConfigListenerExecutor;
+import com.yhzdys.myosotis.event.multicast.executor.ConfigExecutor;
 import com.yhzdys.myosotis.event.multicast.executor.EventCommand;
-import com.yhzdys.myosotis.event.multicast.executor.ListenerExecutor;
-import com.yhzdys.myosotis.event.multicast.executor.NamespaceListenerExecutor;
+import com.yhzdys.myosotis.event.multicast.executor.Executor;
+import com.yhzdys.myosotis.event.multicast.executor.NamespaceExecutor;
 import com.yhzdys.myosotis.executor.EventMulticasterExecutor;
 import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
@@ -53,7 +53,7 @@ public final class MyosotisEventMulticaster {
 
     public void addNamespaceListener(NamespaceListener listener) {
         String namespace = listener.namespace();
-        namespaceListeners.computeIfAbsent(namespace, k -> new ListenerWrapper(listener, new NamespaceListenerExecutor(sharedPool)));
+        namespaceListeners.computeIfAbsent(namespace, k -> new ListenerWrapper(listener, new NamespaceExecutor(sharedPool)));
     }
 
     public void addConfigListener(ConfigListener listener) {
@@ -61,7 +61,7 @@ public final class MyosotisEventMulticaster {
         String configKey = listener.configKey();
         configListeners.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2))
                 .computeIfAbsent(configKey, k -> new CopyOnWriteArrayList<>())
-                .add(new ListenerWrapper(listener, new ConfigListenerExecutor(sharedPool)));
+                .add(new ListenerWrapper(listener, new ConfigExecutor(sharedPool)));
     }
 
     public boolean containsConfigListener(String namespace, String configKey) {
@@ -112,9 +112,9 @@ public final class MyosotisEventMulticaster {
 
     private static final class ListenerWrapper {
         private final Listener listener;
-        private final ListenerExecutor executor;
+        private final Executor executor;
 
-        public ListenerWrapper(Listener listener, ListenerExecutor executor) {
+        public ListenerWrapper(Listener listener, Executor executor) {
             this.listener = listener;
             this.executor = executor;
         }
@@ -123,7 +123,7 @@ public final class MyosotisEventMulticaster {
             return listener;
         }
 
-        public ListenerExecutor getExecutor() {
+        public Executor getExecutor() {
             return executor;
         }
     }

@@ -2,7 +2,7 @@ package com.yhzdys.myosotis;
 
 import com.yhzdys.myosotis.enums.SerializeType;
 
-public class MyosotisCustomizer {
+public class Config {
 
     private final String serverAddress;
 
@@ -23,7 +23,7 @@ public class MyosotisCustomizer {
      */
     private long compressThreshold = 2048L;
 
-    public MyosotisCustomizer(String serverAddress) {
+    public Config(String serverAddress) {
         this.serverAddress = serverAddress;
     }
 

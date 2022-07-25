@@ -35,9 +35,9 @@ pom.xml添加client依赖
 ~~~
 
 ~~~java
-// clientManager必须为单例
-MyosotisClientManager clientManager = new MyosotisClientManager("http://127.0.0.1:7777");
-MyosotisClient client = clientManager.getClient("namespace");
+// MyosotisApplication 需要设置为单例
+MyosotisApplication application = new MyosotisApplication("http://127.0.0.1:7777");
+MyosotisClient client = application.getClient("namespace");
 String configValue = client.getConfig("configKey");
 ~~~
 
@@ -55,13 +55,13 @@ pom.xml添加spring依赖
 
 ~~~java
 @Bean
-public MyosotisClientManager myosotisClientManager() {
-    return new MyosotisClientManager("http://127.0.0.1:7777");
+public MyosotisApplication myosotisApplication() {
+    return new MyosotisApplication("http://127.0.0.1:7777");
 }
 
 @Bean
-public MyosotisClient myosotisClient(MyosotisClientManager clientManager) {
-    return clientManager.getClient("namespace");
+public MyosotisClient myosotisClient(MyosotisApplication application) {
+    return application.getClient("namespace");
 }
 ~~~
 
@@ -120,23 +120,23 @@ public class Constant {
 ### 自定义
 
 ~~~java
-MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
+Config config = new Config("http://myosotis-server.yhzdys.com");
 // 自定义序列化协议，目前可支持JSON、AVRO、PROTOSTUFF(默认JSON)
-customizer.serializeType(SerializeType.PROTOSTUFF);
+config.serializeType(SerializeType.PROTOSTUFF);
 // 开启本地快照保存(默认开启)
-customizer.enableSnapshot(true);
+config.enableSnapshot(true);
 // 开启数据压缩(默认开启)
-customizer.enableCompress(true);
+config.enableCompress(true);
 // 数据压缩阈值，当数据流长度大于该值时使用LZ4压缩算法对数据进行压缩处理(默认2048)
-customizer.compressThreshold(4096);
-MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
+config.compressThreshold(4096);
+MyosotisApplication application = new MyosotisApplication(config);
 ~~~
 
 #### 本地快照备份
 
 ~~~
 对最后一次获取到的服务端配置进行快照文件备份
-使用customizer.setEnableSnapshotFile(true)开启本地快照备份功能(默认开启)
+使用config.enableSnapshotFile(true)开启本地快照备份功能(默认开启)
 本地快照备份开启后，当服务端不可用时，会降级读取快照文件中的配置值，配置值为最后一次从服务端获取的有效配置
 默认读取文件路径为：{user.home}/.myosotis/snapshot/{namespace}/{configKey}.snapshot
 ~~~
@@ -180,8 +180,8 @@ public class YourConfigListener implements ConfigListener {
     }
 }
 
-// 添加监听器到clientManager
-clientManager.addConfigListener(new YourConfigListener());
+// 添加监听器到application
+application.addConfigListener(new YourConfigListener());
 ~~~
 
 #### NamespaceListener
@@ -205,8 +205,8 @@ public class YourNamespaceListener implements NamespaceListener {
     }
 }
 
-// 添加监听器到clientManager
-clientManager.addNamespaceListener(new YourNamespaceListener());
+// 添加监听器到application
+application.addNamespaceListener(new YourNamespaceListener());
 ~~~
 
 ---

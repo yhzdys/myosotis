@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * metadata of long polling config (the configuration used in the program)
  */
-public final class PollingConfigData {
+public final class PollingMetadata {
 
     private final AtomicLong modifiedVersion = new AtomicLong(1);
 

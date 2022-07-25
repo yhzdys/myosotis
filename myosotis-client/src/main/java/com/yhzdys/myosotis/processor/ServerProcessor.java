@@ -1,16 +1,15 @@
 package com.yhzdys.myosotis.processor;
 
-import com.yhzdys.myosotis.MyosotisCustomizer;
+import com.yhzdys.myosotis.Config;
 import com.yhzdys.myosotis.compress.Lz4;
 import com.yhzdys.myosotis.constant.NetConst;
-import com.yhzdys.myosotis.data.AbsentConfigData;
-import com.yhzdys.myosotis.data.PollingConfigData;
+import com.yhzdys.myosotis.data.AbsentMetadata;
+import com.yhzdys.myosotis.data.PollingMetadata;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.entity.PollingData;
 import com.yhzdys.myosotis.enums.SerializeType;
 import com.yhzdys.myosotis.exception.MyosotisException;
-import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 import com.yhzdys.myosotis.misc.MyosotisHttpClient;
 import com.yhzdys.myosotis.serialize.Serializer;
@@ -25,7 +24,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
 import java.net.URI;
@@ -33,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
@@ -56,8 +53,8 @@ public final class ServerProcessor implements Processor {
     /**
      * config metadata from clientManger
      */
-    private final PollingConfigData pollingConfigData;
-    private final AbsentConfigData absentConfigData;
+    private final PollingMetadata pollingMetadata;
+    private final AbsentMetadata absentMetadata;
 
     private final HttpPost pollingPost;
 
@@ -67,21 +64,21 @@ public final class ServerProcessor implements Processor {
 
     private long lastModifiedVersion = 0;
 
-    public ServerProcessor(MyosotisCustomizer customizer,
-                           PollingConfigData pollingConfigData,
-                           AbsentConfigData absentConfigData) {
-        if (StringUtils.isEmpty(customizer.getServerAddress())) {
+    public ServerProcessor(Config config,
+                           PollingMetadata pollingMetadata,
+                           AbsentMetadata absentMetadata) {
+        if (StringUtils.isEmpty(config.getServerAddress())) {
             throw new MyosotisException("Myosotis server address may not be null");
         }
 
-        this.serverAddress = customizer.getServerAddress();
-        this.serializeType = customizer.getSerializeType();
-        this.enableCompress = customizer.isEnableCompress();
-        this.compressThreshold = customizer.getCompressThreshold();
+        this.serverAddress = config.getServerAddress();
+        this.serializeType = config.getSerializeType();
+        this.enableCompress = config.isEnableCompress();
+        this.compressThreshold = config.getCompressThreshold();
 
         this.counter = new ExceptionCounter();
-        this.pollingConfigData = pollingConfigData;
-        this.absentConfigData = absentConfigData;
+        this.pollingMetadata = pollingMetadata;
+        this.absentMetadata = absentMetadata;
         this.pollingPost = new HttpPost();
         try {
             this.pollingPost.setURI(new URI(serverAddress + NetConst.URL.polling));
@@ -94,7 +91,7 @@ public final class ServerProcessor implements Processor {
         //  add feature support headers
         this.addFeatureSupportHeader(pollingPost);
         // customized serialize type
-        this.pollingPost.addHeader(NetConst.serialize_type, customizer.getSerializeType().getCode());
+        this.pollingPost.addHeader(NetConst.serialize_type, config.getSerializeType().getCode());
         this.pollingPost.setConfig(NetConst.long_polling_config);
     }
 
@@ -143,7 +140,7 @@ public final class ServerProcessor implements Processor {
                 return this.deserializeConfig(response);
             }
             if (statusCode == 404) {
-                absentConfigData.add(namespace, configKey);
+                absentMetadata.add(namespace, configKey);
             }
             return null;
         } catch (Throwable e) {
@@ -169,37 +166,17 @@ public final class ServerProcessor implements Processor {
     }
 
     @Override
-    public List<MyosotisConfig> getConfigs(Map<String, Map<String, Long>> namespaceKeyMap) {
-        CloseableHttpResponse response = null;
-        try {
-            response = myosotisHttpClient.execute(this.queryPost(namespaceKeyMap));
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == 404) {
-                return null;
-            }
-            if (statusCode == 200) {
-                return this.deserializeConfigs(response);
-            }
-        } catch (Throwable e) {
-            LoggerFactory.getLogger().info("Get config(s) failed. error: {}", e.getMessage());
-        } finally {
-            this.reuse(response);
-        }
-        return null;
-    }
-
-    @Override
     public void save(MyosotisConfig config) {
     }
 
     private HttpPost pollingPost() throws Exception {
-        long currentModifiedVersion = pollingConfigData.getModifiedVersion();
+        long currentModifiedVersion = pollingMetadata.getModifiedVersion();
         // <id, version>没有变化,重用之前的数据
         if (lastModifiedVersion >= currentModifiedVersion) {
             return pollingPost;
         }
         lastModifiedVersion = currentModifiedVersion;
-        Collection<PollingData> pollingData = pollingConfigData.getPollingMap().values();
+        Collection<PollingData> pollingData = pollingMetadata.getPollingMap().values();
         List<PollingData> pollingList = new ArrayList<>(pollingData);
         // clear header
         pollingPost.removeHeaders(NetConst.origin_data_length);
@@ -215,7 +192,7 @@ public final class ServerProcessor implements Processor {
         }
 
         pollingPost.setEntity(byteArrayEntity);
-        if (pollingConfigData.getModifiedVersion() != lastModifiedVersion) {
+        if (pollingMetadata.getModifiedVersion() != lastModifiedVersion) {
             LoggerFactory.getLogger().warn("Config changed after polling");
         }
         return pollingPost;
@@ -228,18 +205,6 @@ public final class ServerProcessor implements Processor {
         this.addFeatureSupportHeader(request);
 
         request.setConfig(NetConst.default_config);
-        return request;
-    }
-
-    public HttpPost queryPost(Map<String, Map<String, Long>> namespaceKeyMap) throws Exception {
-        HttpPost request = new HttpPost(
-                new URI(serverAddress + NetConst.URL.query_configs)
-        );
-        request.addHeader(NetConst.header_content_json);
-        this.addFeatureSupportHeader(request);
-
-        request.setConfig(NetConst.default_config);
-        request.setEntity(new StringEntity(JsonUtil.toString(namespaceKeyMap)));
         return request;
     }
 

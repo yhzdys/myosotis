@@ -3,7 +3,7 @@ package com.yhzdys.myosotis.event.multicast.executor;
 /**
  * executor of listener for multicast event
  */
-public interface ListenerExecutor {
+public interface Executor {
 
     /**
      * Executes the given command at some time in the future.

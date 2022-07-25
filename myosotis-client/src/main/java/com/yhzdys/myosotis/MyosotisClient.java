@@ -1,5 +1,7 @@
 package com.yhzdys.myosotis;
 
+import com.yhzdys.myosotis.data.CachedData;
+
 /**
  * facade of myosotis configs
  */
@@ -7,19 +9,19 @@ public final class MyosotisClient {
 
     private final String namespace;
 
-    private final MyosotisClientManager clientManager;
+    private final CachedData cachedData;
 
-    MyosotisClient(String namespace, MyosotisClientManager clientManager) {
+    MyosotisClient(String namespace, CachedData cachedData) {
         this.namespace = namespace;
-        this.clientManager = clientManager;
+        this.cachedData = cachedData;
     }
 
     public String getConfig(String configKey) {
-        return clientManager.getConfig(namespace, configKey);
+        return cachedData.get(namespace, configKey);
     }
 
     public String getConfig(String configKey, String defaultValue) {
-        String configValue = clientManager.getConfig(namespace, configKey);
+        String configValue = cachedData.get(namespace, configKey);
         return configValue == null ? defaultValue : configValue;
     }
 

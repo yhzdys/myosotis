@@ -1,8 +1,8 @@
 package com.yhzdys.myosotis.spring;
 
+import com.yhzdys.myosotis.Config;
+import com.yhzdys.myosotis.MyosotisApplication;
 import com.yhzdys.myosotis.MyosotisClient;
-import com.yhzdys.myosotis.MyosotisClientManager;
-import com.yhzdys.myosotis.MyosotisCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,14 +30,14 @@ public class MyosotisAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(MyosotisClientManager.class)
-    public MyosotisClientManager myosotisClientManager() {
-        MyosotisCustomizer customizer = new MyosotisCustomizer(serverProperties.getAddress());
-        return new MyosotisClientManager(customizer);
+    @ConditionalOnMissingBean(MyosotisApplication.class)
+    public MyosotisApplication myosotisApplication() {
+        Config config = new Config(serverProperties.getAddress());
+        return new MyosotisApplication(config);
     }
 
     @Bean
-    public MyosotisClient myosotisClient(MyosotisClientManager clientManager) {
-        return clientManager.getClient(clientProperties.getNamespace());
+    public MyosotisClient myosotisClient(MyosotisApplication application) {
+        return application.getClient(clientProperties.getNamespace());
     }
 }

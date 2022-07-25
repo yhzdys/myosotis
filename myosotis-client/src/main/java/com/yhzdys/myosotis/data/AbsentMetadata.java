@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @see com.yhzdys.myosotis.processor.ServerProcessor#getConfig(String, String)
  */
-public final class AbsentConfigData {
+public final class AbsentMetadata {
 
     /**
      * <namespace, <configKey, Object.class>>

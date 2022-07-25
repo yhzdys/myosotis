@@ -2,25 +2,23 @@ package com.yhzdys.myosotis.event.multicast.executor;
 
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
-import java.util.concurrent.Executor;
-
 /**
  * executor of configListener to handle myosotis config change event
  *
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
  * @see com.yhzdys.myosotis.event.multicast.MyosotisEventMulticaster
  */
-public final class ConfigListenerExecutor implements ListenerExecutor {
+public final class ConfigExecutor implements Executor {
 
     private final Object lock = new Object();
 
-    private final Executor sharedPool;
+    private final java.util.concurrent.Executor sharedPool;
     private final Runnable runner;
 
     private Runnable task;
     private boolean running;
 
-    public ConfigListenerExecutor(Executor sharedPool) {
+    public ConfigExecutor(java.util.concurrent.Executor sharedPool) {
         this.sharedPool = sharedPool;
         this.runner = () -> {
             for (; ; ) {

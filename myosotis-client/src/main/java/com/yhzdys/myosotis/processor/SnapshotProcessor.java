@@ -10,7 +10,6 @@ import com.yhzdys.myosotis.misc.LoggerFactory;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * the snapshot of configs from local snapshot file
@@ -50,11 +49,6 @@ public final class SnapshotProcessor implements Processor {
 
     @Override
     public List<MyosotisConfig> getConfigs(String namespace) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<MyosotisConfig> getConfigs(Map<String, Map<String, Long>> namespaceKeyMap) {
         return Collections.emptyList();
     }
 

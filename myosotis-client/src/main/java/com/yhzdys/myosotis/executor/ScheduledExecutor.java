@@ -6,9 +6,9 @@ import java.util.concurrent.ThreadFactory;
 /**
  * thread pool for myosotis long polling
  */
-public final class PollingScheduler extends ScheduledThreadPoolExecutor {
+public final class ScheduledExecutor extends ScheduledThreadPoolExecutor {
 
-    public PollingScheduler() {
+    public ScheduledExecutor() {
         super(2, new InnerThreadFactory());
     }
 

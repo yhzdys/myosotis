@@ -1,7 +1,7 @@
 package com.yhzdys.myosotis.spring;
 
+import com.yhzdys.myosotis.MyosotisApplication;
 import com.yhzdys.myosotis.MyosotisClient;
-import com.yhzdys.myosotis.MyosotisClientManager;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.exception.MyosotisException;
@@ -31,7 +31,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
      */
     private final Map<String, InnerConfigListener> listenerMap = new ConcurrentHashMap<>(2);
 
-    private MyosotisClientManager clientManager;
+    private MyosotisApplication application;
 
     private String namespace = null;
 
@@ -57,9 +57,9 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
     public void onApplicationEvent(ContextRefreshedEvent event) {
         ApplicationContext applicationContext = event.getApplicationContext();
         try {
-            clientManager = applicationContext.getBean(MyosotisClientManager.class);
+            application = applicationContext.getBean(MyosotisApplication.class);
         } catch (Exception e) {
-            throw new MyosotisException("Can not find bean of class ClientManager.class", e);
+            throw new MyosotisException("Can not find bean of class MyosotisApplication.class", e);
         }
         Map<String, Object> configBeanMap = applicationContext.getBeansWithAnnotation(Myosotis.class);
         if (configBeanMap.isEmpty()) {
@@ -111,13 +111,13 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         if (StringUtils.isEmpty(configKeyForInit)) {
             configKeyForInit = targetField.getName();
         }
-        MyosotisClient client = clientManager.getClient(namespaceForInit);
+        MyosotisClient client = application.getClient(namespaceForInit);
         if (client == null) {
             logger.warn("There is no client of namespace: {}", namespaceForInit);
             return;
         }
         // add config listener
-        clientManager.addConfigListener(
+        application.addConfigListener(
                 this.getListener(namespaceForInit, configKeyForInit, targetBean, targetField)
         );
         String configValue = null;
