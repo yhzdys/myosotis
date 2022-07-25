@@ -36,15 +36,11 @@ public class MyosotisCustomizer {
         return serverAddress;
     }
 
-    public void setServerAddress(String serverAddress) {
-        this.serverAddress = serverAddress;
-    }
-
     public SerializeType getSerializeType() {
         return serializeType;
     }
 
-    public void setSerializeType(SerializeType serializeType) {
+    public void serializeType(SerializeType serializeType) {
         this.serializeType = serializeType;
     }
 
@@ -52,7 +48,7 @@ public class MyosotisCustomizer {
         return enableNative;
     }
 
-    public void setEnableNative(boolean enableNative) {
+    public void enableNative(boolean enableNative) {
         this.enableNative = enableNative;
     }
 
@@ -60,7 +56,7 @@ public class MyosotisCustomizer {
         return enableSnapshot;
     }
 
-    public void setEnableSnapshot(boolean enableSnapshot) {
+    public void enableSnapshot(boolean enableSnapshot) {
         this.enableSnapshot = enableSnapshot;
     }
 
@@ -68,7 +64,7 @@ public class MyosotisCustomizer {
         return enableCompress;
     }
 
-    public void setEnableCompress(boolean enableCompress) {
+    public void enableCompress(boolean enableCompress) {
         this.enableCompress = enableCompress;
     }
 
@@ -76,7 +72,7 @@ public class MyosotisCustomizer {
         return compressThreshold;
     }
 
-    public void setCompressThreshold(long compressThreshold) {
+    public void compressThreshold(long compressThreshold) {
         this.compressThreshold = compressThreshold;
     }
 }

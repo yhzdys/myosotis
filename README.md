@@ -122,15 +122,15 @@ public class Constant {
 ~~~java
 MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
 // 自定义序列化协议，目前可支持JSON、AVRO、PROTOSTUFF(默认JSON)
-customizer.setSerializeType(SerializeType.PROTOSTUFF);
+customizer.serializeType(SerializeType.PROTOSTUFF);
 // 开启本地文件调试(默认开启)
-customizer.setEnableNative(true);
+customizer.enableNative(true);
 // 开启本地快照保存(默认开启)
-customizer.setEnableSnapshot(true);
+customizer.enableSnapshot(true);
 // 开启数据压缩(默认开启)
-customizer.setEnableCompress(true);
+customizer.enableCompress(true);
 // 数据压缩阈值，当数据流长度大于该值时使用LZ4压缩算法对数据进行压缩处理(默认2048)
-customizer.setCompressThreshold(4096);
+customizer.compressThreshold(4096);
 MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
 ~~~
 
