@@ -277,20 +277,13 @@ public final class ServerProcessor implements Processor {
      * 获取服务端返回的数据，如果数据是压缩的，还要对数据进行解压缩
      */
     private byte[] getResponseData(HttpResponse response) throws Exception {
-        // 判断服务端返回的数据是否是压缩后的结果
-        Header header = response.getLastHeader(NetConst.origin_data_length);
         HttpEntity entity = response.getEntity();
-        byte[] data = new byte[0];
-        if (entity != null) {
-            if (header != null) {
-                // 对压缩的数据进行解压缩
-                byte[] bytes = EntityUtils.toByteArray(entity);
-                data = Lz4.decompress(bytes, Integer.parseInt(header.getValue()));
-            } else {
-                data = EntityUtils.toByteArray(entity);
-            }
+        if (entity == null) {
+            return null;
         }
-        return data;
+        Header header = response.getLastHeader(NetConst.origin_data_length);
+        return header == null ? EntityUtils.toByteArray(entity) :
+                Lz4.decompress(EntityUtils.toByteArray(entity), Integer.parseInt(header.getValue()));
     }
 
     private Serializer getSerializer(HttpResponse response) {
