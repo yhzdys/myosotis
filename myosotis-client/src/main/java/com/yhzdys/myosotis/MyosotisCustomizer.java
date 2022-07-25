@@ -4,14 +4,9 @@ import com.yhzdys.myosotis.enums.SerializeType;
 
 public class MyosotisCustomizer {
 
-    private String serverAddress;
+    private final String serverAddress;
 
     private SerializeType serializeType = SerializeType.JSON;
-
-    /**
-     * 开启本地文件配置，本地配置优先级高于远程配置
-     */
-    private boolean enableNative = true;
 
     /**
      * 开启本地快照
@@ -42,14 +37,6 @@ public class MyosotisCustomizer {
 
     public void serializeType(SerializeType serializeType) {
         this.serializeType = serializeType;
-    }
-
-    public boolean isEnableNative() {
-        return enableNative;
-    }
-
-    public void enableNative(boolean enableNative) {
-        this.enableNative = enableNative;
     }
 
     public boolean isEnableSnapshot() {

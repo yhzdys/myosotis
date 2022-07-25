@@ -7,10 +7,10 @@ Myosotis（勿忘我)是一款基于java的高性能、轻量化的动态配置�
 
 客户端特性：
 
-- 低资源占用
-- 本地文件调试
-- 本地快照备份
+- 轻量化设计、低占用
 - 远程配置实时更新
+- 本地快照备份
+- Spring解耦
 
 ### 控制台样例
 
@@ -123,8 +123,6 @@ public class Constant {
 MyosotisCustomizer customizer = new MyosotisCustomizer("http://myosotis-server.yhzdys.com");
 // 自定义序列化协议，目前可支持JSON、AVRO、PROTOSTUFF(默认JSON)
 customizer.serializeType(SerializeType.PROTOSTUFF);
-// 开启本地文件调试(默认开启)
-customizer.enableNative(true);
 // 开启本地快照保存(默认开启)
 customizer.enableSnapshot(true);
 // 开启数据压缩(默认开启)
@@ -134,16 +132,6 @@ customizer.compressThreshold(4096);
 MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
 ~~~
 
-#### 本地文件调试
-
-~~~
-使用customizer.setEnableLocalFile(true)开启本地文件调试功能(默认开启)
-本地调试开启后，可针对指定配置项进行本地配置，当服务端配置不存在时，客户端会尝试加载本地配置，适用于本地调试或功能灰度等场景
-默认读取文件路径为：{user.home}/.myosotis/{namespace}/{configKey}
-
-{configKey}文本内容使用文本格式存储，程序会优先读取文件中的文本内容作为配置值优先加载到客户端
-~~~
-
 #### 本地快照备份
 
 ~~~
@@ -151,12 +139,6 @@ MyosotisClientManager clientManager = new MyosotisClientManager(customizer);
 使用customizer.setEnableSnapshotFile(true)开启本地快照备份功能(默认开启)
 本地快照备份开启后，当服务端不可用时，会降级读取快照文件中的配置值，配置值为最后一次从服务端获取的有效配置
 默认读取文件路径为：{user.home}/.myosotis/snapshot/{namespace}/{configKey}.snapshot
-~~~
-
-#### 配置加载优先级
-
-~~~
-从高到低：服务端配置 > 本地配置 > 配置快照
 ~~~
 
 ### 客户端事件订阅

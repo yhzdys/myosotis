@@ -9,7 +9,6 @@ import java.util.Map;
 /**
  * config processor
  *
- * @see NativeProcessor
  * @see com.yhzdys.myosotis.processor.ServerProcessor
  * @see com.yhzdys.myosotis.processor.SnapshotProcessor
  */
@@ -18,7 +17,6 @@ public interface Processor {
     /**
      * create dir of local file
      *
-     * @see NativeProcessor#init(String)
      * @see com.yhzdys.myosotis.processor.SnapshotProcessor#init(String)
      */
     void init(String namespace);
@@ -26,7 +24,6 @@ public interface Processor {
     /**
      * fetch config change events
      *
-     * @see NativeProcessor#fetchEvents()
      * @see com.yhzdys.myosotis.processor.ServerProcessor#fetchEvents()
      */
     List<MyosotisEvent> fetchEvents();
@@ -34,7 +31,6 @@ public interface Processor {
     /**
      * query config
      *
-     * @see NativeProcessor#getConfig(String, String)
      * @see com.yhzdys.myosotis.processor.ServerProcessor#getConfig(String, String)
      * @see com.yhzdys.myosotis.processor.SnapshotProcessor#getConfig(String, String)
      */

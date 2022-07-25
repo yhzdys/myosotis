@@ -41,12 +41,12 @@ public class ClientTest {
         clientManager.addConfigListener(new ConfigListener() {
             @Override
             public String configKey() {
-                return "test_key12";
+                return "123";
             }
 
             @Override
             public String namespace() {
-                return "test_namespace";
+                return "default";
             }
 
             @Override
@@ -59,7 +59,7 @@ public class ClientTest {
         for (; ; ) {
             System.out.println("--------------------------------");
             String key1 = "123";
-            String config1 = client.getConfig("test_key11");
+            String config1 = client.getConfig(key1);
             System.out.println("##### " + key1 + ":" + config1);
             String key2 = "test_key" + (random.nextInt(100) + 1);
             String config2 = client.getConfig(key2);
