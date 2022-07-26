@@ -50,7 +50,7 @@ public final class NamespaceListenerExecutor implements ListenerExecutor {
     public void execute(EventCommand command) {
         synchronized (commands) {
             int index = commands.indexOf(command);
-            if (index == -1) {
+            if (index < 0) {
                 commands.add(command);
             } else {
                 commands.get(index).setCommand(command.getCommand());
