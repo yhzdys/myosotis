@@ -163,7 +163,7 @@ public final class ServerProcessor implements Processor {
 
     private HttpPost pollingPost() throws Exception {
         long currentModifiedVersion = configMetadata.getPollingVersion();
-        // <id, version>没有变化,重用之前的数据
+        // version not changed, reuse previous data
         if (lastModifiedVersion >= currentModifiedVersion) {
             return pollingPost;
         }

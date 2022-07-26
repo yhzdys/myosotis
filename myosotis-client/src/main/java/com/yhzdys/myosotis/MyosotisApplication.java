@@ -1,6 +1,6 @@
 package com.yhzdys.myosotis;
 
-import com.yhzdys.myosotis.data.CachedConfigs;
+import com.yhzdys.myosotis.data.CachedConfig;
 import com.yhzdys.myosotis.data.ConfigMetadata;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
@@ -54,7 +54,7 @@ public final class MyosotisApplication {
     /**
      * cached configs
      */
-    private final CachedConfigs cachedConfigs;
+    private final CachedConfig cachedConfig;
 
     /**
      * cached config metadata
@@ -75,7 +75,7 @@ public final class MyosotisApplication {
 
     public MyosotisApplication(Config config) {
         this.configMetadata = new ConfigMetadata();
-        this.cachedConfigs = new CachedConfigs();
+        this.cachedConfig = new CachedConfig();
 
         this.serverProcessor = new ServerProcessor(config, configMetadata);
         this.snapshotProcessor = new SnapshotProcessor(config.isEnableSnapshot());
@@ -99,8 +99,8 @@ public final class MyosotisApplication {
                 return client;
             }
             snapshotProcessor.init(namespace);
-            cachedConfigs.add(namespace);
-            client = new MyosotisClient(namespace, cachedConfigs);
+            cachedConfig.add(namespace);
+            client = new MyosotisClient(namespace, cachedConfig);
             clients.put(namespace, client);
         }
         if (namespaceListener != null) {
@@ -193,12 +193,12 @@ public final class MyosotisApplication {
      */
     String getConfig(String namespace, String configKey) {
         // step.1 get from local cache
-        String configValue = cachedConfigs.get(namespace, configKey);
+        String configValue = cachedConfig.get(namespace, configKey);
         if (configValue != null) {
             return configValue;
         }
         synchronized (LockStore.get(namespace + ":" + configKey)) {
-            configValue = cachedConfigs.get(namespace, configKey);
+            configValue = cachedConfig.get(namespace, configKey);
             if (configValue != null) {
                 return configValue;
             }
@@ -208,7 +208,7 @@ public final class MyosotisApplication {
                 configMetadata.addPolling(namespace, configKey, config.getVersion());
                 configMetadata.removeAbsent(namespace, configKey);
                 if (config.getConfigValue() != null) {
-                    cachedConfigs.add(namespace, configKey, config.getConfigValue());
+                    cachedConfig.add(namespace, configKey, config.getConfigValue());
                     snapshotProcessor.save(config);
                     return config.getConfigValue();
                 }
@@ -219,7 +219,7 @@ public final class MyosotisApplication {
             // step.3 get from local snapshot file
             config = snapshotProcessor.getConfig(namespace, configKey);
             if (config != null) {
-                cachedConfigs.add(namespace, configKey, config.getConfigValue());
+                cachedConfig.add(namespace, configKey, config.getConfigValue());
                 configMetadata.addPolling(namespace, configKey, config.getVersion());
                 return config.getConfigValue();
             }
@@ -231,7 +231,7 @@ public final class MyosotisApplication {
      * 本地数据不为空 返回true
      */
     private boolean haveLocalCache(String namespace) {
-        return configMetadata.inPolling(namespace) && cachedConfigs.containsNamespaceConfig(namespace);
+        return configMetadata.inPolling(namespace) && cachedConfig.containsNamespaceConfig(namespace);
     }
 
     /**
@@ -253,7 +253,7 @@ public final class MyosotisApplication {
         configMetadata.removeAbsent(namespace, configKey);
         configMetadata.addPolling(namespace, configKey, config.getVersion());
         if (config.getConfigValue() != null) {
-            cachedConfigs.add(namespace, configKey, config.getConfigValue());
+            cachedConfig.add(namespace, configKey, config.getConfigValue());
             snapshotProcessor.save(config);
         }
     }
@@ -310,7 +310,7 @@ public final class MyosotisApplication {
         switch (event.getType()) {
             case ADD:
                 configMetadata.addPolling(namespace, configKey, event.getVersion());
-                cachedConfigs.add(namespace, configKey, configValue);
+                cachedConfig.add(namespace, configKey, configValue);
                 snapshotProcessor.save(Converter.event2Config(event));
 
                 configMetadata.removeAbsent(namespace, configKey);
@@ -319,15 +319,15 @@ public final class MyosotisApplication {
             case UPDATE:
                 configMetadata.updatePolling(namespace, configKey, event.getVersion());
                 // not really update
-                if (Objects.equals(cachedConfigs.get(namespace, configKey), configValue)) {
+                if (Objects.equals(cachedConfig.get(namespace, configKey), configValue)) {
                     return;
                 }
-                cachedConfigs.add(namespace, configKey, configValue);
+                cachedConfig.add(namespace, configKey, configValue);
                 snapshotProcessor.save(Converter.event2Config(event));
                 break;
             case DELETE:
                 configMetadata.removePolling(namespace, configKey);
-                cachedConfigs.remove(namespace, configKey);
+                cachedConfig.remove(namespace, configKey);
                 if (eventMulticaster.containsConfigListener(namespace, configKey)) {
                     configMetadata.addDeleted(namespace, configKey);
                 }
@@ -358,7 +358,7 @@ public final class MyosotisApplication {
                 configMetadata.removeDeleted(namespace, configKey);
                 String configValue = config.getConfigValue();
                 if (configValue != null) {
-                    cachedConfigs.add(namespace, configKey, configValue);
+                    cachedConfig.add(namespace, configKey, configValue);
                     snapshotProcessor.save(config);
                 }
                 MyosotisEvent event = Converter.config2Event(config, EventType.ADD);
