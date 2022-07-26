@@ -16,12 +16,22 @@ div {
     font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
     overflow: hidden;
     box-sizing: border-box;
+    cursor: default;
+}
+
+th {
+    cursor: default;
+}
+
+td {
+    cursor: default;
 }
 
 a {
     color: inherit;
     text-decoration: none;
     font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
+    cursor: pointer;
 }
 
 button {
@@ -33,6 +43,7 @@ button {
     box-sizing: border-box;
     background-color: aliceblue;
     border: rgba(211, 211, 211, 0.2) solid 1px;
+    cursor: pointer;
 }
 
 button:hover {
