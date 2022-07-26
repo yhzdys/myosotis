@@ -23,5 +23,4 @@ public class PollingController {
         List<PollingData> pollingData = RequestDeserializer.deserializePollingData(data);
         return new PollingTask(pollingService, pollingData);
     }
-
 }

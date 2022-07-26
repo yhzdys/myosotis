@@ -38,5 +38,4 @@ public class QueryController {
         List<MyosotisConfig> configs = pollingService.queryConfigs(namespaceKeyMap);
         return ResponseSerializer.configs(configs);
     }
-
 }

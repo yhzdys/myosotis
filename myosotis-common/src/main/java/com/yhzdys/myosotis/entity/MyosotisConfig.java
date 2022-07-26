@@ -18,21 +18,6 @@ public final class MyosotisConfig {
     public MyosotisConfig() {
     }
 
-    public MyosotisConfig(String namespace, String configKey, String configValue) {
-        this.namespace = namespace;
-        this.configKey = configKey;
-        this.configValue = configValue;
-        this.version = 0;
-    }
-
-    public MyosotisConfig(Long id, String namespace, String configKey, String configValue, Integer version) {
-        this.id = id;
-        this.namespace = namespace;
-        this.configKey = configKey;
-        this.configValue = configValue;
-        this.version = version;
-    }
-
     public Long getId() {
         return id;
     }

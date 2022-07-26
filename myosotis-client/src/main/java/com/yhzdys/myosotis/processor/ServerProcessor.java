@@ -3,8 +3,7 @@ package com.yhzdys.myosotis.processor;
 import com.yhzdys.myosotis.Config;
 import com.yhzdys.myosotis.compress.Lz4;
 import com.yhzdys.myosotis.constant.NetConst;
-import com.yhzdys.myosotis.data.AbsentConfigMetadata;
-import com.yhzdys.myosotis.data.PollingConfigMetadata;
+import com.yhzdys.myosotis.data.ConfigMetadata;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.entity.PollingData;
@@ -51,10 +50,9 @@ public final class ServerProcessor implements Processor {
     private final ExceptionCounter counter;
 
     /**
-     * config metadata from server
+     * metadata of configs
      */
-    private final PollingConfigMetadata pollingConfigMetadata;
-    private final AbsentConfigMetadata absentConfigMetadata;
+    private final ConfigMetadata configMetadata;
 
     private final HttpPost pollingPost;
 
@@ -64,30 +62,24 @@ public final class ServerProcessor implements Processor {
 
     private long lastModifiedVersion = 0;
 
-    public ServerProcessor(Config config,
-                           PollingConfigMetadata pollingConfigMetadata,
-                           AbsentConfigMetadata absentConfigMetadata) {
+    public ServerProcessor(Config config, ConfigMetadata configMetadata) {
         if (StringUtils.isEmpty(config.getServerAddress())) {
             throw new MyosotisException("Myosotis server address may not be null");
         }
-
         this.serverAddress = config.getServerAddress();
         this.serializeType = config.getSerializeType();
         this.enableCompress = config.isEnableCompress();
         this.compressThreshold = config.getCompressThreshold();
 
         this.counter = new ExceptionCounter();
-        this.pollingConfigMetadata = pollingConfigMetadata;
-        this.absentConfigMetadata = absentConfigMetadata;
+        this.configMetadata = configMetadata;
         this.pollingPost = new HttpPost();
         try {
             this.pollingPost.setURI(new URI(serverAddress + NetConst.URL.polling));
         } catch (Exception e) {
             throw new MyosotisException(e);
         }
-        // TODO client language & version support
         this.pollingPost.addHeader(NetConst.client_language, "java");
-        this.pollingPost.addHeader(NetConst.client_version, "1.0");
         // add feature support headers
         this.addFeatureSupportHeader(pollingPost);
         // customized serialize type
@@ -140,7 +132,7 @@ public final class ServerProcessor implements Processor {
                 return this.deserializeConfig(response);
             }
             if (statusCode == 404) {
-                absentConfigMetadata.add(namespace, configKey);
+                configMetadata.addAbsent(namespace, configKey);
             }
             return null;
         } catch (Throwable e) {
@@ -170,13 +162,13 @@ public final class ServerProcessor implements Processor {
     }
 
     private HttpPost pollingPost() throws Exception {
-        long currentModifiedVersion = pollingConfigMetadata.getModifiedVersion();
+        long currentModifiedVersion = configMetadata.getPollingVersion();
         // <id, version>没有变化,重用之前的数据
         if (lastModifiedVersion >= currentModifiedVersion) {
             return pollingPost;
         }
         lastModifiedVersion = currentModifiedVersion;
-        Collection<PollingData> pollingData = pollingConfigMetadata.getPollingMap().values();
+        Collection<PollingData> pollingData = configMetadata.getPollingData();
         List<PollingData> pollingList = new ArrayList<>(pollingData);
         // clear header
         pollingPost.removeHeaders(NetConst.origin_data_length);
@@ -192,7 +184,7 @@ public final class ServerProcessor implements Processor {
         }
 
         pollingPost.setEntity(byteArrayEntity);
-        if (pollingConfigMetadata.getModifiedVersion() != lastModifiedVersion) {
+        if (configMetadata.getPollingVersion() != lastModifiedVersion) {
             LoggerFactory.getLogger().warn("Config changed after polling");
         }
         return pollingPost;

@@ -12,14 +12,14 @@ public final class PollingData {
     private String namespace;
 
     /**
-     * <id, version>
+     * <configKey, version>
      */
-    private Map<Long, Integer> data;
+    private Map<String, Integer> data;
 
     public PollingData() {
     }
 
-    public PollingData(boolean isAll, String namespace, Map<Long, Integer> data) {
+    public PollingData(boolean isAll, String namespace, Map<String, Integer> data) {
         this.isAll = isAll;
         this.namespace = namespace;
         this.data = data;
@@ -41,11 +41,11 @@ public final class PollingData {
         this.namespace = namespace;
     }
 
-    public Map<Long, Integer> getData() {
+    public Map<String, Integer> getData() {
         return data;
     }
 
-    public void setData(Map<Long, Integer> data) {
+    public void setData(Map<String, Integer> data) {
         this.data = data;
     }
 }

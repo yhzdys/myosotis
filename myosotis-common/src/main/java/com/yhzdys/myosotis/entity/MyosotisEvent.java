@@ -23,39 +23,9 @@ public final class MyosotisEvent {
     }
 
     public MyosotisEvent(String namespace, String configKey, EventType type) {
+        this.id = 0L;
         this.namespace = namespace;
         this.configKey = configKey;
-        this.type = type;
-    }
-
-    public MyosotisEvent(Long id, String namespace, EventType type) {
-        this.id = id;
-        this.namespace = namespace;
-        this.type = type;
-    }
-
-    public MyosotisEvent(String namespace, String configKey, String configValue, EventType type) {
-        this.namespace = namespace;
-        this.configKey = configKey;
-        this.configValue = configValue;
-        this.version = 0;
-        this.type = type;
-    }
-
-    public MyosotisEvent(String namespace, String configKey, String configValue, Integer version, EventType type) {
-        this.namespace = namespace;
-        this.configKey = configKey;
-        this.configValue = configValue;
-        this.version = version;
-        this.type = type;
-    }
-
-    public MyosotisEvent(Long id, String namespace, String configKey, String configValue, Integer version, EventType type) {
-        this.id = id;
-        this.namespace = namespace;
-        this.configKey = configKey;
-        this.configValue = configValue;
-        this.version = version;
         this.type = type;
     }
 

@@ -20,5 +20,4 @@ public class ClusterController {
         PollingSupport.wakeUp(namespace);
         return "success";
     }
-
 }

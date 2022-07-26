@@ -122,5 +122,4 @@ public class ResponseSerializer {
         }
         response.setStatus(404);
     }
-
 }

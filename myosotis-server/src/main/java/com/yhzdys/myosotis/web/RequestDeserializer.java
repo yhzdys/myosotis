@@ -30,5 +30,4 @@ public class RequestDeserializer {
             throw new MyosotisException("Deserialize data fail", e);
         }
     }
-
 }

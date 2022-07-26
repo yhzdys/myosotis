@@ -92,24 +92,24 @@ public class PollingService {
     private List<MyosotisEvent> fetchEvents(PollingData pollingData, List<MyosotisConfigDO> configs) {
         List<MyosotisEvent> events = new ArrayList<>();
         // 拷贝数据，防止线程恢复后重新使用时，数据已经修改过了
-        Map<Long, Integer> data = new HashMap<>(pollingData.getData());
+        Map<String, Integer> data = new HashMap<>(pollingData.getData());
         for (MyosotisConfigDO config : configs) {
-            Integer pollingVersion = data.get(config.getId());
+            Integer pollingVersion = data.get(config.getConfigKey());
             // add
             if (pollingVersion == null) {
                 events.add(toEvent(config).setType(EventType.ADD));
             }
             // update
-            else if (pollingVersion < config.getVersion()) {
+            else if (!config.getVersion().equals(pollingVersion)) {
                 events.add(toEvent(config).setType(EventType.UPDATE));
             }
             // 剩下的就是 delete config
-            data.remove(config.getId());
+            data.remove(config.getConfigKey());
         }
         // delete
-        for (Map.Entry<Long, Integer> entry : data.entrySet()) {
+        for (Map.Entry<String, Integer> entry : data.entrySet()) {
             events.add(
-                    new MyosotisEvent(entry.getKey(), pollingData.getNamespace(), EventType.DELETE)
+                    new MyosotisEvent(pollingData.getNamespace(), entry.getKey(), EventType.DELETE)
             );
         }
         return events;
@@ -125,7 +125,7 @@ public class PollingService {
         if (data.getData() == null || data.getData().isEmpty()) {
             return Collections.emptyList();
         }
-        return configMapper.listByIds(new ArrayList<>(data.getData().keySet()));
+        return configMapper.listByKeys(data.getNamespace(), data.getData().keySet());
     }
 
 }

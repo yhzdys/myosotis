@@ -20,7 +20,7 @@ public class ClientTest {
 
         Config config = new Config("http://myosotis-server.yhzdys.com");
 //        Config config = new Config("http://127.0.0.1:7777");
-        config.serializeType(SerializeType.JSON);
+        config.serializeType(SerializeType.AVRO);
         config.enableSnapshot(false);
         config.enableCompress(true);
         config.compressThreshold(10);

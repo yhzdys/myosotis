@@ -1,6 +1,6 @@
 package com.yhzdys.myosotis;
 
-import com.yhzdys.myosotis.data.CachedConfigData;
+import com.yhzdys.myosotis.data.CachedConfigs;
 
 import java.math.BigDecimal;
 
@@ -11,11 +11,11 @@ public final class MyosotisClient {
 
     private final String namespace;
 
-    private final CachedConfigData cachedConfigData;
+    private final CachedConfigs cachedConfigs;
 
-    MyosotisClient(String namespace, CachedConfigData cachedConfigData) {
+    MyosotisClient(String namespace, CachedConfigs cachedConfigs) {
         this.namespace = namespace;
-        this.cachedConfigData = cachedConfigData;
+        this.cachedConfigs = cachedConfigs;
     }
 
     public String getNamespace() {
@@ -23,7 +23,7 @@ public final class MyosotisClient {
     }
 
     public String getString(String configKey) {
-        return cachedConfigData.get(namespace, configKey);
+        return cachedConfigs.get(namespace, configKey);
     }
 
     public <T> T get(String configKey, Parser<T> parser) {

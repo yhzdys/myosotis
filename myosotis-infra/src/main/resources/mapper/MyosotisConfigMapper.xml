@@ -120,17 +120,6 @@
         where namespace = #{namespace,jdbcType=VARCHAR}
     </select>
 
-    <select id="listByIds" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from
-        <include refid="Table_Name"/>
-        where id in
-        <foreach collection="ids" open="(" close=")" separator="," item="id">
-            #{id,jdbcType=BIGINT}
-        </foreach>
-    </select>
-
     <select id="listByKeys" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

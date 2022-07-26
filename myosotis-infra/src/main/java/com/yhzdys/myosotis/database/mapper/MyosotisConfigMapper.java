@@ -4,7 +4,7 @@ import com.yhzdys.myosotis.database.object.MyosotisConfigDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Mapper
@@ -34,7 +34,5 @@ public interface MyosotisConfigMapper {
 
     List<MyosotisConfigDO> listByNamespace(String namespace);
 
-    List<MyosotisConfigDO> listByIds(@Param("ids") ArrayList<Long> longs);
-
-    List<MyosotisConfigDO> listByKeys(@Param("namespace") String namespace, @Param("configKeys") List<String> configKeys);
+    List<MyosotisConfigDO> listByKeys(@Param("namespace") String namespace, @Param("configKeys") Collection<String> configKeys);
 }

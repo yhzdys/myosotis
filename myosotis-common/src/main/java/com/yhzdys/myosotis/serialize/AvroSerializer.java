@@ -130,9 +130,9 @@ public final class AvroSerializer implements Serializer {
             pollingData.setAll((boolean) record.get(k_is_all));
             pollingData.setNamespace(record.get(k_namespace).toString());
             Map<Utf8, Integer> dataTempMap = (Map<Utf8, Integer>) record.get(k_data);
-            Map<Long, Integer> dataMap = new HashMap<>(dataTempMap.size());
+            Map<String, Integer> dataMap = new HashMap<>(dataTempMap.size());
             for (Map.Entry<Utf8, Integer> entry : dataTempMap.entrySet()) {
-                dataMap.put(Long.parseLong(entry.getKey().toString()), entry.getValue());
+                dataMap.put(entry.getKey().toString(), entry.getValue());
             }
             pollingData.setData(dataMap);
             list.add(pollingData);

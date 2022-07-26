@@ -11,6 +11,8 @@ import com.yhzdys.myosotis.event.multicast.executor.NamespaceListenerExecutor;
 import com.yhzdys.myosotis.executor.EventMulticasterExecutor;
 import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -120,10 +122,13 @@ public final class MyosotisEventMulticaster {
      */
     private void triggerConfigListeners(MyosotisEvent event) {
         Map<String, List<ListenerWrapper>> listenerMap = configListeners.get(event.getNamespace());
-        if (listenerMap == null) {
+        if (MapUtils.isEmpty(listenerMap)) {
             return;
         }
         List<ListenerWrapper> listeners = listenerMap.get(event.getConfigKey());
+        if (CollectionUtils.isEmpty(listeners)) {
+            return;
+        }
         for (ListenerWrapper listenerWrapper : listeners) {
             ConfigListener listener = (ConfigListener) listenerWrapper.getListener();
             listenerWrapper.getExecutor().execute(
