@@ -37,13 +37,12 @@ public final class ConfigMetadata {
      * threshold of clear absent config cache (ms.)
      */
     private final long threshold = TimeUnit.MINUTES.toMillis(10);
-    private long lastClearTime = 0L;
-
     /**
      * medata of deleted configs
      * <namespace, Set<configKey>>
      */
     private final Map<String, Set<String>> deletedConfigs = new ConcurrentHashMap<>(0);
+    private long lastClearTime = 0L;
 
     /**
      * confirm namespace configs in polling data

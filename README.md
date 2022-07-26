@@ -36,7 +36,7 @@ pom.xml添加client依赖
 <dependency>
     <groupId>com.yhzdys</groupId>
     <artifactId>myosotis-client</artifactId>
-    <version>1.0.0</version>
+    <version>${myosotis.version}</version>
 </dependency>
 ~~~
 
@@ -55,7 +55,7 @@ pom.xml添加spring依赖
 <dependency>
     <groupId>com.yhzdys</groupId>
     <artifactId>myosotis-spring</artifactId>
-    <version>1.0.0</version>
+    <version>${myosotis.version}</version>
 </dependency>
 ~~~
 
@@ -87,7 +87,7 @@ pom.xml添加starter
 <dependency>
     <groupId>com.yhzdys</groupId>
     <artifactId>myosotis-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>${myosotis.version}</version>
 </dependency>
 ~~~
 
