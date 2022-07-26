@@ -3,7 +3,7 @@ package com.yhzdys.myosotis.entity;
 import com.yhzdys.myosotis.enums.EventType;
 
 /**
- * 配置变更事件
+ * myosotis config change event
  */
 public final class MyosotisEvent {
 

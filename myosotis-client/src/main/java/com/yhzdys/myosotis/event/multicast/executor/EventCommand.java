@@ -10,6 +10,12 @@ public final class EventCommand {
     private final String id;
     private Runnable command;
 
+    /**
+     * constructor
+     *
+     * @param id      command id
+     * @param command command
+     */
     public EventCommand(String id, Runnable command) {
         this.id = id;
         this.command = command;

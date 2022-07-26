@@ -8,6 +8,9 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+/**
+ * local file operation support
+ */
 public final class FileTool {
 
     public static String read(File file) {

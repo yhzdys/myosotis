@@ -19,6 +19,9 @@ public final class EventMulticasterExecutor extends ThreadPoolExecutor {
                 new InnerThreadFactory());
     }
 
+    /**
+     * thread factory of EventMulticasterExecutor
+     */
     public static final class InnerThreadFactory implements ThreadFactory {
 
         @Override

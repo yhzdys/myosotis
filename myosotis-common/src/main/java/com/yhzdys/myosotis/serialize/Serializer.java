@@ -6,6 +6,9 @@ import com.yhzdys.myosotis.entity.PollingData;
 
 import java.util.List;
 
+/**
+ * serializer interface
+ */
 public interface Serializer {
 
     byte[] serializePollingData(List<PollingData> list) throws Exception;

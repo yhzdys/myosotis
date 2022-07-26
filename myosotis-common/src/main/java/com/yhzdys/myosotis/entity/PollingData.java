@@ -2,6 +2,9 @@ package com.yhzdys.myosotis.entity;
 
 import java.util.Map;
 
+/**
+ * long polling data
+ */
 public final class PollingData {
 
     private boolean isAll;

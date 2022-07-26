@@ -7,6 +7,9 @@ import com.yhzdys.myosotis.serialize.ProtoStuffSerializer;
 import com.yhzdys.myosotis.serialize.Serializer;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * client or server serialize type
+ */
 public enum SerializeType {
 
     AVRO("avro", new AvroSerializer()),

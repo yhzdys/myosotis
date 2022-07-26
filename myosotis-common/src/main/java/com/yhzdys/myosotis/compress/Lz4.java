@@ -4,6 +4,9 @@ import net.jpountz.lz4.LZ4Compressor;
 import net.jpountz.lz4.LZ4Factory;
 import net.jpountz.lz4.LZ4FastDecompressor;
 
+/**
+ * compressor of LZ4
+ */
 public final class Lz4 {
 
     private static final LZ4Factory factory = LZ4Factory.fastestInstance();

@@ -4,6 +4,9 @@ import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.enums.EventType;
 
+/**
+ * myosotis config entity converter utility
+ */
 public final class Converter {
 
     public static MyosotisEvent config2Event(MyosotisConfig config, EventType type) {

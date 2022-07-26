@@ -7,6 +7,9 @@ import com.yhzdys.myosotis.exception.MyosotisException;
 
 import java.util.List;
 
+/**
+ * utility of JSON
+ */
 public final class JsonUtil {
 
     private static final ObjectMapper objectMapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);

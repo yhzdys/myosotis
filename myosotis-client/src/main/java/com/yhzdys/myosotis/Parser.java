@@ -6,6 +6,10 @@ package com.yhzdys.myosotis;
 @FunctionalInterface
 public interface Parser<T> {
 
+    /**
+     * @param configValue configValue
+     * @return parsed value
+     */
     T parse(String configValue);
 
 }

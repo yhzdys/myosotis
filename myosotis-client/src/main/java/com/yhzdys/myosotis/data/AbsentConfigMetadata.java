@@ -25,16 +25,33 @@ public final class AbsentConfigMetadata {
     private final long threshold = TimeUnit.MINUTES.toMillis(10);
     private long lastClearTime = 0L;
 
+    /**
+     * @param namespace namespace
+     * @param configKey configKey
+     * @return {@code true} isAbsent {@code false} existed config
+     */
     public boolean isAbsent(String namespace, String configKey) {
         Map<String, Object> absentConfigMap = configMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
         return absentConfigMap.containsKey(configKey);
     }
 
+    /**
+     * add absent config
+     *
+     * @param namespace namespace
+     * @param configKey configKey
+     */
     public void add(String namespace, String configKey) {
         Map<String, Object> absentKeyMap = configMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
         absentKeyMap.put(configKey, emptyObject);
     }
 
+    /**
+     * remove absent config
+     *
+     * @param namespace namespace
+     * @param configKey configKey
+     */
     public void remove(String namespace, String configKey) {
         Map<String, Object> absentKeyMap = configMap.get(namespace);
         if (MapUtils.isEmpty(absentKeyMap)) {
@@ -43,6 +60,9 @@ public final class AbsentConfigMetadata {
         absentKeyMap.remove(configKey);
     }
 
+    /**
+     * clear all absent configs
+     */
     public void clear() {
         long now = System.currentTimeMillis();
         if ((now - lastClearTime) < threshold) {
@@ -51,5 +71,4 @@ public final class AbsentConfigMetadata {
         lastClearTime = now;
         configMap.clear();
     }
-
 }

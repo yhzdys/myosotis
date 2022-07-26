@@ -48,6 +48,14 @@ public final class PollingConfigMetadata {
         modifiedVersion.incrementAndGet();
     }
 
+    /**
+     * add config data for polling
+     *
+     * @param id        id
+     * @param namespace namespace
+     * @param configKey configKey
+     * @param version   version
+     */
     public void add(Long id, String namespace, String configKey, Integer version) {
         this.getPollingData(namespace).getData().put(id, version);
         idNamespaceMap.put(id, namespace);
@@ -56,6 +64,11 @@ public final class PollingConfigMetadata {
         this.updateVersion();
     }
 
+    /**
+     * remove config by id
+     *
+     * @param id id
+     */
     public void remove(Long id) {
         this.getPollingData(idNamespaceMap.get(id)).getData().remove(id);
         idNamespaceMap.remove(id);
@@ -74,22 +87,29 @@ public final class PollingConfigMetadata {
         this.updateVersion();
     }
 
-    public Long getConfigId(String namespace, String configKey) {
-        Map<String, Long> keyIdMap = namespaceKeyIdMap.get(namespace);
-        if (keyIdMap == null) {
-            return null;
-        }
-        return keyIdMap.get(configKey);
-    }
-
+    /**
+     * get polling configs map
+     *
+     * @return map
+     */
     public Map<String, PollingData> getPollingMap() {
         return Collections.unmodifiableMap(pollingDataMap);
     }
 
+    /**
+     * get data version
+     *
+     * @return version
+     */
     public long getModifiedVersion() {
         return modifiedVersion.get();
     }
 
+    /**
+     * update polling config data
+     *
+     * @param event event
+     */
     public void update(MyosotisEvent event) {
         Long id = event.getId();
         int version = event.getVersion();

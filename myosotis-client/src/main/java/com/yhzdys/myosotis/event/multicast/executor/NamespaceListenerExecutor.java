@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
  * @see com.yhzdys.myosotis.event.multicast.MyosotisEventMulticaster
  */
-public final class NamespaceExecutor implements Executor {
+public final class NamespaceListenerExecutor implements ListenerExecutor {
 
     private final LinkedList<EventCommand> commands = new LinkedList<>();
 
@@ -20,7 +20,12 @@ public final class NamespaceExecutor implements Executor {
 
     private boolean running;
 
-    public NamespaceExecutor(ThreadPoolExecutor sharedPool) {
+    /**
+     * constructor
+     *
+     * @param sharedPool sharedPool
+     */
+    public NamespaceListenerExecutor(ThreadPoolExecutor sharedPool) {
         this.sharedPool = sharedPool;
         this.runner = () -> {
             for (; ; ) {

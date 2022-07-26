@@ -1,7 +1,7 @@
 package com.yhzdys.myosotis.entity;
 
 /**
- * 配置变更事件
+ * myosotis config entity
  */
 public final class MyosotisConfig {
 

@@ -4,10 +4,10 @@ import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.Listener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
-import com.yhzdys.myosotis.event.multicast.executor.ConfigExecutor;
+import com.yhzdys.myosotis.event.multicast.executor.ConfigListenerExecutor;
 import com.yhzdys.myosotis.event.multicast.executor.EventCommand;
-import com.yhzdys.myosotis.event.multicast.executor.Executor;
-import com.yhzdys.myosotis.event.multicast.executor.NamespaceExecutor;
+import com.yhzdys.myosotis.event.multicast.executor.ListenerExecutor;
+import com.yhzdys.myosotis.event.multicast.executor.NamespaceListenerExecutor;
 import com.yhzdys.myosotis.executor.EventMulticasterExecutor;
 import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
@@ -51,19 +51,36 @@ public final class MyosotisEventMulticaster {
         }
     }
 
+    /**
+     * add namespaceListener
+     *
+     * @param listener namespaceListener
+     */
     public void addNamespaceListener(NamespaceListener listener) {
         String namespace = listener.namespace();
-        namespaceListeners.computeIfAbsent(namespace, k -> new ListenerWrapper(listener, new NamespaceExecutor(sharedPool)));
+        namespaceListeners.computeIfAbsent(namespace, k -> new ListenerWrapper(listener, new NamespaceListenerExecutor(sharedPool)));
     }
 
+    /**
+     * add configListener
+     *
+     * @param listener configListener
+     */
     public void addConfigListener(ConfigListener listener) {
         String namespace = listener.namespace();
         String configKey = listener.configKey();
         configListeners.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2))
                 .computeIfAbsent(configKey, k -> new CopyOnWriteArrayList<>())
-                .add(new ListenerWrapper(listener, new ConfigExecutor(sharedPool)));
+                .add(new ListenerWrapper(listener, new ConfigListenerExecutor(sharedPool)));
     }
 
+    /**
+     * contains configListener
+     *
+     * @param namespace namespace
+     * @param configKey configKey
+     * @return boolean
+     */
     public boolean containsConfigListener(String namespace, String configKey) {
         Map<String, List<ListenerWrapper>> listenerMap = configListeners.get(namespace);
         if (listenerMap == null) {
@@ -73,6 +90,11 @@ public final class MyosotisEventMulticaster {
         return listeners != null;
     }
 
+    /**
+     * multicast event
+     *
+     * @param event event
+     */
     public void multicastEvent(MyosotisEvent event) {
         this.triggerNamespaceListener(event);
         this.triggerConfigListeners(event);
@@ -112,9 +134,9 @@ public final class MyosotisEventMulticaster {
 
     private static final class ListenerWrapper {
         private final Listener listener;
-        private final Executor executor;
+        private final ListenerExecutor executor;
 
-        public ListenerWrapper(Listener listener, Executor executor) {
+        public ListenerWrapper(Listener listener, ListenerExecutor executor) {
             this.listener = listener;
             this.executor = executor;
         }
@@ -123,7 +145,7 @@ public final class MyosotisEventMulticaster {
             return listener;
         }
 
-        public Executor getExecutor() {
+        public ListenerExecutor getExecutor() {
             return executor;
         }
     }

@@ -12,6 +12,9 @@ public final class ScheduledExecutor extends ScheduledThreadPoolExecutor {
         super(2, new InnerThreadFactory());
     }
 
+    /**
+     * thread factory of ScheduledExecutor
+     */
     private static final class InnerThreadFactory implements ThreadFactory {
 
         @Override

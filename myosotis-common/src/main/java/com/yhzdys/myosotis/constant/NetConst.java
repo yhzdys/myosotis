@@ -4,6 +4,9 @@ import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.message.BasicHeader;
 
+/***
+ * network common constant
+ */
 public final class NetConst {
 
     /*

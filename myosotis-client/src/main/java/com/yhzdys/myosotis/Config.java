@@ -2,6 +2,9 @@ package com.yhzdys.myosotis;
 
 import com.yhzdys.myosotis.enums.SerializeType;
 
+/**
+ * myosotis application config
+ */
 public class Config {
 
     private final String serverAddress;

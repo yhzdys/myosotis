@@ -20,11 +20,24 @@ public final class DeletedConfigMetadata {
      */
     private final Map<String, Map<String, Long>> configMap = new ConcurrentHashMap<>(0);
 
+    /**
+     * add deleted config
+     *
+     * @param id        id
+     * @param namespace namespace
+     * @param configKey configKey
+     */
     public void add(Long id, String namespace, String configKey) {
         Map<String, Long> keyIdMap = configMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
         keyIdMap.put(configKey, id);
     }
 
+    /**
+     * remove deleted config
+     *
+     * @param namespace namespace
+     * @param configKey configKey
+     */
     public void remove(String namespace, String configKey) {
         Map<String, Long> keyMap = configMap.get(namespace);
         if (keyMap == null) {
@@ -36,6 +49,9 @@ public final class DeletedConfigMetadata {
         }
     }
 
+    /**
+     * get deleted configs data
+     */
     public Map<String, Map<String, Long>> getMap() {
         return Collections.unmodifiableMap(configMap);
     }

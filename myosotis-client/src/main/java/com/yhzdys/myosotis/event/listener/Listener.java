@@ -11,6 +11,9 @@ import com.yhzdys.myosotis.entity.MyosotisEvent;
  */
 public interface Listener {
 
+    /**
+     * @return namespace
+     */
     String namespace();
 
     /**
