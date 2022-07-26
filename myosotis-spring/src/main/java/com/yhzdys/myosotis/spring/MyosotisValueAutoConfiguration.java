@@ -4,7 +4,6 @@ import com.yhzdys.myosotis.MyosotisApplication;
 import com.yhzdys.myosotis.MyosotisClient;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
-import com.yhzdys.myosotis.exception.MyosotisException;
 import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.spring.annotation.Myosotis;
 import com.yhzdys.myosotis.spring.annotation.MyosotisValue;
@@ -14,14 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@Component
 public class MyosotisValueAutoConfiguration implements ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(MyosotisValueAutoConfiguration.class);
@@ -29,7 +26,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
     /**
      * <configKey, InnerConfigListener.class>
      */
-    private final Map<String, InnerConfigListener> listenerMap = new ConcurrentHashMap<>(2);
+    private Map<String, InnerConfigListener> listenerMap;
 
     private MyosotisApplication application;
 
@@ -59,7 +56,8 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         try {
             application = applicationContext.getBean(MyosotisApplication.class);
         } catch (Exception e) {
-            throw new MyosotisException("Can not find bean of class MyosotisApplication.class", e);
+            logger.warn("Can not find bean of MyosotisApplication.class, please check your configuration.");
+            return;
         }
         Map<String, Object> configBeanMap = applicationContext.getBeansWithAnnotation(Myosotis.class);
         if (configBeanMap.isEmpty()) {
@@ -70,6 +68,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             MyosotisClient client = clientMap.values().stream().findFirst().get();
             this.namespace = client.getNamespace();
         }
+        listenerMap = new ConcurrentHashMap<>(2);
         for (Object bean : configBeanMap.values()) {
             this.initMyosotisBean(bean);
         }

@@ -69,6 +69,14 @@ public MyosotisApplication myosotisApplication() {
 public MyosotisClient myosotisClient(MyosotisApplication application) {
     return application.getClient("namespace");
 }
+
+/**
+ * 开启注解配置支持
+ */
+@Bean
+public MyosotisValueAutoConfiguration myosotisValueAutoConfiguration() {
+    return new MyosotisValueAutoConfiguration();
+}
 ~~~
 
 ### springboot

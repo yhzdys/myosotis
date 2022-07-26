@@ -67,4 +67,10 @@ public class MyosotisAutoConfiguration {
         }
         return application.getClient(namespace);
     }
+
+    @Bean
+    @ConditionalOnMissingBean(MyosotisValueAutoConfiguration.class)
+    public MyosotisValueAutoConfiguration myosotisValueAutoConfiguration() {
+        return new MyosotisValueAutoConfiguration();
+    }
 }
