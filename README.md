@@ -8,8 +8,8 @@
 ![Last Commit](https://img.shields.io/github/last-commit/yhzdys/myosotis)
 ![Code Size](https://img.shields.io/github/languages/code-size/yhzdys/myosotis)
 
-Myosotis（勿忘我)是一款基于java的高性能、轻量化的动态配置中心，资源开销较小，适用于各种中小型系统
-客户端本可不依赖任何框架，支持jdk8及以上的java环境，同时对spring和springboot有较好的支持
+Myosotis（勿忘我)是基于java开发的一款轻量化、高性能的动态配置中心，适用于各种中小型系统  
+客户端本不依赖任何框架，支持jdk8及以上的java环境，同时对spring和springboot有较好的支持
 
 客户端特性：
 
