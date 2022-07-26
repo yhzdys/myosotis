@@ -45,10 +45,16 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
     }
 
     private static Object castType(Class<?> type, String configValue) {
+        if (configValue == null) {
+            return null;
+        }
         if (type == String.class) {
             return configValue;
         }
-        return JsonUtil.toObject(configValue, type);
+        if (StringUtils.isBlank(configValue)) {
+            return null;
+        }
+        return JsonUtil.toObject(configValue.trim(), type);
     }
 
     public void onApplicationEvent(ContextRefreshedEvent event) {

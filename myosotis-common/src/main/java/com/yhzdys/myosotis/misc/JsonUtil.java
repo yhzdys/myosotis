@@ -38,15 +38,6 @@ public final class JsonUtil {
         }
     }
 
-    public static <T> List<T> toList(String json) {
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<T>>() {
-            });
-        } catch (Exception e) {
-            throw new MyosotisException("JSON parse object(s) error", e);
-        }
-    }
-
     public static <T> List<T> toList(byte[] bytes, TypeReference<List<T>> typeReference) {
         try {
             return objectMapper.readValue(bytes, typeReference);
