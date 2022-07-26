@@ -320,7 +320,7 @@ cd target
 
 | 参数                                | 释义              | 默认值    | 参考值  |
 |-----------------------------------|-----------------|--------|------|
-| myosotis.log.dir                  | 日志目录（绝对路径）            | ./log  |      |
+| myosotis.log.dir                  | 日志目录（绝对路径）      | ./log  |      |
 | myosotis.server.port              | 内置tomcat端口      | 7777   | 7777 |
 | myosotis.server.minThreads        | 内置tomcat最小线程数   | cpu核心数 | 8    |
 | myosotis.server.maxThreads        | 内置tomcat最大线程数   | 1024   | 32   |
