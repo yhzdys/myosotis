@@ -122,9 +122,13 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         );
         String configValue = null;
         try {
-            configValue = client.getConfig(configKeyForInit, myosotisValue.defaultValue());
+            configValue = client.getString(configKeyForInit);
         } catch (Exception e) {
             logger.error("Get myosotis config value of " + namespaceForInit + ":" + configKeyForInit + " error", e);
+        }
+        String defaultValue = myosotisValue.defaultValue();
+        if (configValue == null && StringUtils.isNotEmpty(defaultValue)) {
+            configValue = defaultValue;
         }
         try {
             setFieldValue(targetBean, targetField, configValue);

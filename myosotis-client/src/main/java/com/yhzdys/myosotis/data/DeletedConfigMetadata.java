@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @see MyosotisApplication#addConfigListener(ConfigListener)
  */
-public final class DeletedMetadata {
+public final class DeletedConfigMetadata {
 
     /**
      * <namespace, <configKey , id>>

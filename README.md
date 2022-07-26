@@ -89,7 +89,11 @@ myosotis.client.namespace=default
 ### 原生java客户端
 
 ~~~java
-String configValue = myosotisClient.getConfig("configKey");
+String configValue = myosotisClient.getString("configKey");
+Long configValue = myosotisClient.getLong("configKey");
+Boolean configValue = myosotisClient.getBoolean("configKey");
+// 自定义ValueParser，支持lambda表达式
+? configValue = client.get("configKey", (configValue) -> {...});
 ~~~
 
 ### spring+annotation

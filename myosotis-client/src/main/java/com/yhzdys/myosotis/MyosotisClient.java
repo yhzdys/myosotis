@@ -1,6 +1,8 @@
 package com.yhzdys.myosotis;
 
-import com.yhzdys.myosotis.data.CachedData;
+import com.yhzdys.myosotis.data.CachedConfigData;
+
+import java.math.BigDecimal;
 
 /**
  * facade of myosotis configs
@@ -9,23 +11,47 @@ public final class MyosotisClient {
 
     private final String namespace;
 
-    private final CachedData cachedData;
+    private final CachedConfigData cachedConfigData;
 
-    MyosotisClient(String namespace, CachedData cachedData) {
+    MyosotisClient(String namespace, CachedConfigData cachedConfigData) {
         this.namespace = namespace;
-        this.cachedData = cachedData;
-    }
-
-    public String getConfig(String configKey) {
-        return cachedData.get(namespace, configKey);
-    }
-
-    public String getConfig(String configKey, String defaultValue) {
-        String configValue = cachedData.get(namespace, configKey);
-        return configValue == null ? defaultValue : configValue;
+        this.cachedConfigData = cachedConfigData;
     }
 
     public String getNamespace() {
         return namespace;
+    }
+
+    public String getString(String configKey) {
+        return cachedConfigData.get(namespace, configKey);
+    }
+
+    public <T> T get(String configKey, Parser<T> parser) {
+        String configValue = this.getString(configKey);
+        return configValue == null ? null : parser.parse(configValue);
+    }
+
+    public Integer getInteger(String configKey) {
+        return this.get(configKey, Integer::parseInt);
+    }
+
+    public Long getLong(String configKey) {
+        return this.get(configKey, Long::parseLong);
+    }
+
+    public Float getFloat(String configKey) {
+        return this.get(configKey, Float::parseFloat);
+    }
+
+    public Double getDouble(String configKey) {
+        return this.get(configKey, Double::parseDouble);
+    }
+
+    public Boolean getBoolean(String configKey) {
+        return this.get(configKey, Boolean::parseBoolean);
+    }
+
+    public BigDecimal getDecimal(String configKey) {
+        return this.get(configKey, BigDecimal::new);
     }
 }

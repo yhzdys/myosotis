@@ -1,5 +1,6 @@
 package com.yhzdys.myosotis.data;
 
+import com.yhzdys.myosotis.misc.LoggerFactory;
 import org.apache.commons.collections4.MapUtils;
 
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @see com.yhzdys.myosotis.processor.ServerProcessor#getConfig(String, String)
  */
-public final class AbsentMetadata {
+public final class AbsentConfigMetadata {
 
     /**
      * <namespace, <configKey, Object.class>>
@@ -22,7 +23,8 @@ public final class AbsentMetadata {
     /**
      * threshold of clear absent config cache (ms.)
      */
-    private final long threshold = TimeUnit.MINUTES.toMillis(1);
+    private final long threshold = TimeUnit.MINUTES.toMillis(10);
+    private int count = 0;
     private long lastClearTime = 0L;
 
     public boolean isAbsent(String namespace, String configKey) {
@@ -33,6 +35,10 @@ public final class AbsentMetadata {
     public void add(String namespace, String configKey) {
         Map<String, Object> absentKeyMap = configMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
         absentKeyMap.put(configKey, emptyObject);
+        count++;
+        if (count > 10) {
+            LoggerFactory.getLogger().warn("There are more than 10 absent configs.");
+        }
     }
 
     public void remove(String namespace, String configKey) {
@@ -40,7 +46,10 @@ public final class AbsentMetadata {
         if (MapUtils.isEmpty(absentKeyMap)) {
             return;
         }
-        absentKeyMap.remove(configKey);
+        Object object = absentKeyMap.remove(configKey);
+        if (object != null) {
+            count--;
+        }
     }
 
     public void clear() {

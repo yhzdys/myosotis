@@ -21,6 +21,7 @@ public class ClientTest {
         Config config = new Config("http://myosotis-server.yhzdys.com");
 //        Config config = new Config("http://127.0.0.1:7777");
         config.serializeType(SerializeType.JSON);
+        config.enableSnapshot(false);
         config.enableCompress(true);
         config.compressThreshold(10);
         MyosotisApplication application = new MyosotisApplication(config);
@@ -59,10 +60,10 @@ public class ClientTest {
         for (; ; ) {
             System.out.println("--------------------------------");
             String key1 = "123";
-            String config1 = client.getConfig(key1);
+            String config1 = client.getString(key1);
             System.out.println("##### " + key1 + ":" + config1);
             String key2 = "test_key" + (random.nextInt(100) + 1);
-            String config2 = client.getConfig(key2);
+            String config2 = client.getString(key2);
             System.out.println("##### " + key2 + ":" + config2);
             TimeUnit.MILLISECONDS.sleep(random.nextInt(5000) + 1);
         }
