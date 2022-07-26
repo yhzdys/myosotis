@@ -231,15 +231,22 @@ application.addNamespaceListener(new YourNamespaceListener());
 
 # 运维手册
 
-## 最新版本打包
+## 最新版本
 
-进入根目录
+### 下载
+
+https://github.com/yhzdys/myosotis/releases
+
+### 自助打包
 
 ~~~shell
+git clone https://github.com/yhzdys/myosotis.git
+cd myosotis
 mvn clean package -Dmaven.test.skip
+cd target
 ~~~
 
-在/target目录下，获得myosotis-*.zip和myosotis-*.tar.gz，任选其一
+在target目录下，获得myosotis-*.zip和myosotis-*.tar.gz，任选其一
 解压后的目录结构：
 
 ~~~
