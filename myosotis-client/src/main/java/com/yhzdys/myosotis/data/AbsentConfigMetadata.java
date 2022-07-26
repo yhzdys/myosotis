@@ -6,6 +6,7 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * metadata of absent config (the configuration that does not exist in the server)
@@ -24,7 +25,7 @@ public final class AbsentConfigMetadata {
      * threshold of clear absent config cache (ms.)
      */
     private final long threshold = TimeUnit.MINUTES.toMillis(10);
-    private int count = 0;
+    private final AtomicInteger counter = new AtomicInteger(0);
     private long lastClearTime = 0L;
 
     public boolean isAbsent(String namespace, String configKey) {
@@ -35,7 +36,7 @@ public final class AbsentConfigMetadata {
     public void add(String namespace, String configKey) {
         Map<String, Object> absentKeyMap = configMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
         absentKeyMap.put(configKey, emptyObject);
-        count++;
+        int count = counter.incrementAndGet();
         if (count > 10) {
             LoggerFactory.getLogger().warn("There are more than 10 absent configs.");
         }
@@ -48,7 +49,7 @@ public final class AbsentConfigMetadata {
         }
         Object object = absentKeyMap.remove(configKey);
         if (object != null) {
-            count--;
+            counter.decrementAndGet();
         }
     }
 

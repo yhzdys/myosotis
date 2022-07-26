@@ -8,6 +8,7 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * metadata of deleted config (the configuration that not exist in the server but exist the configListeners)
@@ -21,12 +22,12 @@ public final class DeletedConfigMetadata {
      */
     private final Map<String, Map<String, Long>> configMap = new ConcurrentHashMap<>(0);
 
-    private int count = 0;
+    private final AtomicInteger counter = new AtomicInteger(0);
 
     public void add(Long id, String namespace, String configKey) {
         Map<String, Long> keyIdMap = configMap.computeIfAbsent(namespace, n -> new ConcurrentHashMap<>(2));
         keyIdMap.put(configKey, id);
-        count++;
+        int count = counter.incrementAndGet();
         if (count > 10) {
             LoggerFactory.getLogger().warn("There are more than 10 deleted configs.");
         }
@@ -39,7 +40,7 @@ public final class DeletedConfigMetadata {
         }
         Long id = keyMap.remove(configKey);
         if (id != null) {
-            count--;
+            counter.getAndDecrement();
         }
         if (MapUtils.isEmpty(keyMap)) {
             configMap.remove(namespace);
