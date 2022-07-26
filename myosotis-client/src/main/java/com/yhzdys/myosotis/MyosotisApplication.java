@@ -82,11 +82,7 @@ public final class MyosotisApplication {
         this.absentConfigMetadata = new AbsentConfigMetadata();
 
         this.serverProcessor = new ServerProcessor(config, pollingConfigMetadata, absentConfigMetadata);
-        if (config.isEnableSnapshot()) {
-            this.snapshotProcessor = new SnapshotProcessor();
-        } else {
-            this.snapshotProcessor = null;
-        }
+        this.snapshotProcessor = new SnapshotProcessor(config.isEnableSnapshot());
         this.eventMulticaster = new MyosotisEventMulticaster();
     }
 
@@ -106,9 +102,7 @@ public final class MyosotisApplication {
             if (client != null) {
                 return client;
             }
-            if (snapshotProcessor != null) {
-                snapshotProcessor.init(namespace);
-            }
+            snapshotProcessor.init(namespace);
             cachedConfigData.add(namespace);
             client = new MyosotisClient(namespace, cachedConfigData);
             clients.put(namespace, client);
@@ -219,9 +213,7 @@ public final class MyosotisApplication {
                 absentConfigMetadata.remove(namespace, configKey);
                 if (config.getConfigValue() != null) {
                     cachedConfigData.add(namespace, configKey, config.getConfigValue());
-                    if (snapshotProcessor != null) {
-                        snapshotProcessor.save(config);
-                    }
+                    snapshotProcessor.save(config);
                     return config.getConfigValue();
                 }
             }
@@ -229,7 +221,8 @@ public final class MyosotisApplication {
                 return null;
             }
             // step.3 get from local snapshot file
-            if (snapshotProcessor != null && (config = snapshotProcessor.getConfig(namespace, configKey)) != null) {
+            config = snapshotProcessor.getConfig(namespace, configKey);
+            if (config != null) {
                 cachedConfigData.add(namespace, configKey, config.getConfigValue());
                 pollingConfigMetadata.add(config.getId(), namespace, configKey, config.getVersion());
                 return config.getConfigValue();

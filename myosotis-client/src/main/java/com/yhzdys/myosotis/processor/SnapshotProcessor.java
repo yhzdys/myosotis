@@ -21,8 +21,17 @@ public final class SnapshotProcessor implements Processor {
     public static final String sn_dir = SystemConst.myosotis_dir + SystemConst.separator + "snapshot" + SystemConst.separator + "%s";
     public static final String sn_file = sn_dir + SystemConst.separator + "%s" + ".snapshot";
 
+    private final boolean enable;
+
+    public SnapshotProcessor(boolean enable) {
+        this.enable = enable;
+    }
+
     @Override
     public void init(String namespace) {
+        if (!enable) {
+            return;
+        }
         // init dir of snapshot file
         File dir = new File(String.format(sn_dir, namespace));
         boolean result = dir.mkdirs();
@@ -35,6 +44,9 @@ public final class SnapshotProcessor implements Processor {
 
     @Override
     public MyosotisConfig getConfig(String namespace, String configKey) {
+        if (!enable) {
+            return null;
+        }
         File file = new File(String.format(sn_file, namespace, configKey));
         if (!file.exists()) {
             return null;
@@ -54,6 +66,9 @@ public final class SnapshotProcessor implements Processor {
 
     @Override
     public void save(MyosotisConfig data) {
+        if (!enable) {
+            return;
+        }
         FileTool.save(JsonUtil.toString(data), String.format(sn_file, data.getNamespace(), data.getConfigKey()));
     }
 }
