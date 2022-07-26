@@ -9,12 +9,28 @@
   ],
   "properties": [
     {
+      "name": "myosotis.client.namespace",
+      "type": "java.lang.String"
+    },
+    {
       "name": "myosotis.server.address",
       "type": "java.lang.String"
     },
     {
-      "name": "myosotis.client.namespace",
+      "name": "myosotis.server.serializeType",
       "type": "java.lang.String"
+    },
+    {
+      "name": "myosotis.server.enableSnapshot",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "name": "myosotis.server.enableCompress",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "name": "myosotis.server.compressThreshold",
+      "type": "java.lang.Long"
     }
   ],
   "hints": [
@@ -22,12 +38,7 @@
       "name": "myosotis.server.address",
       "values": [
         {
-          "value": "http://127.0.0.1:7777",
-          "description": "example of local deployment."
-        },
-        {
-          "value": "http://myosotis.com:7777",
-          "description": "example of remote deployment."
+          "value": "http://localhost:7777"
         }
       ],
       "providers": [
@@ -37,16 +48,65 @@
       ]
     },
     {
-      "name": "myosotis.client.namespace",
+      "name": "myosotis.server.serializeType",
       "values": [
         {
-          "value": "myosotis",
-          "description": "example of namespace."
+          "value": "JSON"
+        },
+        {
+          "value": "AVRO"
+        },
+        {
+          "value": "PROTOSTUFF"
         }
       ],
       "providers": [
         {
-          "name": "any"
+          "value": "JSON"
+        },
+        {
+          "value": "AVRO"
+        },
+        {
+          "value": "PROTOSTUFF"
+        }
+      ]
+    },
+    {
+      "name": "myosotis.server.enableSnapshot",
+      "values": [
+        {
+          "value": "true"
+        },
+        {
+          "value": "false"
+        }
+      ],
+      "providers": [
+        {
+          "value": "true"
+        },
+        {
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "name": "myosotis.server.enableCompress",
+      "values": [
+        {
+          "value": "true"
+        },
+        {
+          "value": "false"
+        }
+      ],
+      "providers": [
+        {
+          "value": "true"
+        },
+        {
+          "value": "false"
         }
       ]
     }

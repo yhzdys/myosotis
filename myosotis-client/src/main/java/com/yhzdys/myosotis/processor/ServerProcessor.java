@@ -51,7 +51,7 @@ public final class ServerProcessor implements Processor {
     private final ExceptionCounter counter;
 
     /**
-     * config metadata from clientManger
+     * config metadata from server
      */
     private final PollingConfigMetadata pollingConfigMetadata;
     private final AbsentConfigMetadata absentConfigMetadata;
@@ -88,7 +88,7 @@ public final class ServerProcessor implements Processor {
         // TODO client language & version support
         this.pollingPost.addHeader(NetConst.client_language, "java");
         this.pollingPost.addHeader(NetConst.client_version, "1.0");
-        //  add feature support headers
+        // add feature support headers
         this.addFeatureSupportHeader(pollingPost);
         // customized serialize type
         this.pollingPost.addHeader(NetConst.serialize_type, config.getSerializeType().getCode());
@@ -199,9 +199,7 @@ public final class ServerProcessor implements Processor {
     }
 
     public HttpGet queryGet(String namespace, String configKey) throws Exception {
-        HttpGet request = new HttpGet(
-                new URI(serverAddress + NetConst.URL.configQuery(namespace, configKey))
-        );
+        HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.configQuery(namespace, configKey)));
         this.addFeatureSupportHeader(request);
 
         request.setConfig(NetConst.default_config);

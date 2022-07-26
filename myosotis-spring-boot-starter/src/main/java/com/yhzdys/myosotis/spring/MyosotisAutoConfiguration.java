@@ -3,6 +3,9 @@ package com.yhzdys.myosotis.spring;
 import com.yhzdys.myosotis.Config;
 import com.yhzdys.myosotis.MyosotisApplication;
 import com.yhzdys.myosotis.MyosotisClient;
+import com.yhzdys.myosotis.enums.SerializeType;
+import com.yhzdys.myosotis.exception.MyosotisException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -32,12 +35,36 @@ public class MyosotisAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(MyosotisApplication.class)
     public MyosotisApplication myosotisApplication() {
-        Config config = new Config(serverProperties.getAddress());
+        String address = serverProperties.getAddress();
+        if (StringUtils.isBlank(address)) {
+            throw new MyosotisException("Myosotis server address may not be null");
+        }
+        String serializeType = serverProperties.getSerializeType();
+        Boolean enableSnapshot = serverProperties.getEnableSnapshot();
+        Boolean enableCompress = serverProperties.getEnableCompress();
+        Long compressThreshold = serverProperties.getCompressThreshold();
+        Config config = new Config(address);
+        if (StringUtils.isNotBlank(serializeType)) {
+            config.serializeType(SerializeType.codeOf(serializeType));
+        }
+        if (enableSnapshot != null) {
+            config.enableSnapshot(enableSnapshot);
+        }
+        if (enableCompress != null) {
+            config.enableCompress(enableCompress);
+        }
+        if (compressThreshold != null && compressThreshold > 0L) {
+            config.compressThreshold(compressThreshold);
+        }
         return new MyosotisApplication(config);
     }
 
     @Bean
     public MyosotisClient myosotisClient(MyosotisApplication application) {
-        return application.getClient(clientProperties.getNamespace());
+        String namespace = clientProperties.getNamespace();
+        if (StringUtils.isBlank(namespace)) {
+            throw new MyosotisException("Myosotis client namespace may not be null");
+        }
+        return application.getClient(namespace);
     }
 }

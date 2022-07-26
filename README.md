@@ -87,6 +87,11 @@ application.properties(yml)添加配置
 
 ~~~properties
 myosotis.server.address=http://127.0.0.1:7777
+myosotis.server.serializeType=JSON
+myosotis.server.enableSnapshot=true
+myosotis.server.enableCompress=true
+myosotis.server.compressThreshold=2048
+
 myosotis.client.namespace=default
 ~~~
 
