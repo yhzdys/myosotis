@@ -20,7 +20,6 @@ public final class ConfigListenerExecutor implements ListenerExecutor {
     private Runnable task;
     private boolean running;
 
-
     /**
      * constructor
      *

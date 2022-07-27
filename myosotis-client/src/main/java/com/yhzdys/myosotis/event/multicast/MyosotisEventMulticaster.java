@@ -33,8 +33,16 @@ public final class MyosotisEventMulticaster {
      */
     private final EventMulticasterExecutor sharedPool = new EventMulticasterExecutor();
 
+    /**
+     * namespaceListener holder
+     * <namespace, ListenerWrapper>
+     */
     private final Map<String, ListenerWrapper> namespaceListeners = new ConcurrentHashMap<>(0);
 
+    /**
+     * configListener holder
+     * <namespace, <configKey, List<ListenerWrapper>>>
+     */
     private final Map<String, Map<String, List<ListenerWrapper>>> configListeners = new ConcurrentHashMap<>(0);
 
     private static void triggerNamespaceListener(NamespaceListener listener, MyosotisEvent event) {

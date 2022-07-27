@@ -103,14 +103,9 @@ public final class MyosotisApplication {
             client = new MyosotisClient(namespace, cachedConfig);
             clients.put(namespace, client);
         }
-        if (namespaceListener != null) {
-            this.addNamespaceListener(namespaceListener);
-        }
+        this.addNamespaceListener(namespaceListener);
         if (CollectionUtils.isNotEmpty(configListeners)) {
             for (ConfigListener configListener : configListeners) {
-                if (configListener == null) {
-                    continue;
-                }
                 this.addConfigListener(configListener);
             }
         }
