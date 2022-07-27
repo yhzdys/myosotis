@@ -21,7 +21,7 @@ public class ClusterSupport {
 
     private static ForkJoinPool pool = null;
 
-    public static void reload() {
+    public static synchronized void reload() {
         ClusterConfigLoader.reload();
         load();
     }
@@ -47,14 +47,8 @@ public class ClusterSupport {
         if (CollectionUtils.isEmpty(nodes)) {
             return;
         }
-        List<Node> healthNodes = ClusterSupport.nodes.stream()
-                .filter(Node::isHealth)
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(healthNodes)) {
-            return;
-        }
         pool.execute(
-                () -> healthNodes.parallelStream().forEach(node -> node.wakeUp(namespace))
+                () -> nodes.parallelStream().forEach(node -> node.wakeUp(namespace))
         );
     }
 
