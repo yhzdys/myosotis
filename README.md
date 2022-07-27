@@ -2,10 +2,10 @@
 
 [![OSCS](https://www.oscs1024.com/platform/badge/yhzdys/myosotis.svg?size=small)](https://www.murphysec.com/dr/9vRqDqkgkn3BnIjrR4)
 ![LICENSE](https://img.shields.io/github/license/yhzdys/myosotis)
+![Maven](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fcom%2Fyhzdys%2Fmyosotis%2Fmaven-metadata.xml)
 ![CircleCI](https://img.shields.io/circleci/build/github/yhzdys/myosotis/main)
 [![CodeFactor](https://www.codefactor.io/repository/github/yhzdys/myosotis/badge)](https://www.codefactor.io/repository/github/yhzdys/myosotis)
 ![JAVA](https://img.shields.io/badge/JAVA-1.8+-green.svg)
-![Last Commit](https://img.shields.io/github/last-commit/yhzdys/myosotis)
 ![Code Size](https://img.shields.io/github/languages/code-size/yhzdys/myosotis)
 
 Myosotis（勿忘我)是基于java开发的一款轻量化、高性能的动态配置中心，适用于各种中小型系统  

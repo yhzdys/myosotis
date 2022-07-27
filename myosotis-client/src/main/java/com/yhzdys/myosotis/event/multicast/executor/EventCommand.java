@@ -3,7 +3,7 @@ package com.yhzdys.myosotis.event.multicast.executor;
 import java.util.Objects;
 
 /**
- * command of myosotis event
+ * command wrapper of myosotis event multicast
  */
 public final class EventCommand {
 
