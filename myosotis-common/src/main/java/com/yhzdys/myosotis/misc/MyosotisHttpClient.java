@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * for myosotis internal use only
- * <p>
  * not expose {@link Closeable#close()} method, so current client can't be close(design on purpose)
  */
 public final class MyosotisHttpClient {

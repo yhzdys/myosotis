@@ -29,7 +29,6 @@ public final class ConfigMetadata {
 
     /**
      * medata of absent configs
-     * <p>
      * <namespace, Set<configKey>>
      */
     private final Map<String, Set<String>> absentConfigs = new ConcurrentHashMap<>(0);
