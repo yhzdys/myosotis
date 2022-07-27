@@ -59,7 +59,7 @@ public final class ConfigMetadata {
      *
      * @return pollingData
      */
-    public Collection<PollingData> getPollingData() {
+    public Collection<PollingData> pollingData() {
         return Collections.unmodifiableCollection(pollingDataMap.values());
     }
 
@@ -121,7 +121,7 @@ public final class ConfigMetadata {
      *
      * @return current polling version
      */
-    public long getPollingVersion() {
+    public long pollingVersion() {
         return pollingVersion.get();
     }
 
@@ -216,7 +216,7 @@ public final class ConfigMetadata {
     /**
      * get deleted configs data
      */
-    public Map<String, Set<String>> getDeletedConfigs() {
+    public Map<String, Set<String>> deletedConfigs() {
         return Collections.unmodifiableMap(deletedConfigs);
     }
 }

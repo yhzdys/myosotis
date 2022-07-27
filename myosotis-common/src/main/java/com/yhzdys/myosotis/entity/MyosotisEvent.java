@@ -8,15 +8,10 @@ import com.yhzdys.myosotis.enums.EventType;
 public final class MyosotisEvent {
 
     private Long id;
-
     private String namespace;
-
     private String configKey;
-
     private String configValue;
-
     private Integer version;
-
     private EventType type;
 
     public MyosotisEvent() {

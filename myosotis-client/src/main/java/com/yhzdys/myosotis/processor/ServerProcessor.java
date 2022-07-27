@@ -162,13 +162,13 @@ public final class ServerProcessor implements Processor {
     }
 
     private HttpPost pollingPost() throws Exception {
-        long currentModifiedVersion = configMetadata.getPollingVersion();
+        long currentModifiedVersion = configMetadata.pollingVersion();
         // version not changed, reuse previous data
         if (lastModifiedVersion >= currentModifiedVersion) {
             return pollingPost;
         }
         lastModifiedVersion = currentModifiedVersion;
-        Collection<PollingData> pollingData = configMetadata.getPollingData();
+        Collection<PollingData> pollingData = configMetadata.pollingData();
         List<PollingData> pollingList = new ArrayList<>(pollingData);
         // clear header
         pollingPost.removeHeaders(NetConst.origin_data_length);
@@ -184,14 +184,14 @@ public final class ServerProcessor implements Processor {
         }
 
         pollingPost.setEntity(byteArrayEntity);
-        if (configMetadata.getPollingVersion() != lastModifiedVersion) {
+        if (configMetadata.pollingVersion() != lastModifiedVersion) {
             LoggerFactory.getLogger().warn("Config changed after polling");
         }
         return pollingPost;
     }
 
     public HttpGet queryGet(String namespace, String configKey) throws Exception {
-        HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.configQuery(namespace, configKey)));
+        HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.queryConfig(namespace, configKey)));
         this.addFeatureSupportHeader(request);
 
         request.setConfig(NetConst.default_config);
@@ -270,5 +270,4 @@ public final class ServerProcessor implements Processor {
             count = 0;
         }
     }
-
 }

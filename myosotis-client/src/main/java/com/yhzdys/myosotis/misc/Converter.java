@@ -31,5 +31,4 @@ public final class Converter {
         config.setVersion(event.getVersion());
         return config;
     }
-
 }

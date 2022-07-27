@@ -87,17 +87,6 @@ function setUrlParam(key, value) {
     window.parent.history.pushState("", "", newUrl);
 }
 
-function delUrlParam(key) {
-    let url = window.parent.location.href;
-    let re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-
-    if (!url.match(re)) {
-        return;
-    }
-    let newUrl = (url.replace(re, "")).toString();
-    window.parent.history.pushState("", "", newUrl);
-}
-
 function clearUrlParam() {
     let url = window.parent.location.href;
     let index = url.indexOf("?");
@@ -209,7 +198,6 @@ function changeFrame(title, src) {
 
     clearUrlParam();
 }
-
 
 function hiddenPageButton() {
     let previous_page = document.getElementById("previous_page");

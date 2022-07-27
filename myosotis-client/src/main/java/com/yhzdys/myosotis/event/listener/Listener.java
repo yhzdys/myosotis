@@ -7,7 +7,7 @@ import com.yhzdys.myosotis.entity.MyosotisEvent;
  * will invoke method handle when config change
  *
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
- * @see com.yhzdys.myosotis.event.multicast.MyosotisEventMulticaster
+ * @see com.yhzdys.myosotis.event.multicast.EventMulticaster
  */
 public interface Listener {
 

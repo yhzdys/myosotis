@@ -4,10 +4,10 @@ import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.Listener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
-import com.yhzdys.myosotis.event.multicast.executor.ConfigListenerExecutor;
-import com.yhzdys.myosotis.event.multicast.executor.EventCommand;
-import com.yhzdys.myosotis.event.multicast.executor.ListenerExecutor;
-import com.yhzdys.myosotis.event.multicast.executor.NamespaceListenerExecutor;
+import com.yhzdys.myosotis.event.multicast.actuator.Actuator;
+import com.yhzdys.myosotis.event.multicast.actuator.ConfigEventActuator;
+import com.yhzdys.myosotis.event.multicast.actuator.EventCommand;
+import com.yhzdys.myosotis.event.multicast.actuator.NamespaceEventActuator;
 import com.yhzdys.myosotis.executor.EventMulticasterExecutor;
 import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
@@ -26,12 +26,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see com.yhzdys.myosotis.event.listener.NamespaceListener
  * @see com.yhzdys.myosotis.event.listener.ConfigListener
  */
-public final class MyosotisEventMulticaster {
+public final class EventMulticaster {
 
     /**
      * threadPool for multicast event
      */
-    private final EventMulticasterExecutor sharedPool = new EventMulticasterExecutor();
+    private final EventMulticasterExecutor executor = new EventMulticasterExecutor();
 
     /**
      * namespaceListener holder
@@ -45,19 +45,11 @@ public final class MyosotisEventMulticaster {
      */
     private final Map<String, Map<String, List<ListenerWrapper>>> configListeners = new ConcurrentHashMap<>(0);
 
-    private static void triggerNamespaceListener(NamespaceListener listener, MyosotisEvent event) {
+    private static void triggerListener(Listener listener, MyosotisEvent event) {
         try {
             listener.handle(event);
         } catch (Throwable e) {
-            LoggerFactory.getLogger().error("Trigger namespaceListener error, event: {}", JsonUtil.toString(event), e);
-        }
-    }
-
-    private static void triggerConfigListener(ConfigListener listener, MyosotisEvent event) {
-        try {
-            listener.handle(event);
-        } catch (Throwable e) {
-            LoggerFactory.getLogger().error("Trigger configListener error, event: {}", JsonUtil.toString(event), e);
+            LoggerFactory.getLogger().error("Trigger Listener error, event: {}", JsonUtil.toString(event), e);
         }
     }
 
@@ -68,7 +60,9 @@ public final class MyosotisEventMulticaster {
      */
     public void addNamespaceListener(NamespaceListener listener) {
         String namespace = listener.namespace();
-        namespaceListeners.computeIfAbsent(namespace, k -> new ListenerWrapper(listener, new NamespaceListenerExecutor(sharedPool)));
+        namespaceListeners.computeIfAbsent(
+                namespace, k -> new ListenerWrapper(listener, new NamespaceEventActuator(executor))
+        );
     }
 
     /**
@@ -81,7 +75,7 @@ public final class MyosotisEventMulticaster {
         String configKey = listener.configKey();
         configListeners.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2))
                 .computeIfAbsent(configKey, k -> new CopyOnWriteArrayList<>())
-                .add(new ListenerWrapper(listener, new ConfigListenerExecutor(sharedPool)));
+                .add(new ListenerWrapper(listener, new ConfigEventActuator(executor)));
     }
 
     /**
@@ -120,8 +114,8 @@ public final class MyosotisEventMulticaster {
             return;
         }
         NamespaceListener listener = (NamespaceListener) listenerWrapper.getListener();
-        listenerWrapper.getExecutor().execute(
-                new EventCommand(event.getConfigKey(), () -> triggerNamespaceListener(listener, event))
+        listenerWrapper.getActuator().actuate(
+                new EventCommand(event.getConfigKey(), () -> triggerListener(listener, event))
         );
     }
 
@@ -139,27 +133,27 @@ public final class MyosotisEventMulticaster {
         }
         for (ListenerWrapper listenerWrapper : listeners) {
             ConfigListener listener = (ConfigListener) listenerWrapper.getListener();
-            listenerWrapper.getExecutor().execute(
-                    new EventCommand(null, () -> triggerConfigListener(listener, event))
+            listenerWrapper.getActuator().actuate(
+                    new EventCommand(() -> triggerListener(listener, event))
             );
         }
     }
 
     private static final class ListenerWrapper {
         private final Listener listener;
-        private final ListenerExecutor executor;
+        private final Actuator actuator;
 
-        public ListenerWrapper(Listener listener, ListenerExecutor executor) {
+        public ListenerWrapper(Listener listener, Actuator actuator) {
             this.listener = listener;
-            this.executor = executor;
+            this.actuator = actuator;
         }
 
         public Listener getListener() {
             return listener;
         }
 
-        public ListenerExecutor getExecutor() {
-            return executor;
+        public Actuator getActuator() {
+            return actuator;
         }
     }
 }

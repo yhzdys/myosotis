@@ -22,5 +22,4 @@ public interface Serializer {
     byte[] serializeConfigs(List<MyosotisConfig> list) throws Exception;
 
     List<MyosotisConfig> deserializeConfigs(byte[] data) throws Exception;
-
 }

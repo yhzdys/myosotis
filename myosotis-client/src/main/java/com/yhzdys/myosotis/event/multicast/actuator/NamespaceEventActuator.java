@@ -1,44 +1,39 @@
-package com.yhzdys.myosotis.event.multicast.executor;
+package com.yhzdys.myosotis.event.multicast.actuator;
 
+import com.yhzdys.myosotis.executor.EventMulticasterExecutor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
 import java.util.LinkedList;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * executor of namespaceListener to handle myosotis config change event
+ * actuator of namespaceListener to handle myosotis config change event
  *
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
- * @see com.yhzdys.myosotis.event.multicast.MyosotisEventMulticaster
+ * @see com.yhzdys.myosotis.event.multicast.EventMulticaster
  */
-public final class NamespaceListenerExecutor implements ListenerExecutor {
-
-    private final LinkedList<EventCommand> commands = new LinkedList<>();
-
-    private final ThreadPoolExecutor sharedPool;
+public final class NamespaceEventActuator implements Actuator {
+    private final EventMulticasterExecutor executor;
     private final Runnable runner;
-
+    private final LinkedList<EventCommand> commands = new LinkedList<>();
     private boolean running;
 
     /**
-     * constructor
-     *
-     * @param sharedPool sharedPool
+     * @param executor multicasterExecutor
      */
-    public NamespaceListenerExecutor(ThreadPoolExecutor sharedPool) {
-        this.sharedPool = sharedPool;
+    public NamespaceEventActuator(EventMulticasterExecutor executor) {
+        this.executor = executor;
         this.runner = () -> {
             for (; ; ) {
-                final EventCommand task;
+                final EventCommand command;
                 synchronized (commands) {
-                    task = commands.poll();
-                    if (task == null) {
+                    command = commands.poll();
+                    if (command == null) {
                         running = false;
                         return;
                     }
                 }
                 try {
-                    task.getCommand().run();
+                    command.getCommand().run();
                 } catch (Throwable t) {
                     LoggerFactory.getLogger().error(t.getMessage(), t);
                 }
@@ -47,7 +42,7 @@ public final class NamespaceListenerExecutor implements ListenerExecutor {
     }
 
     @Override
-    public void execute(EventCommand command) {
+    public void actuate(EventCommand command) {
         synchronized (commands) {
             int index = commands.indexOf(command);
             if (index < 0) {
@@ -57,7 +52,7 @@ public final class NamespaceListenerExecutor implements ListenerExecutor {
             }
             if (!running) {
                 running = true;
-                sharedPool.execute(runner);
+                executor.execute(runner);
             }
         }
     }

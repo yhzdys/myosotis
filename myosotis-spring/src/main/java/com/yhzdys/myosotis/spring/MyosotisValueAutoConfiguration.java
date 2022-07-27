@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,9 +25,9 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
     private static final Logger logger = LoggerFactory.getLogger(MyosotisValueAutoConfiguration.class);
 
     /**
-     * <configKey, InnerConfigListener.class>
+     * <configKey, AutoConfigListener.class>
      */
-    private Map<String, InnerConfigListener> listenerMap;
+    private Map<String, AutoConfigListener> listenerMap;
 
     private MyosotisApplication application;
 
@@ -143,15 +144,15 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
     }
 
     private ConfigListener getListener(String namespace, String configKey, Object targetBean, Field targetField) {
-        InnerConfigListener listener = listenerMap.computeIfAbsent(
-                configKey, bean -> new InnerConfigListener(namespace, targetBean, targetField)
+        AutoConfigListener listener = listenerMap.computeIfAbsent(
+                configKey, bean -> new AutoConfigListener(namespace, targetBean, targetField)
         );
         listener.addField(targetBean, targetField);
         return listener;
     }
 
-    private static final class InnerConfigListener implements ConfigListener {
-        private static final Logger logger = LoggerFactory.getLogger(InnerConfigListener.class);
+    private static final class AutoConfigListener implements ConfigListener {
+        private static final Logger logger = LoggerFactory.getLogger(AutoConfigListener.class);
 
         private final String namespace;
         private final String configKey;
@@ -159,9 +160,9 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         /**
          * <targetBean, targetFiled[]>
          */
-        private final ConcurrentHashMap<Object, CopyOnWriteArrayList<Field>> fieldMap = new ConcurrentHashMap<>(2);
+        private final Map<Object, List<Field>> fieldMap = new ConcurrentHashMap<>(2);
 
-        public InnerConfigListener(String namespace, Object targetBean, Field targetField) {
+        public AutoConfigListener(String namespace, Object targetBean, Field targetField) {
             this.namespace = namespace;
             MyosotisValue myosotisValue = targetField.getAnnotation(MyosotisValue.class);
             if (StringUtils.isEmpty(myosotisValue.configKey())) {
@@ -187,9 +188,9 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             String configKey = event.getConfigKey();
             String configValue = event.getConfigValue();
 
-            for (Map.Entry<Object, CopyOnWriteArrayList<Field>> entry : fieldMap.entrySet()) {
+            for (Map.Entry<Object, List<Field>> entry : fieldMap.entrySet()) {
                 Object targetBean = entry.getKey();
-                CopyOnWriteArrayList<Field> fields = entry.getValue();
+                List<Field> fields = entry.getValue();
                 for (Field targetField : fields) {
                     if (StringUtils.isEmpty(configValue)) {
                         MyosotisValue myosotisValue = targetField.getAnnotation(MyosotisValue.class);
@@ -205,7 +206,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         }
 
         public void addField(Object targetBean, Field targetField) {
-            CopyOnWriteArrayList<Field> fields = fieldMap.computeIfAbsent(
+            List<Field> fields = fieldMap.computeIfAbsent(
                     targetBean, bean -> new CopyOnWriteArrayList<>()
             );
             if (fields.contains(targetField)) {

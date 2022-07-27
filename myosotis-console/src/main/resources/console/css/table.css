@@ -120,7 +120,7 @@ th {
 .page_wrapper {
     width: 100%;
     height: 30px;
-    margin: 10px 0 0 0;
+    margin: 10px 0 0;
     padding-left: calc(100% - 260px);
     float: bottom;
 }

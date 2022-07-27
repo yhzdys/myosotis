@@ -68,7 +68,7 @@ public class UserController {
     @GetMapping("/get")
     @Permission(Menu.USER)
     public WebResponse get(@RequestParam Long id) {
-        return WebResponse.success(userService.get(id));
+        return WebResponse.success(userService.getById(id));
     }
 
     @GetMapping("/role")

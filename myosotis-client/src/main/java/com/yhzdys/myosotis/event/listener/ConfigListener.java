@@ -5,7 +5,7 @@ package com.yhzdys.myosotis.event.listener;
  * only receive events of defined configKey
  *
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
- * @see com.yhzdys.myosotis.event.multicast.MyosotisEventMulticaster
+ * @see com.yhzdys.myosotis.event.multicast.EventMulticaster
  */
 public interface ConfigListener extends Listener {
 
@@ -13,5 +13,4 @@ public interface ConfigListener extends Listener {
      * return your configKey want to listen
      */
     String configKey();
-
 }

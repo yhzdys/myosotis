@@ -48,5 +48,4 @@ public interface Processor {
      * @see com.yhzdys.myosotis.processor.SnapshotProcessor#save(MyosotisConfig)
      */
     void save(MyosotisConfig config);
-
 }

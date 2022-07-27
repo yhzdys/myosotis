@@ -6,13 +6,9 @@ package com.yhzdys.myosotis.entity;
 public final class MyosotisConfig {
 
     private Long id;
-
     private String namespace;
-
     private String configKey;
-
     private String configValue;
-
     private Integer version;
 
     public MyosotisConfig() {

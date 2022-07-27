@@ -12,9 +12,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum SerializeType {
 
+    JSON("json", new JsonSerializer()),
     AVRO("avro", new AvroSerializer()),
     PROTOSTUFF("protostuff", new ProtoStuffSerializer()),
-    JSON("json", new JsonSerializer()),
     ;
 
     private final String code;

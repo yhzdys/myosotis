@@ -13,12 +13,18 @@ import java.util.List;
  */
 public final class JsonSerializer implements Serializer {
 
-    private final TypeReference<List<PollingData>> polling_list_ref = new TypeReference<List<PollingData>>() {
-    };
-    private final TypeReference<List<MyosotisEvent>> events_ref = new TypeReference<List<MyosotisEvent>>() {
-    };
-    private final TypeReference<List<MyosotisConfig>> configs_ref = new TypeReference<List<MyosotisConfig>>() {
-    };
+    private final TypeReference<List<PollingData>> polling_list_tr;
+    private final TypeReference<List<MyosotisEvent>> events_tr;
+    private final TypeReference<List<MyosotisConfig>> configs_tr;
+
+    public JsonSerializer() {
+        polling_list_tr = new TypeReference<List<PollingData>>() {
+        };
+        events_tr = new TypeReference<List<MyosotisEvent>>() {
+        };
+        configs_tr = new TypeReference<List<MyosotisConfig>>() {
+        };
+    }
 
     @Override
     public byte[] serializePollingData(List<PollingData> list) {
@@ -27,7 +33,7 @@ public final class JsonSerializer implements Serializer {
 
     @Override
     public List<PollingData> deserializePollingData(byte[] data) {
-        return JsonUtil.toList(data, polling_list_ref);
+        return JsonUtil.toList(data, polling_list_tr);
     }
 
     @Override
@@ -37,7 +43,7 @@ public final class JsonSerializer implements Serializer {
 
     @Override
     public List<MyosotisEvent> deserializeEvents(byte[] data) {
-        return JsonUtil.toList(data, events_ref);
+        return JsonUtil.toList(data, events_tr);
     }
 
     @Override
@@ -47,6 +53,6 @@ public final class JsonSerializer implements Serializer {
 
     @Override
     public List<MyosotisConfig> deserializeConfigs(byte[] data) {
-        return JsonUtil.toList(data, configs_ref);
+        return JsonUtil.toList(data, configs_tr);
     }
 }

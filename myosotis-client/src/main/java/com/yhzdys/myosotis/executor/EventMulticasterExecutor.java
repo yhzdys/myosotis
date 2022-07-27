@@ -16,13 +16,13 @@ public final class EventMulticasterExecutor extends ThreadPoolExecutor {
                 60L,
                 TimeUnit.SECONDS,
                 new SynchronousQueue<>(false),
-                new InnerThreadFactory());
+                new EventMulticasterThreadFactory());
     }
 
     /**
      * thread factory of EventMulticasterExecutor
      */
-    public static final class InnerThreadFactory implements ThreadFactory {
+    public static final class EventMulticasterThreadFactory implements ThreadFactory {
 
         @Override
         public Thread newThread(Runnable runnable) {

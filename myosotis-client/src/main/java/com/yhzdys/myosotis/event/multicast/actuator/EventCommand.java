@@ -1,4 +1,4 @@
-package com.yhzdys.myosotis.event.multicast.executor;
+package com.yhzdys.myosotis.event.multicast.actuator;
 
 import java.util.Objects;
 
@@ -11,8 +11,14 @@ public final class EventCommand {
     private Runnable command;
 
     /**
-     * constructor
-     *
+     * @param command command
+     */
+    public EventCommand(Runnable command) {
+        this.id = null;
+        this.command = command;
+    }
+
+    /**
      * @param id      command id
      * @param command command
      */

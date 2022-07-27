@@ -44,5 +44,4 @@ public final class Lz4 {
         decompressor.decompress(data, 0, restored, 0, length);
         return restored;
     }
-
 }

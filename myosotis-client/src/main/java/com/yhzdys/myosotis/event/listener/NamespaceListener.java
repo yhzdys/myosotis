@@ -5,7 +5,7 @@ package com.yhzdys.myosotis.event.listener;
  * only receive events of defined namespace
  *
  * @see com.yhzdys.myosotis.entity.MyosotisEvent
- * @see com.yhzdys.myosotis.event.multicast.MyosotisEventMulticaster
+ * @see com.yhzdys.myosotis.event.multicast.EventMulticaster
  */
 public interface NamespaceListener extends Listener {
 }

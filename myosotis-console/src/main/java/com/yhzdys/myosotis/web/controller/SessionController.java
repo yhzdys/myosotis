@@ -28,7 +28,7 @@ public class SessionController {
     }
 
     @GetMapping("/logout")
-    public WebResponse login() {
+    public WebResponse logout() {
         sessionService.logout();
         SessionUtil.clearSession();
         return WebResponse.success();

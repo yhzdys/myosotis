@@ -11,5 +11,4 @@ public interface Parser<T> {
      * @return parsed value
      */
     T parse(String configValue);
-
 }

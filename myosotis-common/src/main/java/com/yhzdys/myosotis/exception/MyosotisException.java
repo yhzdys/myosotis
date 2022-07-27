@@ -10,6 +10,7 @@ public final class MyosotisException extends RuntimeException {
     }
 
     public MyosotisException(Exception e) {
+        super(e);
     }
 
     public MyosotisException(String message, Throwable cause) {

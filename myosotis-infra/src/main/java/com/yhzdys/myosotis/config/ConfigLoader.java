@@ -20,7 +20,7 @@ public class ConfigLoader {
         Map<String, String> configMap = new HashMap<>();
         String line;
         while ((line = reader.readLine()) != null) {
-            InnerConfig config = readConfig(line.trim());
+            Config config = readConfig(line.trim());
             if (config == null) {
                 continue;
             }
@@ -29,7 +29,7 @@ public class ConfigLoader {
         return configMap;
     }
 
-    private static InnerConfig readConfig(String line) {
+    private static Config readConfig(String line) {
         if (line.length() == 0 || line.startsWith("#") || line.startsWith("/")) {
             return null;
         }
@@ -42,14 +42,14 @@ public class ConfigLoader {
         if (StringUtils.isAnyEmpty(configKey, configValue)) {
             throw new MyosotisException("Invalid config: " + line);
         }
-        return new InnerConfig(configKey, configValue);
+        return new Config(configKey, configValue);
     }
 
-    private static final class InnerConfig {
+    private static final class Config {
         private final String key;
         private final String value;
 
-        public InnerConfig(String key, String value) {
+        public Config(String key, String value) {
             this.key = key;
             this.value = value;
         }

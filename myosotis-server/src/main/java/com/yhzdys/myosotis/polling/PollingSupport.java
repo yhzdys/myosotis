@@ -16,13 +16,13 @@ public class PollingSupport {
     /**
      * <namespace, <threadId, PollingTask>>
      */
-    private static final Map<String, ConcurrentHashMap<String, PollingTask>> namespaceMap = new ConcurrentHashMap<>(2);
+    private static final Map<String, Map<String, PollingTask>> namespaceMap = new ConcurrentHashMap<>(2);
 
     public static void register(PollingTask pollingTask) {
         List<PollingData> pollingData = pollingTask.getPollingData();
         for (PollingData data : pollingData) {
             try {
-                register(data.getNamespace(), pollingTask);
+                add(data.getNamespace(), pollingTask);
             } catch (Exception e) {
                 logger.error("Register polling task fail, namespace: {}", data.getNamespace(), e);
             }
@@ -33,7 +33,7 @@ public class PollingSupport {
         List<PollingData> pollingData = pollingTask.getPollingData();
         for (PollingData data : pollingData) {
             try {
-                unregister(data.getNamespace(), pollingTask);
+                remove(data.getNamespace(), pollingTask);
             } catch (Exception e) {
                 logger.error("Register polling task fail, namespace: {}", data.getNamespace(), e);
             }
@@ -41,7 +41,7 @@ public class PollingSupport {
     }
 
     public static void wakeUp(String namespace) {
-        ConcurrentHashMap<String, PollingTask> taskMap = namespaceMap.get(namespace);
+        Map<String, PollingTask> taskMap = namespaceMap.get(namespace);
         if (MapUtils.isEmpty(taskMap)) {
             return;
         }
@@ -54,8 +54,8 @@ public class PollingSupport {
         }
     }
 
-    private static void register(String namespace, PollingTask pollingTask) {
-        ConcurrentHashMap<String, PollingTask> taskMap = namespaceMap.get(namespace);
+    private static void add(String namespace, PollingTask pollingTask) {
+        Map<String, PollingTask> taskMap = namespaceMap.get(namespace);
         if (taskMap != null && taskMap.get(pollingTask.getId()) != null) {
             return;
         }
@@ -65,8 +65,8 @@ public class PollingSupport {
         taskMap.putIfAbsent(pollingTask.getId(), pollingTask);
     }
 
-    private static void unregister(String namespace, PollingTask pollingTask) {
-        ConcurrentHashMap<String, PollingTask> taskMap = namespaceMap.get(namespace);
+    private static void remove(String namespace, PollingTask pollingTask) {
+        Map<String, PollingTask> taskMap = namespaceMap.get(namespace);
         if (MapUtils.isEmpty(taskMap)) {
             return;
         }

@@ -6,21 +6,21 @@ import java.util.concurrent.ThreadFactory;
 /**
  * thread pool for myosotis long polling
  */
-public final class ScheduledExecutor extends ScheduledThreadPoolExecutor {
+public final class PollingExecutor extends ScheduledThreadPoolExecutor {
 
-    public ScheduledExecutor() {
-        super(2, new InnerThreadFactory());
+    public PollingExecutor() {
+        super(2, new ScheduleThreadFactory());
     }
 
     /**
      * thread factory of ScheduledExecutor
      */
-    private static final class InnerThreadFactory implements ThreadFactory {
+    private static final class ScheduleThreadFactory implements ThreadFactory {
 
         @Override
         public Thread newThread(Runnable runnable) {
             Thread thread = new Thread(runnable);
-            thread.setName("myosotis-schedule");
+            thread.setName("myosotis-polling");
             thread.setDaemon(true);
             return thread;
         }

@@ -61,7 +61,18 @@
 }
 
 #cancel_button:hover {
-    background-color: lightsteelblue;
+    color: #555555;
+    background-color: lightskyblue;
+}
+
+#ok_button:active {
+    color: lightgray;
+    background-color: red;
+}
+
+#cancel_button:active {
+    color: #555555;
+    background-color: deepskyblue;
 }
 
 /* top bar */

@@ -7,12 +7,13 @@ import java.util.Map;
  */
 public final class PollingData {
 
-    private boolean isAll;
-
-    private String namespace;
-
     /**
-     * <configKey, version>
+     * query all configs
+     */
+    private boolean isAll;
+    private String namespace;
+    /**
+     * metadata of cached configs <configKey, version>
      */
     private Map<String, Integer> data;
 

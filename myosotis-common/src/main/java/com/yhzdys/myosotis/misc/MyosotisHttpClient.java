@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 public final class MyosotisHttpClient {
 
     private static final MyosotisHttpClient instance = new MyosotisHttpClient(createClient());
-
     private final CloseableHttpClient httpClient;
 
     private MyosotisHttpClient(CloseableHttpClient client) {

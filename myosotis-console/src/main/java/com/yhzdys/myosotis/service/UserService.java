@@ -29,7 +29,7 @@ public class UserService extends AuthorityService {
     @Resource
     private MyosotisSessionMapper sessionMapper;
 
-    public MyosotisUserDO get(String username) {
+    public MyosotisUserDO getByUsername(String username) {
         return userMapper.selectByUsername(username);
     }
 
@@ -73,7 +73,7 @@ public class UserService extends AuthorityService {
         return user.getUsername();
     }
 
-    public UserVO get(Long id) {
+    public UserVO getById(Long id) {
         MyosotisUserDO user = userMapper.selectById(id);
         if (user == null) {
             throw new BizException("用户不存在");

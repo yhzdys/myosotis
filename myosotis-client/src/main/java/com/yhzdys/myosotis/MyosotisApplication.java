@@ -8,8 +8,8 @@ import com.yhzdys.myosotis.entity.PollingData;
 import com.yhzdys.myosotis.enums.EventType;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
-import com.yhzdys.myosotis.event.multicast.MyosotisEventMulticaster;
-import com.yhzdys.myosotis.executor.ScheduledExecutor;
+import com.yhzdys.myosotis.event.multicast.EventMulticaster;
+import com.yhzdys.myosotis.executor.PollingExecutor;
 import com.yhzdys.myosotis.misc.Converter;
 import com.yhzdys.myosotis.misc.LockStore;
 import com.yhzdys.myosotis.misc.LoggerFactory;
@@ -67,7 +67,7 @@ public final class MyosotisApplication {
     private final Processor serverProcessor;
     private final Processor snapshotProcessor;
 
-    private final MyosotisEventMulticaster eventMulticaster;
+    private final EventMulticaster multicaster;
 
     public MyosotisApplication(String serverAddress) {
         this(new Config(serverAddress));
@@ -79,7 +79,7 @@ public final class MyosotisApplication {
 
         this.serverProcessor = new ServerProcessor(config, configMetadata);
         this.snapshotProcessor = new SnapshotProcessor(config.isEnableSnapshot());
-        this.eventMulticaster = new MyosotisEventMulticaster();
+        this.multicaster = new EventMulticaster();
     }
 
     public MyosotisClient getClient(String namespace) {
@@ -127,7 +127,7 @@ public final class MyosotisApplication {
             LoggerFactory.getLogger().warn("Add namespaceListener failed, there is no client of namespace: {}", namespace);
             return;
         }
-        eventMulticaster.addNamespaceListener(listener);
+        multicaster.addNamespaceListener(listener);
 
         configMetadata.setPollingAll(namespace);
 
@@ -163,7 +163,7 @@ public final class MyosotisApplication {
             LoggerFactory.getLogger().warn("Add configListener failed, there is no client of namespace: {}", namespace);
             return;
         }
-        eventMulticaster.addConfigListener(listener);
+        multicaster.addConfigListener(listener);
 
         // automatically add to polling metadata
         String value = this.getConfig(namespace, configKey);
@@ -255,7 +255,7 @@ public final class MyosotisApplication {
 
     private void doStart() {
         LoggerFactory.getLogger().info("Myosotis starting...");
-        final ScheduledExecutor executor = new ScheduledExecutor();
+        final PollingExecutor executor = new PollingExecutor();
         executor.scheduleAtFixedRate(() -> {
             try {
                 this.fetchEvents();
@@ -278,7 +278,7 @@ public final class MyosotisApplication {
     }
 
     private void fetchEvents() {
-        Collection<PollingData> pollingData = configMetadata.getPollingData();
+        Collection<PollingData> pollingData = configMetadata.pollingData();
         if (CollectionUtils.isEmpty(pollingData)) {
             return;
         }
@@ -323,21 +323,21 @@ public final class MyosotisApplication {
             case DELETE:
                 configMetadata.removePolling(namespace, configKey);
                 cachedConfig.remove(namespace, configKey);
-                if (eventMulticaster.containsConfigListener(namespace, configKey)) {
+                if (multicaster.containsConfigListener(namespace, configKey)) {
                     configMetadata.addDeleted(namespace, configKey);
                 }
                 break;
             default:
                 return;
         }
-        eventMulticaster.multicastEvent(event);
+        multicaster.multicastEvent(event);
     }
 
     /**
      * 查询被configListener订阅的不存在的配置
      */
     private void fetchDeletedConfigs() {
-        Map<String, Set<String>> deletedConfigs = configMetadata.getDeletedConfigs();
+        Map<String, Set<String>> deletedConfigs = configMetadata.deletedConfigs();
         if (MapUtils.isEmpty(deletedConfigs)) {
             return;
         }
@@ -357,7 +357,7 @@ public final class MyosotisApplication {
                     snapshotProcessor.save(config);
                 }
                 MyosotisEvent event = Converter.config2Event(config, EventType.ADD);
-                eventMulticaster.multicastEvent(event);
+                multicaster.multicastEvent(event);
             }
         }
     }

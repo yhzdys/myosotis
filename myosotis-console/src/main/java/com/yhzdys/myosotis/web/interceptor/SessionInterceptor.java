@@ -51,7 +51,7 @@ public class SessionInterceptor implements HandlerInterceptor {
             response.setStatus(401);
             return false;
         }
-        MyosotisUserDO user = userService.get(username);
+        MyosotisUserDO user = userService.getByUsername(username);
         UserRole userRole = UserRole.codeOf(user.getUserRole());
 
         SessionContext context = new SessionContext();

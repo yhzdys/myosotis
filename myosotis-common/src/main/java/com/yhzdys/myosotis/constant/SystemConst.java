@@ -13,11 +13,9 @@ import java.util.List;
  * the constant class of system arguments
  */
 public final class SystemConst {
-
     public static final String local_host;
 
     public static final String separator = System.getProperty("file.separator");
-
     public static final String myosotis_dir = System.getProperty("user.home") + separator + ".myosotis";
 
     static {
@@ -55,5 +53,4 @@ public final class SystemConst {
             throw new MyosotisException("Load local host failed.", e);
         }
     }
-
 }
