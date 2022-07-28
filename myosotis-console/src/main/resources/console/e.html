@@ -8,7 +8,7 @@
             <div class="namespace_search" id="namespace_search">
                 <label>
                     <input class="namespace_input" id="namespace_input" list="namespace_option"
-                           placeholder="按回车进行搜索" type="text">
+                           maxlength="64" placeholder="按回车进行搜索" type="text">
                 </label>
                 <datalist class="namespace_option" id="namespace_option">
                 </datalist>
@@ -17,19 +17,19 @@
         <div class="name_wrapper" id="name_wrapper" style="display: none">
             <label>
                 名称：
-                <input id="name_input" placeholder="名称">
+                <input id="name_input" maxlength="64" placeholder="名称">
             </label>
         </div>
         <div class="description_wrapper" id="description_wrapper" style="display: none">
             <label>
                 描述：
-                <textarea id="description_input" placeholder="描述信息"></textarea>
+                <textarea id="description_input" maxlength="256" placeholder="描述信息"></textarea>
             </label>
         </div>
         <div class="value_wrapper" id="value_wrapper" style="display: none">
             <label>
                 值：
-                <textarea id="value_input" placeholder=""></textarea>
+                <textarea id="value_input" maxlength="1024" placeholder=""></textarea>
             </label>
         </div>
         <div class="owners_wrapper" id="owners_wrapper" style="display: none">
@@ -41,7 +41,7 @@
         <div class="name_wrapper" id="username_wrapper" style="display: none">
             <label>
                 用户名：
-                <input id="username_input" placeholder="名称">
+                <input id="username_input" maxlength="32" placeholder="名称">
             </label>
         </div>
         <div class="roles_wrapper" id="roles_wrapper" style="display: none">

@@ -21,19 +21,19 @@
 
 .add_button, .reload_button {
     width: 60px;
-    color: rgba(0, 0, 0, 0.6);
+    color: #555555;
     font-size: 12px;
     background-color: orange;
     border: none;
 }
 
 .add_button:hover, .reload_button:hover {
-    color: lightgray;
+    color: white;
     background-color: orangered;
 }
 
 .add_button:active, .reload_button:active {
-    color: lightgray;
+    color: white;
     background-color: red;
 }
 
@@ -69,12 +69,6 @@ thead {
     box-shadow: 0 1px 5px 0 lightgray;
 }
 
-th {
-    font-weight: normal;
-    text-align: left;
-    height: 30px;
-}
-
 .table_wrapper {
     width: 100%;
 }
@@ -86,7 +80,7 @@ th {
 }
 
 .table_data:hover {
-    background-color: ghostwhite;
+    background-color: rgba(211, 211, 211, 0.2);
 }
 
 .table {

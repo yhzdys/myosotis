@@ -51,7 +51,7 @@ public final class MyosotisClient {
         return this.get(configKey, Boolean::parseBoolean);
     }
 
-    public BigDecimal getDecimal(String configKey) {
+    public BigDecimal getBigDecimal(String configKey) {
         return this.get(configKey, BigDecimal::new);
     }
 }
