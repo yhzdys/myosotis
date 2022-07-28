@@ -35,7 +35,7 @@ public final class ConfigMetadata {
     /**
      * threshold of clear absent config cache (ms.)
      */
-    private final long threshold = TimeUnit.MINUTES.toMillis(10);
+    private final long threshold = TimeUnit.MINUTES.toMillis(1);
     /**
      * medata of deleted configs
      * <namespace, Set<configKey>>

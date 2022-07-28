@@ -5,13 +5,14 @@
     <parent>
         <groupId>com.yhzdys</groupId>
         <artifactId>myosotis</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </parent>
     <artifactId>myosotis-test</artifactId>
 
     <properties>
         <junit.version>4.13.2</junit.version>
         <logback.version>1.2.11</logback.version>
+        <jol.version>0.16</jol.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -23,6 +24,11 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+            <version>${jol.version}</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

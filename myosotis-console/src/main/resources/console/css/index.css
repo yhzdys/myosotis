@@ -47,31 +47,39 @@
 #ok_button {
     font-size: 12px;
     float: left;
-    border-right: rgba(211, 211, 211, 0.6) solid 1px;
+    color: #555555;
+    background-color: rgba(255, 69, 0, 0.6);
+    border-right: rgba(211, 211, 211, 0.2) solid 1px;
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+}
+
+#ok_button:hover {
+    color: white;
+    background-color: orangered;
+}
+
+#ok_button:active {
+    color: white;
+    background-color: red;
 }
 
 #cancel_button {
     font-size: 12px;
     float: right;
-}
-
-#ok_button:hover {
-    color: lightgray;
-    background-color: orangered;
+    color: #555555;
+    background-color: whitesmoke;
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
 }
 
 #cancel_button:hover {
-    color: #555555;
-    background-color: lightskyblue;
-}
-
-#ok_button:active {
-    color: lightgray;
-    background-color: red;
+    color: white;
+    background-color: lightblue;
 }
 
 #cancel_button:active {
-    color: #555555;
+    color: white;
     background-color: deepskyblue;
 }
 
@@ -217,11 +225,13 @@
     padding: 16px 10px;
     font-size: 12px;
     text-align: center;
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
 }
 
 .menu_item:hover {
     color: cornflowerblue;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.8);
     border-radius: 3px;
 }
 
@@ -235,7 +245,7 @@
     height: 40px;
     padding-left: 110px;
     padding-top: 14px;
-    background-color: rgba(248, 248, 255, 0.8);
+    background-color: rgba(248, 248, 255, 0.2);
     box-shadow: 0 1px 5px 1px lightgray;
     font-size: 12px;
     color: darkgray;
