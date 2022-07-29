@@ -5,7 +5,6 @@ import com.yhzdys.myosotis.data.ConfigMetadata;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.entity.PollingData;
-import com.yhzdys.myosotis.enums.EventType;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
 import com.yhzdys.myosotis.event.multicast.EventMulticaster;
@@ -17,14 +16,12 @@ import com.yhzdys.myosotis.processor.Processor;
 import com.yhzdys.myosotis.processor.ServerProcessor;
 import com.yhzdys.myosotis.processor.SnapshotProcessor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -168,7 +165,7 @@ public final class MyosotisApplication {
         // automatically add to polling metadata
         String value = this.getConfig(namespace, configKey);
         if (value == null) {
-            configMetadata.addDeleted(namespace, configKey);
+            configMetadata.addPolling(namespace, configKey, 0);
         }
     }
 
@@ -265,15 +262,6 @@ public final class MyosotisApplication {
                 LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
             }
         }, 1000, 1, TimeUnit.MILLISECONDS);
-
-        executor.scheduleAtFixedRate(() -> {
-            try {
-                this.fetchDeletedConfigs();
-            } catch (Throwable e) {
-                LoggerFactory.getLogger().error("Fetch deleted config(s) error", e);
-                LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
-            }
-        }, 2, 10, TimeUnit.SECONDS);
         LoggerFactory.getLogger().info("Myosotis start completed...");
     }
 
@@ -307,12 +295,10 @@ public final class MyosotisApplication {
                 configMetadata.addPolling(namespace, configKey, event.getVersion());
                 cachedConfig.add(namespace, configKey, configValue);
                 snapshotProcessor.save(Converter.event2Config(event));
-
                 configMetadata.removeAbsent(namespace, configKey);
-                configMetadata.removeDeleted(namespace, configKey);
                 break;
             case UPDATE:
-                configMetadata.updatePolling(namespace, configKey, event.getVersion());
+                configMetadata.addPolling(namespace, configKey, event.getVersion());
                 // not really update
                 if (Objects.equals(cachedConfig.get(namespace, configKey), configValue)) {
                     return;
@@ -321,44 +307,18 @@ public final class MyosotisApplication {
                 snapshotProcessor.save(Converter.event2Config(event));
                 break;
             case DELETE:
-                configMetadata.removePolling(namespace, configKey);
-                cachedConfig.remove(namespace, configKey);
-                if (multicaster.containsConfigListener(namespace, configKey)) {
-                    configMetadata.addDeleted(namespace, configKey);
+                if (multicaster.containsListener(namespace, configKey)) {
+                    // reset polling version
+                    configMetadata.addPolling(namespace, configKey, 0);
+                    configMetadata.addAbsent(namespace, configKey);
+                } else {
+                    configMetadata.removePolling(namespace, configKey);
                 }
+                cachedConfig.remove(namespace, configKey);
                 break;
             default:
                 return;
         }
         multicaster.multicastEvent(event);
-    }
-
-    /**
-     * 查询被configListener订阅的不存在的配置
-     */
-    private void fetchDeletedConfigs() {
-        Map<String, Set<String>> deletedConfigs = configMetadata.deletedConfigs();
-        if (MapUtils.isEmpty(deletedConfigs)) {
-            return;
-        }
-        for (String namespace : deletedConfigs.keySet()) {
-            Set<String> configKeys = deletedConfigs.get(namespace);
-            for (String configKey : configKeys) {
-                MyosotisConfig config = serverProcessor.getConfig(namespace, configKey);
-                if (config == null) {
-                    continue;
-                }
-                configMetadata.addPolling(namespace, configKey, config.getVersion());
-                configMetadata.removeAbsent(namespace, configKey);
-                configMetadata.removeDeleted(namespace, configKey);
-                String configValue = config.getConfigValue();
-                if (configValue != null) {
-                    cachedConfig.add(namespace, configKey, configValue);
-                    snapshotProcessor.save(config);
-                }
-                MyosotisEvent event = Converter.config2Event(config, EventType.ADD);
-                multicaster.multicastEvent(event);
-            }
-        }
     }
 }

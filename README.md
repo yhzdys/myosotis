@@ -48,7 +48,7 @@ pom.xml添加client依赖
 // MyosotisApplication 需要设置为单例
 MyosotisApplication application = new MyosotisApplication("http://127.0.0.1:7777");
 MyosotisClient client = application.getClient("namespace");
-String configValue = client.getConfig("configKey");
+String configValue = client.getString("configKey");
 ~~~
 
 ### springframework

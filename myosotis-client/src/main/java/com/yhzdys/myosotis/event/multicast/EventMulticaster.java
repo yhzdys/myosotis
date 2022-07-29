@@ -85,7 +85,7 @@ public final class EventMulticaster {
      * @param configKey configKey
      * @return boolean
      */
-    public boolean containsConfigListener(String namespace, String configKey) {
+    public boolean containsListener(String namespace, String configKey) {
         Map<String, List<ListenerWrapper>> listenerMap = configListeners.get(namespace);
         if (listenerMap == null) {
             return false;
