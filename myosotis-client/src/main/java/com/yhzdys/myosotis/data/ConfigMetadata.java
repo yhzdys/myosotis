@@ -32,15 +32,11 @@ public final class ConfigMetadata {
      * <namespace, Set<configKey>>
      */
     private final Map<String, Set<String>> absentConfigs = new ConcurrentHashMap<>(0);
+
     /**
      * threshold of clear absent config cache (ms.)
      */
     private final long threshold = TimeUnit.MINUTES.toMillis(1);
-    /**
-     * medata of deleted configs
-     * <namespace, Set<configKey>>
-     */
-    private final Map<String, Set<String>> deletedConfigs = new ConcurrentHashMap<>(0);
     private long lastClearTime = 0L;
 
     /**
@@ -100,19 +96,6 @@ public final class ConfigMetadata {
             return;
         }
         pollingData.getData().remove(configKey);
-        this.updatePollingVersion();
-    }
-
-    /**
-     * update polling config data
-     *
-     * @param namespace namespace
-     * @param configKey configKey
-     * @param version   version
-     */
-    public void updatePolling(String namespace, String configKey, Integer version) {
-        this.getPollingData(namespace)
-                .getData().put(configKey, version);
         this.updatePollingVersion();
     }
 
@@ -183,40 +166,5 @@ public final class ConfigMetadata {
         }
         lastClearTime = now;
         absentConfigs.clear();
-    }
-
-    /**
-     * add deleted config
-     *
-     * @param namespace namespace
-     * @param configKey configKey
-     */
-    public void addDeleted(String namespace, String configKey) {
-        deletedConfigs.computeIfAbsent(namespace, n -> new CopyOnWriteArraySet<>())
-                .add(configKey);
-    }
-
-    /**
-     * remove deleted config
-     *
-     * @param namespace namespace
-     * @param configKey configKey
-     */
-    public void removeDeleted(String namespace, String configKey) {
-        Set<String> configs = deletedConfigs.get(namespace);
-        if (configs == null) {
-            return;
-        }
-        configs.remove(configKey);
-        if (configs.isEmpty()) {
-            deletedConfigs.remove(namespace);
-        }
-    }
-
-    /**
-     * get deleted configs data
-     */
-    public Map<String, Set<String>> deletedConfigs() {
-        return Collections.unmodifiableMap(deletedConfigs);
     }
 }

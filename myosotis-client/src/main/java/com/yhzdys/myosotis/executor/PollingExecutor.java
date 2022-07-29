@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadFactory;
 public final class PollingExecutor extends ScheduledThreadPoolExecutor {
 
     public PollingExecutor() {
-        super(2, new ScheduleThreadFactory());
+        super(1, new ScheduleThreadFactory());
     }
 
     /**

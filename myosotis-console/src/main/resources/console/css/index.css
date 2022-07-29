@@ -75,12 +75,12 @@
 
 #cancel_button:hover {
     color: white;
-    background-color: lightblue;
+    background-color: lightgray;
 }
 
 #cancel_button:active {
     color: white;
-    background-color: deepskyblue;
+    background-color: darkgray;
 }
 
 /* top bar */

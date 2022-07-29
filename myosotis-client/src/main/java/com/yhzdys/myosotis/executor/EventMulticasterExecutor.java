@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public final class EventMulticasterExecutor extends ThreadPoolExecutor {
 
     public EventMulticasterExecutor() {
-        super(2,
+        super(1,
                 Runtime.getRuntime().availableProcessors(),
                 60L,
                 TimeUnit.SECONDS,

@@ -18,8 +18,8 @@ public class ClientTest {
     @Test
     public void testClient() throws Exception {
 
-        Config config = new Config("http://myosotis-server.yhzdys.com");
-//        Config config = new Config("http://127.0.0.1:7777");
+//        Config config = new Config("http://myosotis-server.yhzdys.com");
+        Config config = new Config("http://127.0.0.1:7777");
         config.serializeType(SerializeType.AVRO);
         config.enableSnapshot(false);
         config.enableCompress(true);
@@ -62,10 +62,7 @@ public class ClientTest {
             String key1 = "123";
             String config1 = client.getString(key1);
             System.out.println("##### " + key1 + ":" + config1);
-            String key2 = "test_key" + (random.nextInt(100) + 1);
-            String config2 = client.getString(key2);
-            System.out.println("##### " + key2 + ":" + config2);
-            TimeUnit.MILLISECONDS.sleep(random.nextInt(5000) + 1);
+            TimeUnit.MILLISECONDS.sleep(random.nextInt(1000) + 1);
         }
     }
 }

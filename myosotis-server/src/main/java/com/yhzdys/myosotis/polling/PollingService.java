@@ -96,7 +96,7 @@ public class PollingService {
         for (MyosotisConfigDO config : configs) {
             Integer pollingVersion = data.get(config.getConfigKey());
             // add
-            if (pollingVersion == null) {
+            if (pollingVersion == null || pollingVersion < 1) {
                 events.add(toEvent(config).setType(EventType.ADD));
             }
             // update
@@ -108,6 +108,10 @@ public class PollingService {
         }
         // delete
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
+            Integer pollingVersion = entry.getValue();
+            if (pollingVersion == null || pollingVersion < 1) {
+                continue;
+            }
             events.add(
                     new MyosotisEvent(pollingData.getNamespace(), entry.getKey(), EventType.DELETE)
             );
