@@ -18,8 +18,9 @@ public class ClientTest {
     @Test
     public void testClient() throws Exception {
 
+        Config config = new Config("http://118.195.238.149:7766");
 //        Config config = new Config("http://myosotis-server.yhzdys.com");
-        Config config = new Config("http://127.0.0.1:7777");
+//        Config config = new Config("http://127.0.0.1:7777");
         config.serializeType(SerializeType.AVRO);
         config.enableSnapshot(false);
         config.enableCompress(true);

@@ -5,6 +5,7 @@ import com.yhzdys.myosotis.data.ConfigMetadata;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.entity.PollingData;
+import com.yhzdys.myosotis.enums.EventType;
 import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
 import com.yhzdys.myosotis.event.multicast.EventMulticaster;
@@ -279,46 +280,48 @@ public final class MyosotisApplication {
             if (client == null) {
                 continue;
             }
-            this.multicastServerEvents(client, event);
+            this.multicastEvents(client, event);
         }
     }
 
     /**
      * myosotis server config events
      */
-    private void multicastServerEvents(MyosotisClient client, MyosotisEvent event) {
+    private void multicastEvents(MyosotisClient client, MyosotisEvent event) {
         String namespace = client.getNamespace();
         String configKey = event.getConfigKey();
         String configValue = event.getConfigValue();
-        switch (event.getType()) {
-            case ADD:
-                configMetadata.addPolling(namespace, configKey, event.getVersion());
-                cachedConfig.add(namespace, configKey, configValue);
-                snapshotProcessor.save(Converter.event2Config(event));
-                configMetadata.removeAbsent(namespace, configKey);
-                break;
-            case UPDATE:
-                configMetadata.addPolling(namespace, configKey, event.getVersion());
-                // not really update
-                if (Objects.equals(cachedConfig.get(namespace, configKey), configValue)) {
-                    return;
-                }
-                cachedConfig.add(namespace, configKey, configValue);
-                snapshotProcessor.save(Converter.event2Config(event));
-                break;
-            case DELETE:
-                if (multicaster.containsListener(namespace, configKey)) {
-                    // reset polling version
-                    configMetadata.addPolling(namespace, configKey, 0);
-                    configMetadata.addAbsent(namespace, configKey);
-                } else {
-                    configMetadata.removePolling(namespace, configKey);
-                }
-                cachedConfig.remove(namespace, configKey);
-                break;
-            default:
+
+        if (event.getType() == EventType.UPDATE) {
+            configMetadata.addPolling(namespace, configKey, event.getVersion());
+            // not really update
+            if (Objects.equals(configValue, cachedConfig.get(namespace, configKey))) {
                 return;
+            }
+            cachedConfig.add(namespace, configKey, configValue);
+            snapshotProcessor.save(Converter.event2Config(event));
+        } else {
+            switch (event.getType()) {
+                case ADD:
+                    configMetadata.addPolling(namespace, configKey, event.getVersion());
+                    cachedConfig.add(namespace, configKey, configValue);
+                    snapshotProcessor.save(Converter.event2Config(event));
+                    configMetadata.removeAbsent(namespace, configKey);
+                    break;
+                case DELETE:
+                    if (multicaster.containsListener(namespace, configKey)) {
+                        // reset polling version
+                        configMetadata.addPolling(namespace, configKey, 0);
+                    } else {
+                        configMetadata.removePolling(namespace, configKey);
+                    }
+                    cachedConfig.remove(namespace, configKey);
+                    configMetadata.addAbsent(namespace, configKey);
+                    break;
+                default:
+                    return;
+            }
         }
-        multicaster.multicastEvent(event);
+        multicaster.multicast(event);
     }
 }

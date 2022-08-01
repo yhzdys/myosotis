@@ -81,8 +81,7 @@ public class Node {
             return;
         }
         HttpGet request = new HttpGet("http://" + address + polling_notify + namespace);
-        request.setHeader(NetConst.client_host_ip, SystemConst.local_host);
-
+        request.addHeader(NetConst.client_host_ip, SystemConst.local_host);
         request.setConfig(NetConst.default_config);
 
         CloseableHttpResponse response = null;

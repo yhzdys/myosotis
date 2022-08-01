@@ -99,7 +99,7 @@ public final class EventMulticaster {
      *
      * @param event event
      */
-    public void multicastEvent(MyosotisEvent event) {
+    public void multicast(MyosotisEvent event) {
         this.triggerNamespaceListener(event);
         this.triggerConfigListeners(event);
     }

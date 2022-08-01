@@ -75,8 +75,10 @@ public class ResponseSerializer {
         SerializeType serializeType;
         HttpServletRequest request = attributes.getRequest();
         // client support avro
-        if (NetConst.support_yes.equalsIgnoreCase(request.getHeader(NetConst.serialize_avro_support))) {
+        if (NetConst.support_yes.equals(request.getHeader(NetConst.serialize_avro_support))) {
             serializeType = SerializeType.AVRO;
+        } else if (NetConst.support_yes.equals(request.getHeader(NetConst.serialize_protostuff_support))) {
+            serializeType = SerializeType.PROTOSTUFF;
         } else {
             serializeType = SerializeType.JSON;
         }
@@ -105,7 +107,7 @@ public class ResponseSerializer {
         // client support data compress
         if (NetConst.support_yes.equalsIgnoreCase(request.getHeader(NetConst.compress_support))) {
             byte[] compressed = Lz4.compress(data);
-            response.setHeader(NetConst.origin_data_length, String.valueOf(data.length));
+            response.addHeader(NetConst.origin_data_length, String.valueOf(data.length));
             return compressed;
         }
         return data;
