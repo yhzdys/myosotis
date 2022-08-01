@@ -3,6 +3,7 @@ package com.yhzdys.myosotis.processor;
 import com.yhzdys.myosotis.Config;
 import com.yhzdys.myosotis.compress.Lz4;
 import com.yhzdys.myosotis.constant.NetConst;
+import com.yhzdys.myosotis.constant.SystemConst;
 import com.yhzdys.myosotis.data.ConfigMetadata;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
@@ -80,6 +81,7 @@ public final class ServerProcessor implements Processor {
             throw new MyosotisException(e);
         }
         this.pollingPost.addHeader(NetConst.client_language, "java");
+        this.pollingPost.addHeader(NetConst.client_host_ip, SystemConst.local_host);
         // add feature support headers
         this.addFeatureSupportHeader(pollingPost);
         // customized serialize type
@@ -192,6 +194,7 @@ public final class ServerProcessor implements Processor {
 
     public HttpGet queryGet(String namespace, String configKey) throws Exception {
         HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.queryConfig(namespace, configKey)));
+        request.addHeader(NetConst.client_host_ip, SystemConst.local_host);
         this.addFeatureSupportHeader(request);
 
         request.setConfig(NetConst.default_config);

@@ -57,25 +57,6 @@ public class PollingService {
         return configDO == null ? null : toConfig(configDO);
     }
 
-    /**
-     * 查询指定的configs <namespace, <configKey, id>>
-     */
-    public List<MyosotisConfig> queryConfigs(Map<String, Map<String, Long>> namespaceKeyMap) {
-        List<MyosotisConfig> configs = new ArrayList<>();
-        for (Map.Entry<String, Map<String, Long>> entry : namespaceKeyMap.entrySet()) {
-            String namespace = entry.getKey();
-            Map<String, Long> keyIdMap = entry.getValue();
-            List<String> configKeys = new ArrayList<>(keyIdMap.keySet());
-            List<MyosotisConfigDO> list = configMapper.listByKeys(namespace, configKeys);
-            configs.addAll(
-                    list.stream()
-                            .map(PollingService::toConfig)
-                            .collect(Collectors.toList())
-            );
-        }
-        return configs;
-    }
-
     public List<MyosotisEvent> pollingEvents(List<PollingData> pollingData) {
         List<MyosotisEvent> events = new ArrayList<>();
         for (PollingData data : pollingData) {

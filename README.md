@@ -20,9 +20,8 @@ Myosotis（勿忘我)是基于java开发的一款轻量化、高性能的动态�
 
 ### 控制台样例
 
-[MyosotisConsole](http://myosotis.yhzdys.com/console/index.html)
-
-初始 用户名/密码 (myosotis/123456)
+* [Console](http://myosotis.yhzdys.com/console/index.html)
+* 用户名/密码:myosotis/123456
 
 # Quick Start
 
