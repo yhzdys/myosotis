@@ -29,9 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * serializer of apache avro
- */
 public final class AvroSerializer implements Serializer {
 
     private final Schema polling_list_schema;

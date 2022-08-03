@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 public class MyosotisAutoConfiguration {
 
     private ClientProperty clientProperties;
-
     private ServerProperty serverProperties;
 
     @Autowired

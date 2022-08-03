@@ -34,34 +34,21 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
-/**
- * query server config and fetch config change events
- *
- * @see com.yhzdys.myosotis.processor.Processor
- */
 public final class ServerProcessor implements Processor {
 
-    /**
-     * shared http client
-     */
     private static final MyosotisHttpClient myosotisHttpClient = MyosotisHttpClient.getInstance();
 
     private final String serverAddress;
 
     private final ExceptionCounter counter;
-
-    /**
-     * metadata of configs
-     */
     private final ConfigMetadata configMetadata;
-
     private final HttpPost pollingPost;
 
     private final SerializeType serializeType;
     private final boolean enableCompress;
     private final long compressThreshold;
 
-    private long lastModifiedVersion = 0;
+    private long version = 0;
 
     public ServerProcessor(Config config, ConfigMetadata configMetadata) {
         if (StringUtils.isEmpty(config.getServerAddress())) {
@@ -166,10 +153,10 @@ public final class ServerProcessor implements Processor {
     private HttpPost pollingPost() throws Exception {
         long currentModifiedVersion = configMetadata.pollingVersion();
         // version not changed, reuse previous data
-        if (lastModifiedVersion >= currentModifiedVersion) {
+        if (version >= currentModifiedVersion) {
             return pollingPost;
         }
-        lastModifiedVersion = currentModifiedVersion;
+        version = currentModifiedVersion;
         Collection<PollingData> pollingData = configMetadata.pollingData();
         List<PollingData> pollingList = new ArrayList<>(pollingData);
         // clear header
@@ -186,7 +173,7 @@ public final class ServerProcessor implements Processor {
         }
 
         pollingPost.setEntity(byteArrayEntity);
-        if (configMetadata.pollingVersion() != lastModifiedVersion) {
+        if (configMetadata.pollingVersion() != version) {
             LoggerFactory.getLogger().warn("Config changed after polling");
         }
         return pollingPost;
@@ -231,9 +218,6 @@ public final class ServerProcessor implements Processor {
         return this.getSerializer(response).deserializeConfigs(data);
     }
 
-    /**
-     * 获取服务端返回的数据，如果数据是压缩的，还要对数据进行解压缩
-     */
     private byte[] getResponseData(HttpResponse response) throws Exception {
         HttpEntity entity = response.getEntity();
         if (entity == null) {
@@ -249,9 +233,6 @@ public final class ServerProcessor implements Processor {
         return SerializeType.codeOf(header.getValue()).getSerializer();
     }
 
-    /**
-     * record the number of exceptions
-     */
     private static class ExceptionCounter {
         private int count = 0;
 

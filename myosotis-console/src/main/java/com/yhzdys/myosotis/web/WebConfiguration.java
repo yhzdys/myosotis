@@ -25,7 +25,6 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
 
     @Resource
     private SessionInterceptor sessionInterceptor;
-
     @Resource
     private PermissionInterceptor permissionInterceptor;
 

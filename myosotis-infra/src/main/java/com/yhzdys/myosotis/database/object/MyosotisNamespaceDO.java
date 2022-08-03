@@ -5,13 +5,9 @@ import java.util.Date;
 public class MyosotisNamespaceDO {
 
     private Long id;
-
     private String namespace;
-
     private String description;
-
     private Date createTime;
-
     private Date updateTime;
 
     public Long getId() {

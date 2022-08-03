@@ -5,17 +5,11 @@ import java.util.Date;
 public class MyosotisSessionDO {
 
     private Long id;
-
     private String sessionKey;
-
     private String username;
-
     private String privateKey;
-
     private Date expireTime;
-
     private Date createTime;
-
     private Date updateTime;
 
     public Long getId() {

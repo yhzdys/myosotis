@@ -7,11 +7,8 @@ public class Page {
     private static final Page empty_page = new Page(new ArrayList<>(), 1, 0L, true);
 
     private List<?> list;
-
     private Integer page;
-
     private Long count;
-
     private Boolean end;
 
     public Page(List<?> list, Integer page, Long count, Boolean end) {

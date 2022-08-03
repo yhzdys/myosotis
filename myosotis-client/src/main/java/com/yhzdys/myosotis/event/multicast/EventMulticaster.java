@@ -19,28 +19,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * multicast config change event
- *
- * @see com.yhzdys.myosotis.event.listener.Listener
- * @see com.yhzdys.myosotis.event.listener.NamespaceListener
- * @see com.yhzdys.myosotis.event.listener.ConfigListener
- */
 public final class EventMulticaster {
 
-    /**
-     * threadPool for multicast event
-     */
     private final EventMulticasterExecutor executor = new EventMulticasterExecutor();
 
     /**
-     * namespaceListener holder
      * <namespace, ListenerWrapper>
      */
     private final Map<String, ListenerWrapper> namespaceListeners = new ConcurrentHashMap<>(0);
 
     /**
-     * configListener holder
      * <namespace, <configKey, List<ListenerWrapper>>>
      */
     private final Map<String, Map<String, List<ListenerWrapper>>> configListeners = new ConcurrentHashMap<>(0);
@@ -53,11 +41,6 @@ public final class EventMulticaster {
         }
     }
 
-    /**
-     * add namespaceListener
-     *
-     * @param listener namespaceListener
-     */
     public void addNamespaceListener(NamespaceListener listener) {
         String namespace = listener.namespace();
         namespaceListeners.computeIfAbsent(
@@ -65,11 +48,6 @@ public final class EventMulticaster {
         );
     }
 
-    /**
-     * add configListener
-     *
-     * @param listener configListener
-     */
     public void addConfigListener(ConfigListener listener) {
         String namespace = listener.namespace();
         String configKey = listener.configKey();
@@ -78,13 +56,6 @@ public final class EventMulticaster {
                 .add(new ListenerWrapper(listener, new ConfigEventActuator(executor)));
     }
 
-    /**
-     * contains configListener
-     *
-     * @param namespace namespace
-     * @param configKey configKey
-     * @return boolean
-     */
     public boolean containsListener(String namespace, String configKey) {
         Map<String, List<ListenerWrapper>> listenerMap = configListeners.get(namespace);
         if (listenerMap == null) {
@@ -94,19 +65,11 @@ public final class EventMulticaster {
         return listeners != null;
     }
 
-    /**
-     * multicast event
-     *
-     * @param event event
-     */
     public void multicast(MyosotisEvent event) {
         this.triggerNamespaceListener(event);
         this.triggerConfigListeners(event);
     }
 
-    /**
-     * trigger namespaceListener
-     */
     private void triggerNamespaceListener(MyosotisEvent event) {
         String namespace = event.getNamespace();
         ListenerWrapper listenerWrapper = namespaceListeners.get(namespace);
@@ -119,9 +82,6 @@ public final class EventMulticaster {
         );
     }
 
-    /**
-     * trigger configListener(s)
-     */
     private void triggerConfigListeners(MyosotisEvent event) {
         Map<String, List<ListenerWrapper>> listenerMap = configListeners.get(event.getNamespace());
         if (MapUtils.isEmpty(listenerMap)) {

@@ -5,13 +5,9 @@ import java.util.Date;
 public class MyosotisAuthorityDO {
 
     private Long id;
-
     private String username;
-
     private String namespace;
-
     private Date createTime;
-
     private Date updateTime;
 
     public MyosotisAuthorityDO() {

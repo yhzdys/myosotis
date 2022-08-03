@@ -3,15 +3,10 @@ package com.yhzdys.myosotis.web.entity;
 public class EditRequest {
 
     private Long id;
-
     private String namespace;
-
     private String name;
-
     private String value;
-
     private String owners;
-
     private String description;
 
     public Long getId() {

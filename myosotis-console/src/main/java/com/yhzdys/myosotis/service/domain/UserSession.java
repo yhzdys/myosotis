@@ -7,9 +7,7 @@ import java.util.Date;
 public class UserSession {
 
     private String sessionKey;
-
     private Date expireTime;
-
     private UserVO user;
 
     public String getSessionKey() {

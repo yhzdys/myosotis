@@ -10,7 +10,6 @@ import com.yhzdys.myosotis.event.listener.ConfigListener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
 import com.yhzdys.myosotis.event.multicast.EventMulticaster;
 import com.yhzdys.myosotis.executor.PollingExecutor;
-import com.yhzdys.myosotis.misc.Converter;
 import com.yhzdys.myosotis.misc.LockStore;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 import com.yhzdys.myosotis.processor.Processor;
@@ -28,44 +27,32 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
-/**
- * manage myosotis clients
- * all client shared one scheduled threadPool
- *
- * @see com.yhzdys.myosotis.MyosotisClient
- */
 public final class MyosotisApplication {
 
     /**
-     * application state flag
-     */
-    private final AtomicBoolean started = new AtomicBoolean(false);
-
-    /**
-     * myosotis client holder
      * <namespace, MyosotisClient.class>
-     *
-     * @see com.yhzdys.myosotis.MyosotisClient
      */
     private final Map<String, MyosotisClient> clients = new ConcurrentHashMap<>(2);
 
     /**
-     * cached configs
+     * cached config(s)
      */
     private final CachedConfig cachedConfig;
 
     /**
-     * cached config metadata
+     * metadata of cached config(s)
      */
     private final ConfigMetadata configMetadata;
 
     /**
-     * config fetch processor
+     * config(s) processor
      */
     private final Processor serverProcessor;
     private final Processor snapshotProcessor;
 
     private final EventMulticaster multicaster;
+
+    private final AtomicBoolean started = new AtomicBoolean(false);
 
     public MyosotisApplication(String serverAddress) {
         this(new Config(serverAddress));
@@ -129,16 +116,15 @@ public final class MyosotisApplication {
 
         configMetadata.setPollingAll(namespace);
 
-        // to init local cache
-        if (haveLocalCache(namespace)) {
+        if (cached(namespace)) {
             return;
         }
         synchronized (LockStore.get(namespace)) {
-            if (haveLocalCache(namespace)) {
+            if (cached(namespace)) {
                 return;
             }
-            // init local cache
-            this.initConfigs(namespace);
+            // init namespace configs
+            this.initNamespace(namespace);
         }
     }
 
@@ -172,7 +158,6 @@ public final class MyosotisApplication {
 
     public void start() {
         if (started.get()) {
-            // already started
             return;
         }
         if (started.compareAndSet(false, true)) {
@@ -209,7 +194,7 @@ public final class MyosotisApplication {
             if (configMetadata.isAbsent(namespace, configKey)) {
                 return null;
             }
-            // step.3 get from local snapshot file
+            // step.3 get from snapshot file
             config = snapshotProcessor.getConfig(namespace, configKey);
             if (config != null) {
                 cachedConfig.add(namespace, configKey, config.getConfigValue());
@@ -220,17 +205,11 @@ public final class MyosotisApplication {
         return null;
     }
 
-    /**
-     * 本地数据不为空 返回true
-     */
-    private boolean haveLocalCache(String namespace) {
+    private boolean cached(String namespace) {
         return configMetadata.inPolling(namespace) && cachedConfig.containsNamespaceConfig(namespace);
     }
 
-    /**
-     * 查询到的配置刷到缓存中，并加入轮询队列
-     */
-    private void initConfigs(String namespace) {
+    private void initNamespace(String namespace) {
         List<MyosotisConfig> configs = serverProcessor.getConfigs(namespace);
         if (CollectionUtils.isEmpty(configs)) {
             return;
@@ -284,9 +263,6 @@ public final class MyosotisApplication {
         }
     }
 
-    /**
-     * myosotis server config events
-     */
     private void multicastEvents(MyosotisClient client, MyosotisEvent event) {
         String namespace = client.getNamespace();
         String configKey = event.getConfigKey();
@@ -299,13 +275,13 @@ public final class MyosotisApplication {
                 return;
             }
             cachedConfig.add(namespace, configKey, configValue);
-            snapshotProcessor.save(Converter.event2Config(event));
+            snapshotProcessor.save(this.event2Config(event));
         } else {
             switch (event.getType()) {
                 case ADD:
                     configMetadata.addPolling(namespace, configKey, event.getVersion());
                     cachedConfig.add(namespace, configKey, configValue);
-                    snapshotProcessor.save(Converter.event2Config(event));
+                    snapshotProcessor.save(this.event2Config(event));
                     configMetadata.removeAbsent(namespace, configKey);
                     break;
                 case DELETE:
@@ -323,5 +299,15 @@ public final class MyosotisApplication {
             }
         }
         multicaster.multicast(event);
+    }
+
+    private MyosotisConfig event2Config(MyosotisEvent event) {
+        MyosotisConfig config = new MyosotisConfig();
+        config.setId(event.getId());
+        config.setNamespace(event.getNamespace());
+        config.setConfigKey(event.getConfigKey());
+        config.setConfigValue(event.getConfigValue());
+        config.setVersion(event.getVersion());
+        return config;
     }
 }

@@ -2,9 +2,6 @@ package com.yhzdys.myosotis.entity;
 
 import java.util.Map;
 
-/**
- * long polling data
- */
 public final class PollingData {
 
     /**
@@ -13,7 +10,8 @@ public final class PollingData {
     private boolean isAll;
     private String namespace;
     /**
-     * metadata of cached configs <configKey, version>
+     * metadata of config(s)
+     * <configKey, version>
      */
     private Map<String, Integer> data;
 

@@ -11,24 +11,16 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * metadata of configs (polling、absent、deleted)
- */
 public final class ConfigMetadata {
 
-    /**
-     * polling data version
-     */
     private final AtomicLong pollingVersion = new AtomicLong(1L);
 
     /**
-     * medata of polling configs
      * <namespace, PollingData.class>
      */
-    private final Map<String, PollingData> pollingDataMap = new ConcurrentHashMap<>(2);
+    private final Map<String, PollingData> pollingConfigs = new ConcurrentHashMap<>(2);
 
     /**
-     * medata of absent configs
      * <namespace, Set<configKey>>
      */
     private final Map<String, Set<String>> absentConfigs = new ConcurrentHashMap<>(0);
@@ -39,31 +31,15 @@ public final class ConfigMetadata {
     private final long threshold = TimeUnit.MINUTES.toMillis(1);
     private long lastClearTime = 0L;
 
-    /**
-     * confirm namespace configs in polling data
-     *
-     * @param namespace namespace
-     * @return result
-     */
     public boolean inPolling(String namespace) {
-        PollingData pollingData = pollingDataMap.get(namespace);
+        PollingData pollingData = pollingConfigs.get(namespace);
         return pollingData != null;
     }
 
-    /**
-     * get all pollingData
-     *
-     * @return pollingData
-     */
     public Collection<PollingData> pollingData() {
-        return Collections.unmodifiableCollection(pollingDataMap.values());
+        return Collections.unmodifiableCollection(pollingConfigs.values());
     }
 
-    /**
-     * set namespace to polling all configs
-     *
-     * @param namespace namespace
-     */
     public void setPollingAll(String namespace) {
         this.getPollingData(namespace).setAll(true);
     }
@@ -72,26 +48,13 @@ public final class ConfigMetadata {
         pollingVersion.incrementAndGet();
     }
 
-    /**
-     * add config data for polling
-     *
-     * @param namespace namespace
-     * @param configKey configKey
-     * @param version   version
-     */
     public void addPolling(String namespace, String configKey, Integer version) {
         this.getPollingData(namespace).getData().put(configKey, version);
         this.updatePollingVersion();
     }
 
-    /**
-     * remove config
-     *
-     * @param namespace namespace
-     * @param configKey configKey
-     */
     public void removePolling(String namespace, String configKey) {
-        PollingData pollingData = pollingDataMap.get(namespace);
+        PollingData pollingData = pollingConfigs.get(namespace);
         if (pollingData == null) {
             return;
         }
@@ -99,26 +62,16 @@ public final class ConfigMetadata {
         this.updatePollingVersion();
     }
 
-    /**
-     * get polling data version
-     *
-     * @return current polling version
-     */
     public long pollingVersion() {
         return pollingVersion.get();
     }
 
     private PollingData getPollingData(String namespace) {
-        return pollingDataMap.computeIfAbsent(
+        return pollingConfigs.computeIfAbsent(
                 namespace, cg -> new PollingData(false, namespace, new ConcurrentHashMap<>(2))
         );
     }
 
-    /**
-     * @param namespace namespace
-     * @param configKey configKey
-     * @return {@code true} isAbsent {@code false} existed config
-     */
     public boolean isAbsent(String namespace, String configKey) {
         Set<String> configs = absentConfigs.get(namespace);
         if (configs == null || configs.isEmpty()) {
@@ -127,23 +80,11 @@ public final class ConfigMetadata {
         return configs.contains(configKey);
     }
 
-    /**
-     * add absent config
-     *
-     * @param namespace namespace
-     * @param configKey configKey
-     */
     public void addAbsent(String namespace, String configKey) {
         absentConfigs.computeIfAbsent(namespace, n -> new CopyOnWriteArraySet<>())
                 .add(configKey);
     }
 
-    /**
-     * remove absent config
-     *
-     * @param namespace namespace
-     * @param configKey configKey
-     */
     public void removeAbsent(String namespace, String configKey) {
         Set<String> configs = absentConfigs.get(namespace);
         if (configs == null) {
@@ -156,9 +97,6 @@ public final class ConfigMetadata {
         configs.remove(configKey);
     }
 
-    /**
-     * clear all absent configs
-     */
     public void clearAbsent() {
         long now = System.currentTimeMillis();
         if ((now - lastClearTime) < threshold) {

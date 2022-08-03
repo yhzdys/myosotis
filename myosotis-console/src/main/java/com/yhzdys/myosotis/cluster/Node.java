@@ -48,9 +48,6 @@ public class Node {
         this.failCount = 0;
     }
 
-    /**
-     * to check cluster node health
-     */
     public void healthCheck() {
         long now = System.currentTimeMillis();
         // to lazy check. (10min.)

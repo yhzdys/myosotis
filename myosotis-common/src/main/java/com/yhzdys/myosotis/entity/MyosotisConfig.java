@@ -1,8 +1,5 @@
 package com.yhzdys.myosotis.entity;
 
-/**
- * myosotis config entity
- */
 public final class MyosotisConfig {
 
     private Long id;

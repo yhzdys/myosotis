@@ -11,11 +11,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * the snapshot of configs from local snapshot file
- *
- * @see com.yhzdys.myosotis.processor.Processor
- */
 public final class SnapshotProcessor implements Processor {
 
     public static final String sn_dir = SystemConst.myosotis_dir + SystemConst.separator + "snapshot" + SystemConst.separator + "%s";
@@ -32,7 +27,6 @@ public final class SnapshotProcessor implements Processor {
         if (!enable) {
             return;
         }
-        // init dir of snapshot file
         File dir = new File(String.format(sn_dir, namespace));
         boolean result = dir.mkdirs();
     }

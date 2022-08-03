@@ -23,7 +23,6 @@ public class SessionService {
 
     @Resource
     private MyosotisSessionMapper sessionMapper;
-
     @Resource
     private MyosotisUserMapper userMapper;
 

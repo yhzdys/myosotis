@@ -5,13 +5,9 @@ import com.yhzdys.myosotis.database.object.MyosotisConfigDO;
 public class ConfigVO {
 
     private Long id;
-
     private String namespace;
-
     private String configKey;
-
     private String description;
-
     private String configValue;
 
     public ConfigVO convert(MyosotisConfigDO config) {

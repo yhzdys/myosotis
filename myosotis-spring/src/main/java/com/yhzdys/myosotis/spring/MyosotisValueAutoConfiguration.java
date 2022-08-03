@@ -28,9 +28,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
      * <configKey, AutoConfigListener.class>
      */
     private Map<String, AutoConfigListener> listenerMap;
-
     private MyosotisApplication application;
-
     private String namespace = null;
 
     @SuppressWarnings("deprecation")

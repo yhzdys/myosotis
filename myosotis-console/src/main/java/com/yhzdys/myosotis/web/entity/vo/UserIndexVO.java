@@ -5,11 +5,8 @@ import java.util.List;
 public class UserIndexVO {
 
     private Long userId;
-
     private String username;
-
     private PairVO userRole;
-
     private List<PairVO> menus;
 
     public Long getUserId() {

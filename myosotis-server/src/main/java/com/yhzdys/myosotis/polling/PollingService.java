@@ -100,9 +100,6 @@ public class PollingService {
         return events;
     }
 
-    /**
-     * 从db中查询配置
-     */
     private List<MyosotisConfigDO> getConfigs(PollingData data) {
         if (data.isAll()) {
             return configMapper.listByNamespace(data.getNamespace());

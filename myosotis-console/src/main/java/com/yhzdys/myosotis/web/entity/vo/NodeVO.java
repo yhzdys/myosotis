@@ -10,11 +10,8 @@ import java.util.Date;
 public class NodeVO {
 
     private String address;
-
     private String lastCheckTime;
-
     private Long failCount;
-
     private Boolean health;
 
     public NodeVO convert(Node node) {

@@ -20,11 +20,6 @@ public class Encryptor {
         return DigestUtils.md5Hex(source).toLowerCase();
     }
 
-    /**
-     * 生成rsa公私钥
-     *
-     * @return keyPair @left=公钥 @right=私钥
-     */
     public static Pair<String, String> genRsaKeyPair() {
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
@@ -38,13 +33,6 @@ public class Encryptor {
         }
     }
 
-    /**
-     * 通过公钥加密
-     *
-     * @param source    明文
-     * @param publicKey 公钥
-     * @return 密文
-     */
     public static String encryptByPublicKey(String source, String publicKey) {
         try {
             PublicKey pubKey = getPublicKey(publicKey);
@@ -57,13 +45,6 @@ public class Encryptor {
         }
     }
 
-    /**
-     * 通过私钥解密
-     *
-     * @param source     加密字符串
-     * @param privateKey 私钥
-     * @return 明文
-     */
     public static String decryptByPrivateKey(String source, String privateKey) {
         try {
             PrivateKey priKey = getPrivateKey(privateKey);
@@ -76,12 +57,6 @@ public class Encryptor {
         }
     }
 
-    /**
-     * 从公钥字符串中获取公钥
-     *
-     * @param key Base64的公钥字符串
-     * @return 公钥
-     */
     private static PublicKey getPublicKey(String key) {
         try {
             byte[] keyBytes = Base64.decodeBase64(key);
@@ -93,12 +68,6 @@ public class Encryptor {
         }
     }
 
-    /**
-     * 从私钥字符串中获取私钥
-     *
-     * @param key Base64的私钥字符串
-     * @return 私钥
-     */
     private static PrivateKey getPrivateKey(String key) {
         try {
             byte[] keyBytes = Base64.decodeBase64(key.getBytes(StandardCharsets.UTF_8));

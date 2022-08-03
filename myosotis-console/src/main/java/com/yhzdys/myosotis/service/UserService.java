@@ -25,7 +25,6 @@ public class UserService extends AuthorityService {
 
     @Resource
     private MyosotisUserMapper userMapper;
-
     @Resource
     private MyosotisSessionMapper sessionMapper;
 

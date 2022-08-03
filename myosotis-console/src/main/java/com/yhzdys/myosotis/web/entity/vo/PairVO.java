@@ -3,7 +3,6 @@ package com.yhzdys.myosotis.web.entity.vo;
 public class PairVO {
 
     private String code;
-
     private String name;
 
     public PairVO() {

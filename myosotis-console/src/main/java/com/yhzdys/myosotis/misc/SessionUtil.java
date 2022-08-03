@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public class SessionUtil {
+
     private static final String random_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     public static String genSalt() {

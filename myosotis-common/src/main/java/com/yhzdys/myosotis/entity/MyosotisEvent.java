@@ -2,9 +2,6 @@ package com.yhzdys.myosotis.entity;
 
 import com.yhzdys.myosotis.enums.EventType;
 
-/**
- * myosotis config change event
- */
 public final class MyosotisEvent {
 
     private Long id;

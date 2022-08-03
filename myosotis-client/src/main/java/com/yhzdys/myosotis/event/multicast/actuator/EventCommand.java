@@ -2,26 +2,16 @@ package com.yhzdys.myosotis.event.multicast.actuator;
 
 import java.util.Objects;
 
-/**
- * command wrapper of myosotis event multicast
- */
 public final class EventCommand {
 
     private final String id;
     private Runnable command;
 
-    /**
-     * @param command command
-     */
     public EventCommand(Runnable command) {
         this.id = null;
         this.command = command;
     }
 
-    /**
-     * @param id      command id
-     * @param command command
-     */
     public EventCommand(String id, Runnable command) {
         this.id = id;
         this.command = command;

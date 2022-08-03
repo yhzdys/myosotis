@@ -5,9 +5,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * cluster node health check executor
- */
 public class ClusterMonitor {
 
     private final List<Node> nodes;

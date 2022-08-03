@@ -5,13 +5,9 @@ import java.util.List;
 public class SessionContext {
 
     private Long userId;
-
     private String username;
-
     private String sessionKey;
-
     private UserRole userRole;
-
     private List<Menu> menus;
 
     public Long getUserId() {

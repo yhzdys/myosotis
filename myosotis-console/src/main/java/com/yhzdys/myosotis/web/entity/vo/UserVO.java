@@ -9,13 +9,9 @@ import java.text.SimpleDateFormat;
 public class UserVO {
 
     private Long id;
-
     private String username;
-
     private PairVO userRole;
-
     private String namespaces;
-
     private String createTime;
 
     public UserVO convert(MyosotisUserDO user) {

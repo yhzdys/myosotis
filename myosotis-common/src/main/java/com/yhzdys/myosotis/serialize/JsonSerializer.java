@@ -8,9 +8,6 @@ import com.yhzdys.myosotis.misc.JsonUtil;
 
 import java.util.List;
 
-/**
- * serializer of JSON
- */
 public final class JsonSerializer implements Serializer {
 
     private final TypeReference<List<PollingData>> polling_list_tr;

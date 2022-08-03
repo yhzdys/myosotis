@@ -5,9 +5,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * shared thread pool for multicast myosotis event
- */
 public final class EventMulticasterExecutor extends ThreadPoolExecutor {
 
     public EventMulticasterExecutor() {
@@ -19,9 +16,6 @@ public final class EventMulticasterExecutor extends ThreadPoolExecutor {
                 new EventMulticasterThreadFactory());
     }
 
-    /**
-     * thread factory of EventMulticasterExecutor
-     */
     public static final class EventMulticasterThreadFactory implements ThreadFactory {
 
         @Override

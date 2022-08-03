@@ -3,9 +3,7 @@ package com.yhzdys.myosotis.web.entity;
 public class NamespaceRequest {
 
     private Long id;
-
     private String namespace;
-
     private String description;
 
     public Long getId() {

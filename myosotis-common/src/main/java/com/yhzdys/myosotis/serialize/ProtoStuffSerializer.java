@@ -12,9 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-/**
- * serializer of ProtoStuff
- */
 public final class ProtoStuffSerializer implements Serializer {
 
     private final Schema<PollingData> polling_schema;

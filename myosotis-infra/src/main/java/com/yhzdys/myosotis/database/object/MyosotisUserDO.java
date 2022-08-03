@@ -5,17 +5,11 @@ import java.util.Date;
 public class MyosotisUserDO {
 
     private Long id;
-
     private String username;
-
     private String password;
-
     private String salt;
-
     private String userRole;
-
     private Date createTime;
-
     private Date updateTime;
 
     public Long getId() {

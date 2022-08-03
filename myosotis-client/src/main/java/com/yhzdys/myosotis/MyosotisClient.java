@@ -4,9 +4,6 @@ import com.yhzdys.myosotis.data.CachedConfig;
 
 import java.math.BigDecimal;
 
-/**
- * facade of myosotis configs
- */
 public final class MyosotisClient {
 
     private final String namespace;

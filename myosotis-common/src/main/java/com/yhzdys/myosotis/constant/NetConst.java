@@ -2,10 +2,8 @@ package com.yhzdys.myosotis.constant;
 
 import org.apache.http.client.config.RequestConfig;
 
-/***
- * network common constant
- */
 public final class NetConst {
+
     public static final String support_yes = "y";
 
     // myosotis-client-ip
@@ -29,6 +27,7 @@ public final class NetConst {
     public static final RequestConfig long_polling_config = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(20000).build();
 
     public static final class URL {
+
         public static final String polling = "/polling";
         public static final String query_namespace = "/query/namespace/%s";
         public static final String query_config = "/query/config/%s/%s";

@@ -5,19 +5,12 @@ import java.util.Date;
 public class MyosotisConfigDO {
 
     private Long id;
-
     private String namespace;
-
     private String configKey;
-
     private String description;
-
     private String configValue;
-
     private Integer version;
-
     private Date createTime;
-
     private Date updateTime;
 
     public Long getId() {

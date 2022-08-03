@@ -26,7 +26,6 @@ public class NamespaceService extends AuthorityService {
 
     @Resource
     private MyosotisNamespaceMapper namespaceMapper;
-
     @Resource
     private MyosotisConfigMapper configMapper;
 

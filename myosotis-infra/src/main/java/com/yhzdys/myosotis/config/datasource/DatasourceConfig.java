@@ -8,9 +8,7 @@ import com.yhzdys.myosotis.config.BaseConfig;
 public class DatasourceConfig extends BaseConfig {
 
     private String mysqlUrl;
-
     private String mysqlUsername;
-
     private String mysqlPassword;
 
     public String getMysqlUrl() {

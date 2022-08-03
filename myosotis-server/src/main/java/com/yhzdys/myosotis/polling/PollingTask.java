@@ -13,11 +13,8 @@ import java.util.concurrent.TimeUnit;
 public class PollingTask implements Callable<byte[]> {
 
     private final String id;
-
     private final PollingService pollingService;
-
     private final List<PollingData> pollingData;
-
     private final Object lock;
 
     public PollingTask(PollingService pollingService, List<PollingData> pollingData) {

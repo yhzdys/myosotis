@@ -6,13 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ServerProperty {
 
     private String address;
-
     private String serializeType;
-
     private Boolean enableSnapshot;
-
     private Boolean enableCompress;
-
     private Long compressThreshold;
 
     public String getAddress() {

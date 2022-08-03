@@ -18,7 +18,6 @@ public class ClusterSupport {
     private static final Logger logger = LoggerFactory.getLogger(ClusterSupport.class);
 
     private static List<Node> nodes = null;
-
     private static ForkJoinPool pool = null;
 
     public static synchronized void reload() {

@@ -5,7 +5,6 @@ import com.yhzdys.myosotis.config.BaseConfig;
 public class ConsoleConfig extends BaseConfig {
 
     private String logDir;
-
     private int port;
 
     public String getLogDir() {

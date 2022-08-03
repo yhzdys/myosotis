@@ -5,13 +5,9 @@ import com.yhzdys.myosotis.database.object.MyosotisNamespaceDO;
 public class NamespaceVO {
 
     private Long id;
-
     private String namespace;
-
     private String description;
-
     private String owners;
-
     private Long configCount;
 
     public NamespaceVO convert(MyosotisNamespaceDO namespace) {

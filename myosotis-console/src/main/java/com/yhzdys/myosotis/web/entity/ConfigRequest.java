@@ -3,11 +3,8 @@ package com.yhzdys.myosotis.web.entity;
 public class ConfigRequest {
 
     private Long id;
-
     private String namespace;
-
     private String configKey;
-
     private String configValue;
 
     public Long getId() {

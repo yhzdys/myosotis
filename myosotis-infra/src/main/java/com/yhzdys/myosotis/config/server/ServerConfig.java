@@ -7,21 +7,14 @@ public class ServerConfig extends BaseConfig {
     private String logDir;
 
     private int port;
-
     private int minThreads;
-
     private int maxThreads;
-
     private int connectionTimeout;
-
     private int maxConnections;
-
     private int keepAliveRequests;
-
     private int acceptCount;
 
     private boolean enableCompress;
-
     private long compressThreshold;
 
     public String getLogDir() {

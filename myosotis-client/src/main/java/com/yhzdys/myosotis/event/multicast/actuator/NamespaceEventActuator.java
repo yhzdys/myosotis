@@ -5,21 +5,13 @@ import com.yhzdys.myosotis.misc.LoggerFactory;
 
 import java.util.LinkedList;
 
-/**
- * actuator of namespaceListener to handle myosotis config change event
- *
- * @see com.yhzdys.myosotis.entity.MyosotisEvent
- * @see com.yhzdys.myosotis.event.multicast.EventMulticaster
- */
 public final class NamespaceEventActuator implements Actuator {
+
     private final EventMulticasterExecutor executor;
     private final Runnable runner;
     private final LinkedList<EventCommand> commands = new LinkedList<>();
     private boolean running;
 
-    /**
-     * @param executor multicasterExecutor
-     */
     public NamespaceEventActuator(EventMulticasterExecutor executor) {
         this.executor = executor;
         this.runner = () -> {

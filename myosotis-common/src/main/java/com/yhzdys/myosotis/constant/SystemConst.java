@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-/**
- * the constant class of system arguments
- */
 public final class SystemConst {
     public static final String local_host;
 
