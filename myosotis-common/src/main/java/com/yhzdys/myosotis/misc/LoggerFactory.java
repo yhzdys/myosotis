@@ -5,6 +5,6 @@ import org.slf4j.Logger;
 public final class LoggerFactory {
 
     public static Logger getLogger() {
-        return org.slf4j.LoggerFactory.getLogger("myosotis");
+        return org.slf4j.LoggerFactory.getLogger("com.yhzdys.myosotis");
     }
 }
