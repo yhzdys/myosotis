@@ -14,6 +14,7 @@ import com.yhzdys.myosotis.web.entity.vo.PairVO;
 import com.yhzdys.myosotis.web.entity.vo.UserIndexVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,9 +52,9 @@ public class UserController {
         return WebResponse.success();
     }
 
-    @GetMapping("/delete")
+    @GetMapping("/delete/{id}")
     @Permission(Menu.USER)
-    public WebResponse delete(@RequestParam Long id) {
+    public WebResponse delete(@PathVariable Long id) {
         userService.delete(id);
         return WebResponse.success();
     }
@@ -65,9 +66,9 @@ public class UserController {
         return WebResponse.success();
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get/{id}")
     @Permission(Menu.USER)
-    public WebResponse get(@RequestParam Long id) {
+    public WebResponse get(@PathVariable Long id) {
         return WebResponse.success(userService.getById(id));
     }
 
@@ -90,9 +91,9 @@ public class UserController {
         return WebResponse.success(userService.page(keyword, page));
     }
 
-    @GetMapping("/reset")
+    @GetMapping("/reset/{id}")
     @Permission(Menu.USER)
-    public WebResponse reset(@RequestParam Long id) {
+    public WebResponse reset(@PathVariable Long id) {
         String username = userService.resetPassword(id);
         if (Objects.equals(SessionContextHolder.getUsername(), username)) {
             SessionUtil.clearSession();

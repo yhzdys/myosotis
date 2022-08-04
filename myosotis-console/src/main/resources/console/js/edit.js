@@ -121,7 +121,7 @@ document.getElementById("cancel_button").addEventListener("click", () => {
 });
 
 function fillNamespaceData(id) {
-    get("/namespace/get?id=" + id, (json) => {
+    get("/namespace/get/" + id, (json) => {
         let data = json.data;
         name_input.value = data.namespace;
         description_input.value = data.description;
@@ -132,7 +132,7 @@ function fillNamespaceData(id) {
 }
 
 function fillConfigData(id) {
-    get("/config/get?id=" + id, (json) => {
+    get("/config/get/" + id, (json) => {
         let data = json.data;
         namespace_input.value = data.namespace;
         name_input.value = data.configKey;
@@ -146,7 +146,7 @@ function fillConfigData(id) {
 
 function fillUserData(id) {
     initUserRole();
-    get("/user/get?id=" + id, (json) => {
+    get("/user/get/" + id, (json) => {
         let data = json.data;
         namespaces_input.value = data.namespaces;
         let roleRadio = document.getElementById(data.userRole.code);

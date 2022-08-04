@@ -16,16 +16,16 @@ window.parent.document.getElementById("ok_button").addEventListener("click", () 
     }
     switch (json.type) {
         case "deleteNamespace":
-            get("/namespace/delete?id=" + json.id);
+            get("/namespace/delete/" + json.id);
             break;
         case "deleteConfig":
-            get("/config/delete?id=" + json.id);
+            get("/config/delete/" + json.id);
             break;
         case "resetUser":
-            get("/user/reset?id=" + json.id);
+            get("/user/reset/" + json.id);
             break;
         case "deleteUser":
-            get("/user/delete?id=" + json.id);
+            get("/user/delete/" + json.id);
             break;
         default:
             break;
