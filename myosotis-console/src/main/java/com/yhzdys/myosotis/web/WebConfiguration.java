@@ -30,9 +30,12 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(sessionInterceptor).addPathPatterns("/**")
+        registry.addInterceptor(sessionInterceptor)
+                .addPathPatterns("/**")
                 .excludePathPatterns("/session/**", "/console/**");
-        registry.addInterceptor(permissionInterceptor).addPathPatterns("/**")
+
+        registry.addInterceptor(permissionInterceptor)
+                .addPathPatterns("/**")
                 .excludePathPatterns("/session/**", "/console/**");
     }
 

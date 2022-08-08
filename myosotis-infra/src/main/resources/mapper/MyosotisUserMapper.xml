@@ -34,7 +34,7 @@
         from
         <include refid="Table_Name"/>
         <if test="keyword != null">
-            where username like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+            where username like #{keyword,jdbcType=VARCHAR}
         </if>
     </select>
 
@@ -44,7 +44,7 @@
         from
         <include refid="Table_Name"/>
         <if test="keyword != null">
-            where username like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+            where username like #{keyword,jdbcType=VARCHAR}
         </if>
         limit #{offset,jdbcType=INTEGER}, #{length,jdbcType=INTEGER}
     </select>

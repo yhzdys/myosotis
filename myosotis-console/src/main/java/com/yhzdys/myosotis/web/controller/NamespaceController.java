@@ -55,7 +55,7 @@ public class NamespaceController {
     public WebResponse page(@RequestParam(required = false) Integer page,
                             @RequestParam(required = false) String keyword) {
         page = page == null || page < 1 ? 1 : page;
-        keyword = StringUtils.isEmpty(keyword) ? null : keyword;
+        keyword = StringUtils.isEmpty(keyword) ? null : "%" + keyword + "%";
         return WebResponse.success(namespaceService.page(keyword, page));
     }
 }

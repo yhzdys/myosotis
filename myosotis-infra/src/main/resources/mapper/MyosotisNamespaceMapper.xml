@@ -30,7 +30,7 @@
             </foreach>
         </if>
         <if test="keyword != null">
-            and namespace like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+            and namespace like #{keyword,jdbcType=VARCHAR}
         </if>
     </select>
 
@@ -47,7 +47,7 @@
             </foreach>
         </if>
         <if test="keyword != null">
-            and namespace like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+            and namespace like #{keyword,jdbcType=VARCHAR}
         </if>
         limit #{offset,jdbcType=INTEGER}, #{length,jdbcType=INTEGER}
     </select>

@@ -53,7 +53,7 @@
             and namespace = #{namespace,jdbcType=VARCHAR}
         </if>
         <if test="keyword != null">
-            and config_key like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+            and config_key like #{keyword,jdbcType=VARCHAR}
         </if>
     </select>
 
@@ -80,7 +80,7 @@
             and namespace = #{namespace,jdbcType=VARCHAR}
         </if>
         <if test="keyword != null">
-            and config_key like concat("%", #{keyword,jdbcType=VARCHAR}, "%")
+            and config_key like #{keyword,jdbcType=VARCHAR}
         </if>
         limit #{offset,jdbcType=INTEGER}, #{length,jdbcType=INTEGER}
     </select>

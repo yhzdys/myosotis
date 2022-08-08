@@ -61,7 +61,7 @@ public class ConfigController {
                             @RequestParam(required = false) String keyword) {
         namespace = StringUtils.isEmpty(namespace) ? null : namespace;
         page = page == null || page < 1 ? 1 : page;
-        keyword = StringUtils.isEmpty(keyword) ? null : keyword;
+        keyword = StringUtils.isEmpty(keyword) ? null : "%" + keyword + "%";
         return WebResponse.success(
                 configService.page(namespace, namespaceService.getUserNamespaces(), keyword, page)
         );
