@@ -268,7 +268,7 @@ public final class MyosotisApplication {
         String configKey = event.getConfigKey();
         String configValue = event.getConfigValue();
 
-        if (event.getType() == EventType.UPDATE) {
+        if (EventType.UPDATE.equals(event.getType())) {
             configMetadata.addPolling(namespace, configKey, event.getVersion());
             // not really update
             if (Objects.equals(configValue, cachedConfig.get(namespace, configKey))) {

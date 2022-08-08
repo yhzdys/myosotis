@@ -67,12 +67,12 @@ public final class ServerProcessor implements Processor {
         } catch (Exception e) {
             throw new MyosotisException(e);
         }
-        this.pollingPost.addHeader(NetConst.client_language, "java");
-        this.pollingPost.addHeader(NetConst.client_host_ip, SystemConst.local_host);
+        this.pollingPost.setHeader(NetConst.client_language, "java");
+        this.pollingPost.setHeader(NetConst.client_host_ip, SystemConst.local_host);
         // add feature support headers
         this.addFeatureSupportHeader(pollingPost);
         // customized serialize type
-        this.pollingPost.addHeader(NetConst.serialize_type, config.getSerializeType().getCode());
+        this.pollingPost.setHeader(NetConst.serialize_type, config.getSerializeType().getCode());
         this.pollingPost.setConfig(NetConst.long_polling_config);
     }
 
@@ -166,7 +166,7 @@ public final class ServerProcessor implements Processor {
         // data compress
         ByteArrayEntity byteArrayEntity;
         if (enableCompress && data.length >= compressThreshold) {
-            pollingPost.addHeader(NetConst.origin_data_length, String.valueOf(data.length));
+            pollingPost.setHeader(NetConst.origin_data_length, String.valueOf(data.length));
             byteArrayEntity = new ByteArrayEntity(Lz4.compress(data));
         } else {
             byteArrayEntity = new ByteArrayEntity(data);
@@ -181,7 +181,7 @@ public final class ServerProcessor implements Processor {
 
     public HttpGet queryGet(String namespace, String configKey) throws Exception {
         HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.queryConfig(namespace, configKey)));
-        request.addHeader(NetConst.client_host_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_host_ip, SystemConst.local_host);
         this.addFeatureSupportHeader(request);
 
         request.setConfig(NetConst.default_config);
@@ -189,9 +189,9 @@ public final class ServerProcessor implements Processor {
     }
 
     private void addFeatureSupportHeader(HttpRequestBase request) {
-        request.addHeader(NetConst.compress_support, NetConst.support_yes);
-        request.addHeader(NetConst.serialize_avro_support, NetConst.support_yes);
-        request.addHeader(NetConst.serialize_protostuff_support, NetConst.support_yes);
+        request.setHeader(NetConst.compress_support, NetConst.support_yes);
+        request.setHeader(NetConst.serialize_avro_support, NetConst.support_yes);
+        request.setHeader(NetConst.serialize_protostuff_support, NetConst.support_yes);
     }
 
     private List<MyosotisEvent> deserializeEvents(CloseableHttpResponse response) throws Exception {
@@ -223,7 +223,7 @@ public final class ServerProcessor implements Processor {
         if (entity == null) {
             return null;
         }
-        Header header = response.getLastHeader(NetConst.origin_data_length);
+        Header header = response.getFirstHeader(NetConst.origin_data_length);
         return header == null ? EntityUtils.toByteArray(entity) :
                 Lz4.decompress(EntityUtils.toByteArray(entity), Integer.parseInt(header.getValue()));
     }

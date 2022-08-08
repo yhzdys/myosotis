@@ -86,7 +86,7 @@ public class ResponseSerializer {
         if (response == null) {
             throw new MyosotisException("Http servlet response is null");
         }
-        response.addHeader(NetConst.serialize_type, serializeType.getCode());
+        response.setHeader(NetConst.serialize_type, serializeType.getCode());
         return serializeType.getSerializer();
     }
 
@@ -107,7 +107,7 @@ public class ResponseSerializer {
         // client support data compress
         if (NetConst.support_yes.equalsIgnoreCase(request.getHeader(NetConst.compress_support))) {
             byte[] compressed = Lz4.compress(data);
-            response.addHeader(NetConst.origin_data_length, String.valueOf(data.length));
+            response.setHeader(NetConst.origin_data_length, String.valueOf(data.length));
             return compressed;
         }
         return data;

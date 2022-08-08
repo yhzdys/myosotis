@@ -33,12 +33,13 @@ public final class EventMulticaster {
      */
     private final Map<String, Map<String, List<ListenerWrapper>>> configListeners = new ConcurrentHashMap<>(0);
 
-    private static void triggerListener(Listener listener, MyosotisEvent event) {
-        try {
-            listener.handle(event);
-        } catch (Throwable e) {
-            LoggerFactory.getLogger().error("Trigger Listener error, event: {}", JsonUtil.toString(event), e);
+    public boolean containsListener(String namespace, String configKey) {
+        Map<String, List<ListenerWrapper>> listenerMap = configListeners.get(namespace);
+        if (listenerMap == null) {
+            return false;
         }
+        List<ListenerWrapper> listeners = listenerMap.get(configKey);
+        return listeners != null;
     }
 
     public void addNamespaceListener(NamespaceListener listener) {
@@ -56,15 +57,6 @@ public final class EventMulticaster {
                 .add(new ListenerWrapper(listener, new ConfigEventActuator(executor)));
     }
 
-    public boolean containsListener(String namespace, String configKey) {
-        Map<String, List<ListenerWrapper>> listenerMap = configListeners.get(namespace);
-        if (listenerMap == null) {
-            return false;
-        }
-        List<ListenerWrapper> listeners = listenerMap.get(configKey);
-        return listeners != null;
-    }
-
     public void multicast(MyosotisEvent event) {
         this.triggerNamespaceListener(event);
         this.triggerConfigListeners(event);
@@ -78,7 +70,7 @@ public final class EventMulticaster {
         }
         NamespaceListener listener = (NamespaceListener) listenerWrapper.getListener();
         listenerWrapper.getActuator().actuate(
-                new EventCommand(event.getConfigKey(), () -> triggerListener(listener, event))
+                new EventCommand(event.getConfigKey(), () -> this.triggerListener(listener, event))
         );
     }
 
@@ -94,8 +86,16 @@ public final class EventMulticaster {
         for (ListenerWrapper listenerWrapper : listeners) {
             ConfigListener listener = (ConfigListener) listenerWrapper.getListener();
             listenerWrapper.getActuator().actuate(
-                    new EventCommand(() -> triggerListener(listener, event))
+                    new EventCommand(() -> this.triggerListener(listener, event))
             );
+        }
+    }
+
+    private void triggerListener(Listener listener, MyosotisEvent event) {
+        try {
+            listener.handle(event);
+        } catch (Throwable e) {
+            LoggerFactory.getLogger().error("Trigger Listener error, event: {}", JsonUtil.toString(event), e);
         }
     }
 
