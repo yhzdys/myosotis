@@ -1,10 +1,10 @@
 # Myosotis
 
-[![OSCS](https://www.oscs1024.com/platform/badge/yhzdys/myosotis.svg?size=small)](https://www.murphysec.com/dr/NZ31XuI4v8zIJkCamQ)
+![OSCS](https://www.oscs1024.com/platform/badge/yhzdys/myosotis.svg?size=small)
 ![LICENSE](https://img.shields.io/github/license/yhzdys/myosotis)
 ![Maven](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fcom%2Fyhzdys%2Fmyosotis%2Fmaven-metadata.xml)
 ![CircleCI](https://img.shields.io/circleci/build/github/yhzdys/myosotis/main)
-[![CodeFactor](https://www.codefactor.io/repository/github/yhzdys/myosotis/badge)](https://www.codefactor.io/repository/github/yhzdys/myosotis)
+![CodeFactor](https://www.codefactor.io/repository/github/yhzdys/myosotis/badge)
 ![Java](https://img.shields.io/badge/java-1.8%2B-green)
 ![Code Size](https://img.shields.io/github/languages/code-size/yhzdys/myosotis)
 
@@ -193,8 +193,6 @@ com.yhzdys.myosotis.event.listener.NamespaceListener
 ConfigListener提供单个命名空间下单个配置变动事件的订阅能力
 NamespaceListener提供单个命名空间下所有配置变动事件的订阅能力(若命名空间下存在较多配置，不建议使用)
 ~~~
-
-> 注意：客户端虽提供了一套完整的事件发布与订阅机制，但请勿将其当成MQ来使用，务必让工具干自己该干的事
 
 #### ConfigListener
 
