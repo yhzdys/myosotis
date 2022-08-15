@@ -3,11 +3,16 @@ package com.yhzdys.myosotis.processor;
 import com.yhzdys.myosotis.constant.SystemConst;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
-import com.yhzdys.myosotis.misc.FileTool;
 import com.yhzdys.myosotis.misc.JsonUtil;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,7 +51,7 @@ public final class SnapshotProcessor implements Processor {
             return null;
         }
         try {
-            return JsonUtil.toObject(FileTool.read(file), MyosotisConfig.class);
+            return JsonUtil.toObject(this.readFile(file), MyosotisConfig.class);
         } catch (Exception e) {
             LoggerFactory.getLogger().error("Parse snapshot config error", e);
             return null;
@@ -63,6 +68,46 @@ public final class SnapshotProcessor implements Processor {
         if (!enable) {
             return;
         }
-        FileTool.save(JsonUtil.toString(data), String.format(sn_file, data.getNamespace(), data.getConfigKey()));
+        this.saveFile(JsonUtil.toString(data), String.format(sn_file, data.getNamespace(), data.getConfigKey()));
+    }
+
+    private String readFile(File file) {
+        try (FileInputStream fis = new FileInputStream(file); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[128];
+            int length;
+            while ((length = fis.read(buffer)) != -1) {
+                bos.write(buffer, 0, length);
+            }
+            return bos.toString("UTF-8").trim();
+        } catch (Exception e) {
+            LoggerFactory.getLogger().error("Read file failed", e);
+            return null;
+        }
+    }
+
+    private void saveFile(String data, String path) {
+        File file = new File(path);
+        Writer writer = null;
+        try {
+            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+                LoggerFactory.getLogger().warn("Mkdir snapshot parent file failed. path: {}", path);
+                return;
+            }
+            if (!file.exists() && !file.createNewFile()) {
+                LoggerFactory.getLogger().warn("Create snapshot file failed. path: {}", path);
+                return;
+            }
+            writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8);
+            writer.write(data.trim());
+        } catch (Exception e) {
+            LoggerFactory.getLogger().error("Save file failed", e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
     }
 }
