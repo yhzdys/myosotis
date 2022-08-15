@@ -7,7 +7,7 @@ public final class NetConst {
     public static final String support_yes = "y";
 
     // myosotis-client-ip
-    public static final String client_host_ip = "myosotis-ip";
+    public static final String client_ip = "myosotis-ci";
     // myosotis-client-language
     public static final String client_language = "myosotis-cl";
 
@@ -18,8 +18,6 @@ public final class NetConst {
 
     // myosotis-serialize-type 序列化方式
     public static final String serialize_type = "myosotis-st";
-    public static final String serialize_avro_support = "myosotis-sas";
-    public static final String serialize_protostuff_support = "myosotis-sps";
 
     // default
     public static final RequestConfig default_config = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(5000).build();

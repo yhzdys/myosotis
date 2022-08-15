@@ -68,7 +68,7 @@ public final class ServerProcessor implements Processor {
             throw new MyosotisException(e);
         }
         this.pollingPost.setHeader(NetConst.client_language, "java");
-        this.pollingPost.setHeader(NetConst.client_host_ip, SystemConst.local_host);
+        this.pollingPost.setHeader(NetConst.client_ip, SystemConst.local_host);
         // add feature support headers
         this.addFeatureSupportHeader(pollingPost);
         // customized serialize type
@@ -181,7 +181,7 @@ public final class ServerProcessor implements Processor {
 
     public HttpGet queryGet(String namespace, String configKey) throws Exception {
         HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.queryConfig(namespace, configKey)));
-        request.setHeader(NetConst.client_host_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_ip, SystemConst.local_host);
         this.addFeatureSupportHeader(request);
 
         request.setConfig(NetConst.default_config);
@@ -190,8 +190,6 @@ public final class ServerProcessor implements Processor {
 
     private void addFeatureSupportHeader(HttpRequestBase request) {
         request.setHeader(NetConst.compress_support, NetConst.support_yes);
-        request.setHeader(NetConst.serialize_avro_support, NetConst.support_yes);
-        request.setHeader(NetConst.serialize_protostuff_support, NetConst.support_yes);
     }
 
     private List<MyosotisEvent> deserializeEvents(CloseableHttpResponse response) throws Exception {

@@ -72,20 +72,13 @@ public class ResponseSerializer {
         if (attributes == null) {
             throw new MyosotisException("Servlet request attributes is null");
         }
-        SerializeType serializeType;
-        HttpServletRequest request = attributes.getRequest();
-        // client support avro
-        if (NetConst.support_yes.equals(request.getHeader(NetConst.serialize_avro_support))) {
-            serializeType = SerializeType.AVRO;
-        } else if (NetConst.support_yes.equals(request.getHeader(NetConst.serialize_protostuff_support))) {
-            serializeType = SerializeType.PROTOSTUFF;
-        } else {
-            serializeType = SerializeType.JSON;
-        }
         HttpServletResponse response = attributes.getResponse();
         if (response == null) {
             throw new MyosotisException("Http servlet response is null");
         }
+        HttpServletRequest request = attributes.getRequest();
+        SerializeType serializeType = SerializeType.codeOf(request.getHeader(NetConst.serialize_type));
+
         response.setHeader(NetConst.serialize_type, serializeType.getCode());
         return serializeType.getSerializer();
     }

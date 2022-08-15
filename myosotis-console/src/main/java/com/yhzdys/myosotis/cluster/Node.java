@@ -41,7 +41,7 @@ public class Node {
         this.address = address;
         HttpGet request = new HttpGet("http://" + address + health_check);
         request.setConfig(NetConst.default_config);
-        request.setHeader(NetConst.client_host_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_ip, SystemConst.local_host);
         this.monitorRequest = request;
         this.health = true;
         this.lazyCheck = false;
@@ -78,7 +78,7 @@ public class Node {
             return;
         }
         HttpGet request = new HttpGet("http://" + address + polling_notify + namespace);
-        request.setHeader(NetConst.client_host_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_ip, SystemConst.local_host);
         request.setConfig(NetConst.default_config);
 
         CloseableHttpResponse response = null;
