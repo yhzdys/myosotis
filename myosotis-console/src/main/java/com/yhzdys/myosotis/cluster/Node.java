@@ -21,7 +21,7 @@ public class Node {
     /**
      * lazy health check threshold (10min.)
      */
-    private static final long lazy_check_threshold = TimeUnit.MINUTES.toMillis(10) - 1L;
+    private static final long lazy_check_threshold = TimeUnit.MINUTES.toMillis(10);
 
     private final MyosotisHttpClient myosotisHttpClient = MyosotisHttpClient.getInstance();
 

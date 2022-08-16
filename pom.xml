@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <name>myosotis</name>
-    <description>a lightweight and high-performance configuration management system</description>
+    <description>A lightweight, high-performance and easy-to-use configuration management system</description>
     <url>https://github.com/yhzdys/myosotis</url>
 
     <licenses>

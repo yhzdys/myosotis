@@ -10,7 +10,7 @@ public final class EventMulticasterExecutor extends ThreadPoolExecutor {
     public EventMulticasterExecutor() {
         super(0,
                 Runtime.getRuntime().availableProcessors() * 2,
-                60L,
+                60,
                 TimeUnit.SECONDS,
                 new SynchronousQueue<>(false),
                 new EventMulticasterThreadFactory());

@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,11 +26,11 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
     private static final Logger logger = LoggerFactory.getLogger(MyosotisValueAutoConfiguration.class);
 
     /**
-     * <configKey, AutoConfigListener.class>
+     * <namespace + configKey, AutoConfigListener.class>
      */
-    private Map<String, AutoConfigListener> listenerMap;
+    private Map<String, AutoConfigListener> listeners;
     private MyosotisApplication application;
-    private String namespace = null;
+    private String defaultNamespace = null;
 
     @SuppressWarnings("deprecation")
     private static void setFieldValue(Object object, Field field, String configValue) throws Exception {
@@ -68,12 +69,11 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         if (configBeanMap.isEmpty()) {
             return;
         }
-        Map<String, MyosotisClient> clientMap = applicationContext.getBeansOfType(MyosotisClient.class);
-        if (clientMap.size() == 1) {
-            MyosotisClient client = clientMap.values().stream().findFirst().get();
-            this.namespace = client.getNamespace();
+        List<MyosotisClient> clients = new ArrayList<>(application.clients());
+        if (clients.size() == 1) {
+            this.defaultNamespace = clients.get(0).getNamespace();
         }
-        listenerMap = new ConcurrentHashMap<>(2);
+        listeners = new ConcurrentHashMap<>(2);
         for (Object bean : configBeanMap.values()) {
             this.initMyosotisBean(bean);
         }
@@ -84,7 +84,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             return;
         }
         Myosotis myosotis = targetBean.getClass().getAnnotation(Myosotis.class);
-        String namespace = StringUtils.isEmpty(myosotis.namespace()) ? this.namespace : myosotis.namespace();
+        String namespace = StringUtils.isEmpty(myosotis.namespace()) ? this.defaultNamespace : myosotis.namespace();
 
         Field[] fields = targetBean.getClass().getDeclaredFields();
         for (Field field : fields) {
@@ -116,10 +116,6 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             configKeyForInit = targetField.getName();
         }
         MyosotisClient client = application.getClient(namespaceForInit);
-        if (client == null) {
-            logger.warn("There is no client of namespace: {}", namespaceForInit);
-            return;
-        }
         // add config listener
         application.addConfigListener(
                 this.getListener(namespaceForInit, configKeyForInit, targetBean, targetField)
@@ -142,14 +138,15 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
     }
 
     private ConfigListener getListener(String namespace, String configKey, Object targetBean, Field targetField) {
-        AutoConfigListener listener = listenerMap.computeIfAbsent(
-                configKey, bean -> new AutoConfigListener(namespace, targetBean, targetField)
+        AutoConfigListener listener = listeners.computeIfAbsent(
+                namespace + ":" + configKey, bean -> new AutoConfigListener(namespace, targetBean, targetField)
         );
         listener.addField(targetBean, targetField);
         return listener;
     }
 
     private static final class AutoConfigListener implements ConfigListener {
+
         private static final Logger logger = LoggerFactory.getLogger(AutoConfigListener.class);
 
         private final String namespace;
@@ -160,7 +157,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
          */
         private final Map<Object, List<Field>> fieldMap = new ConcurrentHashMap<>(2);
 
-        public AutoConfigListener(String namespace, Object targetBean, Field targetField) {
+        private AutoConfigListener(String namespace, Object targetBean, Field targetField) {
             this.namespace = namespace;
             MyosotisValue myosotisValue = targetField.getAnnotation(MyosotisValue.class);
             if (StringUtils.isEmpty(myosotisValue.configKey())) {
@@ -203,10 +200,8 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             }
         }
 
-        public void addField(Object targetBean, Field targetField) {
-            List<Field> fields = fieldMap.computeIfAbsent(
-                    targetBean, bean -> new CopyOnWriteArrayList<>()
-            );
+        private void addField(Object targetBean, Field targetField) {
+            List<Field> fields = fieldMap.computeIfAbsent(targetBean, bean -> new CopyOnWriteArrayList<>());
             if (fields.contains(targetField)) {
                 return;
             }

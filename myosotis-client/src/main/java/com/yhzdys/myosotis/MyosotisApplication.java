@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -133,11 +134,15 @@ public final class MyosotisApplication {
         multicaster.addConfigListener(listener);
     }
 
+    public Collection<MyosotisClient> clients() {
+        return Collections.unmodifiableCollection(clients.values());
+    }
+
     /**
      * get config
      * fetch order: cache > server > snapshot
      */
-    String getConfig(String namespace, String configKey) {
+    private String getConfig(String namespace, String configKey) {
         // step.1 get from local cache
         String configValue = cachedConfig.get(namespace, configKey);
         if (configValue != null) {
@@ -216,7 +221,7 @@ public final class MyosotisApplication {
     private void fetchEvents() {
         Collection<PollingData> pollingData = configMetadata.pollingData();
         if (CollectionUtils.isEmpty(pollingData)) {
-            LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(1L));
+            LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(1));
             return;
         }
         List<MyosotisEvent> events = serverProcessor.fetchEvents();
