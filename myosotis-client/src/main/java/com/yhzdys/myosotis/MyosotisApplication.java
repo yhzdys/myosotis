@@ -207,7 +207,7 @@ public final class MyosotisApplication {
                 this.fetchEvents();
                 configMetadata.clearAbsent();
             } catch (Throwable e) {
-                LoggerFactory.getLogger().error("Polling config(s) error", e);
+                LoggerFactory.getLogger().error("Polling config(s) failed, msg: {}", e.getMessage());
                 LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
             }
         }, 0, 1, TimeUnit.MILLISECONDS);

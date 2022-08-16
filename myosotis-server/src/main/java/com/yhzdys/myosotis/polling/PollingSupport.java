@@ -24,7 +24,7 @@ public class PollingSupport {
             try {
                 add(data.getNamespace(), pollingTask);
             } catch (Exception e) {
-                logger.error("Register polling task fail, namespace: {}", data.getNamespace(), e);
+                logger.error("Register [{}] polling task failed, msg: {}", data.getNamespace(), e.getMessage());
             }
         }
     }
@@ -35,7 +35,7 @@ public class PollingSupport {
             try {
                 remove(data.getNamespace(), pollingTask);
             } catch (Exception e) {
-                logger.error("Register polling task fail, namespace: {}", data.getNamespace(), e);
+                logger.error("Register [{}] polling task failed, msg: {}", data.getNamespace(), e.getMessage());
             }
         }
     }

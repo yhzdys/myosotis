@@ -23,6 +23,11 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource> {
         return this.innerDatasource();
     }
 
+    @Override
+    public Class<?> getObjectType() {
+        return DataSource.class;
+    }
+
     private DataSource mysqlDatasource(DatasourceConfig config) {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setPoolName("Myosotis-MySQL");
@@ -43,10 +48,5 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource> {
         hikariConfig.setMaximumPoolSize(1);
         hikariConfig.setConnectionTimeout(2000);
         return new HikariDataSource(hikariConfig);
-    }
-
-    @Override
-    public Class<?> getObjectType() {
-        return DataSource.class;
     }
 }

@@ -68,7 +68,7 @@ public class Node {
             this.reuse(response);
             lastCheckTime = now;
             if (!health) {
-                logger.info("Cluster node[{}] health check {}.", address, "fail");
+                logger.info("Cluster node[{}] health check {}", address, "failed");
             }
         }
     }

@@ -20,7 +20,7 @@ public class PollingTool {
         try {
             ClusterSupport.wakeUp(namespace);
         } catch (Exception e) {
-            logger.error("Wake up remote polling task error.", e);
+            logger.error("WakeUp cluster node failed", e);
         }
     }
 }

@@ -62,7 +62,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         try {
             application = applicationContext.getBean(MyosotisApplication.class);
         } catch (Exception e) {
-            logger.warn("Can not find bean of MyosotisApplication.class, please check your configuration.");
+            logger.warn("Can not find bean of MyosotisApplication.class, please check your configuration");
             return;
         }
         Map<String, Object> configBeanMap = applicationContext.getBeansWithAnnotation(Myosotis.class);
@@ -91,7 +91,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             try {
                 this.initFieldValue(namespace, targetBean, field);
             } catch (Exception e) {
-                logger.error("Init myosotis value failed, {}.{}", targetBean.getClass().getName(), field.getName(), e);
+                logger.error("Init myosotis value [{}.{}] failed, msg: {}", targetBean.getClass().getName(), field.getName(), e.getMessage());
             }
         }
     }
@@ -124,7 +124,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         try {
             configValue = client.getString(configKeyForInit);
         } catch (Exception e) {
-            logger.error("Get myosotis config value of " + namespaceForInit + ":" + configKeyForInit + " error", e);
+            logger.error("Get config value of " + namespaceForInit + ":" + configKeyForInit + " failed", e);
         }
         String defaultValue = myosotisValue.defaultValue();
         if (configValue == null && StringUtils.isNotEmpty(defaultValue)) {
@@ -133,7 +133,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         try {
             setFieldValue(targetBean, targetField, configValue);
         } catch (Exception e) {
-            logger.error("Init myosotis config value of " + namespaceForInit + "." + configKeyForInit + " error", e);
+            logger.error("Init config value of " + namespaceForInit + "." + configKeyForInit + " failed", e);
         }
     }
 
@@ -194,7 +194,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
                     try {
                         setFieldValue(targetBean, targetField, configValue);
                     } catch (Exception e) {
-                        logger.error("Update myosotis value error, configKey: {}", configKey, e);
+                        logger.error("Update config value failed, configKey: {}", configKey, e);
                     }
                 }
             }

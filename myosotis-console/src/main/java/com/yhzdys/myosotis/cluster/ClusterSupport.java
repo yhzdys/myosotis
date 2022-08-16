@@ -66,7 +66,7 @@ public class ClusterSupport {
         if (CollectionUtils.isEmpty(nodeAddresses)) {
             return null;
         }
-        logger.info("Cluster nodes: {} loaded.", nodeAddresses);
+        logger.info("Cluster nodes: {} loaded", nodeAddresses);
         List<Node> nodeList = nodeAddresses.stream()
                 .map(Node::new)
                 .collect(Collectors.toList());

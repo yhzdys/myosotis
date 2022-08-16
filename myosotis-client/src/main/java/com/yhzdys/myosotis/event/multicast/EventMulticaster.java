@@ -93,7 +93,7 @@ public final class EventMulticaster {
         try {
             listener.handle(event);
         } catch (Throwable e) {
-            LoggerFactory.getLogger().error("Trigger Listener({}) error", listener.getClass().getName(), e);
+            LoggerFactory.getLogger().error("Trigger Listener({}) failed, msg: {}", listener.getClass().getName(), e.getMessage());
         }
     }
 

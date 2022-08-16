@@ -53,7 +53,7 @@ public final class SnapshotProcessor implements Processor {
         try {
             return JsonUtil.toObject(this.readFile(file), MyosotisConfig.class);
         } catch (Exception e) {
-            LoggerFactory.getLogger().error("Parse snapshot config error", e);
+            LoggerFactory.getLogger().error("Parse snapshot config failed", e);
             return null;
         }
     }
@@ -80,7 +80,7 @@ public final class SnapshotProcessor implements Processor {
             }
             return bos.toString("UTF-8").trim();
         } catch (Exception e) {
-            LoggerFactory.getLogger().error("Read file failed", e);
+            LoggerFactory.getLogger().error("Read snapshot file failed", e);
             return null;
         }
     }
@@ -90,11 +90,11 @@ public final class SnapshotProcessor implements Processor {
         Writer writer = null;
         try {
             if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-                LoggerFactory.getLogger().warn("Mkdir snapshot parent file failed. path: {}", path);
+                LoggerFactory.getLogger().warn("Mkdir snapshot parent file failed, path: {}", path);
                 return;
             }
             if (!file.exists() && !file.createNewFile()) {
-                LoggerFactory.getLogger().warn("Create snapshot file failed. path: {}", path);
+                LoggerFactory.getLogger().warn("Create snapshot file failed, path: {}", path);
                 return;
             }
             writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8);

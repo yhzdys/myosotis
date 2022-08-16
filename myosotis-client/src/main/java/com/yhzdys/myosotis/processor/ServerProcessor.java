@@ -99,7 +99,7 @@ public final class ServerProcessor implements Processor {
             }
             counter.increase(statusCode);
         } catch (Exception e) {
-            LoggerFactory.getLogger().info("Polling failed. error: {}", e.getMessage(), e);
+            LoggerFactory.getLogger().error("Polling failed, msg: {}", e.getMessage());
             counter.increase(500);
         } finally {
             this.reuse(response);
@@ -121,7 +121,7 @@ public final class ServerProcessor implements Processor {
             }
             return null;
         } catch (Throwable e) {
-            LoggerFactory.getLogger().info("Get config failed. error: {}", e.getMessage());
+            LoggerFactory.getLogger().error("Get config failed, msg: {}", e.getMessage());
         } finally {
             this.reuse(response);
         }
@@ -135,7 +135,7 @@ public final class ServerProcessor implements Processor {
             response = myosotisHttpClient.execute(this.queryGet(namespace, null));
             return this.deserializeConfigs(response);
         } catch (Throwable e) {
-            LoggerFactory.getLogger().info("Get config(s) failed. error: {}", e.getMessage());
+            LoggerFactory.getLogger().error("Get config(s) failed, msg: {}", e.getMessage());
         } finally {
             this.reuse(response);
         }
