@@ -28,11 +28,11 @@ public class ClusterMonitor {
 
     public void start() {
         scheduler.scheduleAtFixedRate(
-                this::ClusterNodeHealthCheck, 0, 60, TimeUnit.SECONDS
+                this::checkNodeHealth, 0, 60, TimeUnit.SECONDS
         );
     }
 
-    private void ClusterNodeHealthCheck() {
+    private void checkNodeHealth() {
         pool.execute(
                 () -> nodes.parallelStream().forEach(Node::healthCheck)
         );

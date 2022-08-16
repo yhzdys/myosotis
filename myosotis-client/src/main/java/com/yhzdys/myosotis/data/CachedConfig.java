@@ -34,9 +34,4 @@ public final class CachedConfig {
         }
         return configs.get(configKey);
     }
-
-    public boolean containsNamespaceConfig(String namespace) {
-        Map<String, String> configs = configMap.get(namespace);
-        return configs != null && !configs.isEmpty();
-    }
 }

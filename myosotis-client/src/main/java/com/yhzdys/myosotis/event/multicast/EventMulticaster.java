@@ -101,12 +101,12 @@ public final class EventMulticaster {
         private final Listener listener;
         private final Actuator actuator;
 
-        public ActuatorWrapper(Listener listener, Actuator actuator) {
+        private ActuatorWrapper(Listener listener, Actuator actuator) {
             this.listener = listener;
             this.actuator = actuator;
         }
 
-        public Listener getListener() {
+        private Listener getListener() {
             return listener;
         }
 

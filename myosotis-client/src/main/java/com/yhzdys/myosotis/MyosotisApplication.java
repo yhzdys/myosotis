@@ -96,17 +96,17 @@ public final class MyosotisApplication {
         }
         // init client if absent
         this.getClient(namespace);
-        if (isCached(namespace)) {
+        if (configMetadata.isPollingAll(namespace)) {
             return;
         }
         synchronized (LockStore.get(namespace)) {
-            if (isCached(namespace)) {
+            if (configMetadata.isPollingAll(namespace)) {
                 return;
             }
             // init namespace configs
             this.initNamespace(namespace);
+            configMetadata.setPollingAll(namespace);
         }
-        configMetadata.setPollingAll(namespace);
         multicaster.addNamespaceListener(listener);
     }
 
@@ -176,10 +176,6 @@ public final class MyosotisApplication {
             }
         }
         return null;
-    }
-
-    private boolean isCached(String namespace) {
-        return configMetadata.inPolling(namespace) && cachedConfig.containsNamespaceConfig(namespace);
     }
 
     private void initNamespace(String namespace) {

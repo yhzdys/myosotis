@@ -31,13 +31,13 @@ public final class ConfigMetadata {
     private final long threshold = TimeUnit.MINUTES.toMillis(1);
     private long lastClearTime = 0L;
 
-    public boolean inPolling(String namespace) {
-        PollingData pollingData = pollingConfigs.get(namespace);
-        return pollingData != null;
-    }
-
     public Collection<PollingData> pollingData() {
         return Collections.unmodifiableCollection(pollingConfigs.values());
+    }
+
+    public boolean isPollingAll(String namespace) {
+        PollingData pollingData = this.getPollingData(namespace);
+        return pollingData.isAll();
     }
 
     public void setPollingAll(String namespace) {
