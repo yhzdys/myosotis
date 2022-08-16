@@ -19,8 +19,8 @@ public class ClientTest {
     public void testClient() throws Exception {
 
         Config config = new Config("http://127.0.0.1:7777");
-        config.serializeType(SerializeType.AVRO);
-        config.enableSnapshot(false);
+        config.serializeType(SerializeType.PROTOSTUFF);
+        config.enableSnapshot(true);
         config.enableCompress(true);
         config.compressThreshold(10);
         MyosotisApplication application = new MyosotisApplication(config);

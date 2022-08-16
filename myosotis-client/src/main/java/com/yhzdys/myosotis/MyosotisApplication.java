@@ -79,7 +79,7 @@ public final class MyosotisApplication {
             }
             snapshotProcessor.init(namespace);
             cachedConfig.add(namespace);
-            client = new MyosotisClient(namespace, cachedConfig);
+            client = new MyosotisClient(this, namespace);
             clients.put(namespace, client);
         }
         return client;
@@ -142,7 +142,7 @@ public final class MyosotisApplication {
      * get config
      * fetch order: cache > server > snapshot
      */
-    private String getConfig(String namespace, String configKey) {
+    String getConfig(String namespace, String configKey) {
         // step.1 get from local cache
         String configValue = cachedConfig.get(namespace, configKey);
         if (configValue != null) {
@@ -210,7 +210,7 @@ public final class MyosotisApplication {
                 LoggerFactory.getLogger().error("Polling config(s) error", e);
                 LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
             }
-        }, 1000, 1, TimeUnit.MILLISECONDS);
+        }, 0, 1, TimeUnit.MILLISECONDS);
         LoggerFactory.getLogger().info("Myosotis start completed...");
     }
 

@@ -67,12 +67,8 @@ public final class ServerProcessor implements Processor {
         } catch (Exception e) {
             throw new MyosotisException(e);
         }
-        this.pollingPost.setHeader(NetConst.client_language, "java");
-        this.pollingPost.setHeader(NetConst.client_ip, SystemConst.local_host);
-        // add feature support headers
-        this.addFeatureSupportHeader(pollingPost);
-        // customized serialize type
-        this.pollingPost.setHeader(NetConst.serialize_type, config.getSerializeType().getCode());
+        // add common headers
+        this.addCommonHeader(pollingPost);
         this.pollingPost.setConfig(NetConst.long_polling_config);
     }
 
@@ -171,7 +167,6 @@ public final class ServerProcessor implements Processor {
         } else {
             byteArrayEntity = new ByteArrayEntity(data);
         }
-
         pollingPost.setEntity(byteArrayEntity);
         if (configMetadata.pollingVersion() != version) {
             LoggerFactory.getLogger().warn("Config changed after polling");
@@ -181,14 +176,15 @@ public final class ServerProcessor implements Processor {
 
     public HttpGet queryGet(String namespace, String configKey) throws Exception {
         HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.queryConfig(namespace, configKey)));
-        request.setHeader(NetConst.client_ip, SystemConst.local_host);
-        this.addFeatureSupportHeader(request);
-
+        this.addCommonHeader(request);
         request.setConfig(NetConst.default_config);
         return request;
     }
 
-    private void addFeatureSupportHeader(HttpRequestBase request) {
+    private void addCommonHeader(HttpRequestBase request) {
+        request.setHeader(NetConst.client_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_language, "java");
+        request.setHeader(NetConst.serialize_type, serializeType.getCode());
         request.setHeader(NetConst.compress_support, NetConst.support_yes);
     }
 
