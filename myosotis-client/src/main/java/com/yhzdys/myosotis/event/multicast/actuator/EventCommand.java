@@ -5,39 +5,39 @@ import java.util.Objects;
 public final class EventCommand {
 
     private final String id;
-    private Runnable command;
+    private Runnable runner;
 
-    public EventCommand(Runnable command) {
+    public EventCommand(Runnable runner) {
         this.id = null;
-        this.command = command;
+        this.runner = runner;
     }
 
-    public EventCommand(String id, Runnable command) {
+    public EventCommand(String id, Runnable runner) {
         this.id = id;
-        this.command = command;
+        this.runner = runner;
     }
 
     public String getId() {
         return id;
     }
 
-    public Runnable getCommand() {
-        return command;
+    public Runnable getRunner() {
+        return runner;
     }
 
-    public void setCommand(Runnable command) {
-        this.command = command;
+    public void setRunner(Runnable runner) {
+        this.runner = runner;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (object == null || this.getClass() != object.getClass()) {
             return false;
         }
-        EventCommand that = (EventCommand) o;
+        EventCommand that = (EventCommand) object;
         return Objects.equals(id, that.getId());
     }
 

@@ -27,10 +27,11 @@ public final class NetConst {
     public static final class URL {
 
         public static final String polling = "/polling";
-        public static final String query_namespace = "/query/namespace/%s";
-        public static final String query_config = "/query/config/%s/%s";
 
-        public static String queryConfig(String namespace, String configKey) {
+        private static final String query_namespace = "/query/namespace/%s";
+        private static final String query_config = "/query/config/%s/%s";
+
+        public static String query(String namespace, String configKey) {
             if (configKey == null) {
                 return String.format(query_namespace, namespace);
             }

@@ -43,7 +43,6 @@ public class ResponseSerializer {
 
     public static byte[] configs(List<MyosotisConfig> configs) {
         if (CollectionUtils.isEmpty(configs)) {
-            set404Response();
             return empty_byte_array;
         }
         return compress(serializeConfigs(configs));

@@ -8,7 +8,7 @@ import com.yhzdys.myosotis.event.multicast.actuator.Actuator;
 import com.yhzdys.myosotis.event.multicast.actuator.ConfigEventActuator;
 import com.yhzdys.myosotis.event.multicast.actuator.EventCommand;
 import com.yhzdys.myosotis.event.multicast.actuator.NamespaceEventActuator;
-import com.yhzdys.myosotis.executor.EventMulticasterExecutor;
+import com.yhzdys.myosotis.executor.MulticasterExecutor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -20,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class EventMulticaster {
 
-    private final EventMulticasterExecutor executor = new EventMulticasterExecutor();
+    private final MulticasterExecutor executor = new MulticasterExecutor();
 
     /**
      * <namespace, ListenerWrapper>
@@ -67,9 +67,10 @@ public final class EventMulticaster {
             return;
         }
         Listener listener = actuator.getListener();
-        actuator.actuate(
-                new EventCommand(event.getConfigKey(), () -> this.triggerListener(listener, event))
+        EventCommand eventCommand = new EventCommand(
+                event.getConfigKey(), () -> this.triggerListener(listener, event)
         );
+        actuator.actuate(eventCommand);
     }
 
     private void triggerConfigListeners(MyosotisEvent event) {
@@ -77,15 +78,14 @@ public final class EventMulticaster {
         if (MapUtils.isEmpty(listenerMap)) {
             return;
         }
-        List<ActuatorWrapper> listeners = listenerMap.get(event.getConfigKey());
-        if (CollectionUtils.isEmpty(listeners)) {
+        List<ActuatorWrapper> actuators = listenerMap.get(event.getConfigKey());
+        if (CollectionUtils.isEmpty(actuators)) {
             return;
         }
-        for (ActuatorWrapper actuator : listeners) {
+        for (ActuatorWrapper actuator : actuators) {
             Listener listener = actuator.getListener();
-            actuator.actuate(
-                    new EventCommand(() -> this.triggerListener(listener, event))
-            );
+            EventCommand eventCommand = new EventCommand(() -> this.triggerListener(listener, event));
+            actuator.actuate(eventCommand);
         }
     }
 

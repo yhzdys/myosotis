@@ -5,15 +5,14 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public final class EventMulticasterExecutor extends ThreadPoolExecutor {
+public final class MulticasterExecutor extends ThreadPoolExecutor {
 
-    public EventMulticasterExecutor() {
-        super(0,
-                Runtime.getRuntime().availableProcessors() * 2,
-                60,
-                TimeUnit.SECONDS,
-                new SynchronousQueue<>(false),
-                new EventMulticasterThreadFactory());
+    public MulticasterExecutor() {
+        super(0, Runtime.getRuntime().availableProcessors() * 2,
+                60, TimeUnit.SECONDS,
+                new SynchronousQueue<>(true),
+                new EventMulticasterThreadFactory(),
+                new DiscardOldestPolicy());
     }
 
     public static final class EventMulticasterThreadFactory implements ThreadFactory {

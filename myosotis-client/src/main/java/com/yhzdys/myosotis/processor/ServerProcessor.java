@@ -67,20 +67,8 @@ public final class ServerProcessor implements Processor {
         } catch (Exception e) {
             throw new MyosotisException(e);
         }
-        // add common headers
         this.addCommonHeader(pollingPost);
         this.pollingPost.setConfig(NetConst.long_polling_config);
-    }
-
-    private void reuse(CloseableHttpResponse response) {
-        if (response == null) {
-            return;
-        }
-        try {
-            EntityUtils.consume(response.getEntity());
-        } catch (Exception e) {
-            LoggerFactory.getLogger().error(e.getMessage(), e);
-        }
     }
 
     @Override
@@ -155,8 +143,6 @@ public final class ServerProcessor implements Processor {
         version = currentModifiedVersion;
         Collection<PollingData> pollingData = configMetadata.pollingData();
         List<PollingData> pollingList = new ArrayList<>(pollingData);
-        // clear header
-        pollingPost.removeHeaders(NetConst.origin_data_length);
         // serialization
         byte[] data = serializeType.getSerializer().serializePollingData(pollingList);
         // data compress
@@ -165,17 +151,15 @@ public final class ServerProcessor implements Processor {
             pollingPost.setHeader(NetConst.origin_data_length, String.valueOf(data.length));
             byteArrayEntity = new ByteArrayEntity(Lz4.compress(data));
         } else {
+            pollingPost.removeHeaders(NetConst.origin_data_length);
             byteArrayEntity = new ByteArrayEntity(data);
         }
         pollingPost.setEntity(byteArrayEntity);
-        if (configMetadata.pollingVersion() != version) {
-            LoggerFactory.getLogger().warn("Config changed after polling");
-        }
         return pollingPost;
     }
 
     public HttpGet queryGet(String namespace, String configKey) throws Exception {
-        HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.queryConfig(namespace, configKey)));
+        HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.query(namespace, configKey)));
         this.addCommonHeader(request);
         request.setConfig(NetConst.default_config);
         return request;
@@ -225,6 +209,17 @@ public final class ServerProcessor implements Processor {
     private Serializer getSerializer(HttpResponse response) {
         Header header = response.getFirstHeader(NetConst.serialize_type);
         return SerializeType.codeOf(header.getValue()).getSerializer();
+    }
+
+    private void reuse(CloseableHttpResponse response) {
+        if (response == null) {
+            return;
+        }
+        try {
+            EntityUtils.consume(response.getEntity());
+        } catch (Exception e) {
+            LoggerFactory.getLogger().error(e.getMessage(), e);
+        }
     }
 
     private static class ExceptionCounter {

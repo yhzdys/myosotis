@@ -1,18 +1,18 @@
 package com.yhzdys.myosotis.event.multicast.actuator;
 
-import com.yhzdys.myosotis.executor.EventMulticasterExecutor;
+import com.yhzdys.myosotis.executor.MulticasterExecutor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
 import java.util.LinkedList;
 
 public final class NamespaceEventActuator implements Actuator {
 
-    private final EventMulticasterExecutor executor;
+    private final MulticasterExecutor executor;
     private final Runnable runner;
     private final LinkedList<EventCommand> commands = new LinkedList<>();
     private boolean running;
 
-    public NamespaceEventActuator(EventMulticasterExecutor executor) {
+    public NamespaceEventActuator(MulticasterExecutor executor) {
         this.executor = executor;
         this.runner = () -> {
             for (; ; ) {
@@ -25,7 +25,7 @@ public final class NamespaceEventActuator implements Actuator {
                     }
                 }
                 try {
-                    command.getCommand().run();
+                    command.getRunner().run();
                 } catch (Throwable t) {
                     LoggerFactory.getLogger().error(t.getMessage(), t);
                 }
@@ -40,7 +40,7 @@ public final class NamespaceEventActuator implements Actuator {
             if (index < 0) {
                 commands.add(command);
             } else {
-                commands.get(index).setCommand(command.getCommand());
+                commands.get(index).setRunner(command.getRunner());
             }
             if (!running) {
                 running = true;
