@@ -139,7 +139,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
 
     private ConfigListener getListener(String namespace, String configKey, Object targetBean, Field targetField) {
         AutoConfigListener listener = listeners.computeIfAbsent(
-                namespace + ":" + configKey, k -> new AutoConfigListener(namespace, targetBean, targetField)
+                namespace + ":" + configKey, k -> new AutoConfigListener(namespace, configKey)
         );
         listener.addField(targetBean, targetField);
         return listener;
@@ -157,15 +157,9 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
          */
         private final Map<Object, List<Field>> fieldMap = new ConcurrentHashMap<>(2);
 
-        private AutoConfigListener(String namespace, Object targetBean, Field targetField) {
+        private AutoConfigListener(String namespace, String configKey) {
             this.namespace = namespace;
-            MyosotisValue myosotisValue = targetField.getAnnotation(MyosotisValue.class);
-            if (StringUtils.isEmpty(myosotisValue.configKey())) {
-                this.configKey = targetField.getName();
-            } else {
-                this.configKey = myosotisValue.configKey();
-            }
-            this.addField(targetBean, targetField);
+            this.configKey = configKey;
         }
 
         @Override
@@ -200,12 +194,12 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             }
         }
 
-        private void addField(Object targetBean, Field targetField) {
-            List<Field> fields = fieldMap.computeIfAbsent(targetBean, bean -> new CopyOnWriteArrayList<>());
-            if (fields.contains(targetField)) {
+        private void addField(Object bean, Field field) {
+            List<Field> fields = fieldMap.computeIfAbsent(bean, k -> new CopyOnWriteArrayList<>());
+            if (fields.contains(field)) {
                 return;
             }
-            fields.add(targetField);
+            fields.add(field);
         }
     }
 }
