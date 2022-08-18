@@ -90,9 +90,9 @@ function fillConfigTable(page) {
 document.getElementById("add_button").addEventListener("click", () => {
     let namespace = getInnerUrlParam("namespace");
     if (isEmpty(namespace)) {
-        changeFrame("配置管理 > 新增", "e.html?type=addConfig");
+        changeFrame("e.html?type=addConfig");
     } else {
-        changeFrame("配置管理 > 新增", "e.html?type=addConfig&namespace=" + namespace);
+        changeFrame("e.html?type=addConfig&namespace=" + namespace);
     }
 });
 
@@ -100,7 +100,7 @@ function editConfig() {
     let row = arguments.callee.caller.arguments[0].target.parentElement.parentElement;
     let id = row.children[0].innerText;
     let configKey = row.children[2].innerText;
-    changeFrame("配置管理 > 编辑（" + configKey + "）", "e.html?type=editConfig&id=" + id);
+    changeFrame("e.html?type=editConfig&id=" + id + "&name=" + configKey);
     clearUrlParam();
 }
 

@@ -1,14 +1,13 @@
 package com.yhzdys.myosotis.misc;
 
-import org.apache.http.HeaderElement;
-import org.apache.http.HeaderElementIterator;
+import org.apache.http.Header;
+import org.apache.http.HeaderIterator;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
@@ -50,27 +49,24 @@ public final class MyosotisHttpClient {
         return httpClient.execute(request);
     }
 
-    /**
-     * copy from {@link org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy}
-     */
     private static class MyosotisKeepAliveStrategy implements ConnectionKeepAliveStrategy {
 
         @Override
         public long getKeepAliveDuration(HttpResponse httpResponse, HttpContext httpContext) {
-            final HeaderElementIterator it = new BasicHeaderElementIterator(httpResponse.headerIterator(HTTP.CONN_KEEP_ALIVE));
-            while (it.hasNext()) {
-                HeaderElement header = it.nextElement();
+            HeaderIterator iterator = httpResponse.headerIterator(HTTP.CONN_KEEP_ALIVE);
+            while (iterator.hasNext()) {
+                Header header = iterator.nextHeader();
                 String name = header.getName();
                 String value = header.getValue();
                 if (value != null && name.equalsIgnoreCase("timeout")) {
                     try {
-                        // 90%
-                        return Long.parseLong(value) * 900;
+                        return Long.parseLong(value) * 1000;
                     } catch (Exception ignore) {
                     }
                 }
             }
-            return -1;
+            // 10min.
+            return TimeUnit.MINUTES.toMillis(10);
         }
     }
 }

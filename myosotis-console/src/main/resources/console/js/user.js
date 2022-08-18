@@ -89,14 +89,14 @@ function fillUserTable(page) {
 }
 
 document.getElementById("add_button").addEventListener("click", () => {
-    changeFrame("用户管理 > 新增", "e.html?type=addUser");
+    changeFrame("e.html?type=addUser");
 });
 
 function editUser() {
     let row = arguments.callee.caller.arguments[0].target.parentElement.parentElement;
     let id = row.children[0].innerText;
-    let namespace = row.children[1].innerText;
-    changeFrame("用户管理 > 编辑（" + namespace + "）", "e.html?type=editUser&id=" + id);
+    let username = row.children[1].innerText;
+    changeFrame("e.html?type=editUser&id=" + id + "&name=" + username);
     clearUrlParam();
 }
 

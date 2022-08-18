@@ -80,19 +80,19 @@ function fillNamespaceTable(page) {
             if (isSuperUser) {
                 if (element.configCount < 1) {
                     option.innerHTML = "<td>\n" +
-                        "<a class='data_button' onclick='listConfig()'>查看</a>\n" +
+                        "<a class='data_button' onclick='listConfigs()'>查看</a>\n" +
                         "<a class='data_button' onclick='editNamespace()'>编辑</a>\n" +
                         "<a class='data_button delete_button' onclick='deleteNamespace()'>删除</a>\n" +
                         "</td>";
                 } else {
                     option.innerHTML = "<td>\n" +
-                        "<a class='data_button' onclick='listConfig()'>查看</a>\n" +
+                        "<a class='data_button' onclick='listConfigs()'>查看</a>\n" +
                         "<a class='data_button' onclick='editNamespace()'>编辑</a>\n" +
                         "</td>";
                 }
             } else {
                 option.innerHTML = "<td>\n" +
-                    "<a class='data_button' onclick='listConfig()'>查看</a>\n" +
+                    "<a class='data_button' onclick='listConfigs()'>查看</a>\n" +
                     "</td>";
             }
             row.appendChild(option);
@@ -103,10 +103,10 @@ function fillNamespaceTable(page) {
 }
 
 document.getElementById("add_button").addEventListener("click", () => {
-    changeFrame("命名空间 > 新增", "e.html?type=addNamespace");
+    changeFrame("e.html?type=addNamespace");
 });
 
-function listConfig() {
+function listConfigs() {
     let row = arguments.callee.caller.arguments[0].target.parentElement.parentElement;
     let namespace = row.children[1].innerText;
     configMenu(namespace);
@@ -117,7 +117,7 @@ function editNamespace() {
     let row = arguments.callee.caller.arguments[0].target.parentElement.parentElement;
     let id = row.children[0].innerText;
     let namespace = row.children[1].innerText;
-    changeFrame("命名空间 > 编辑（" + namespace + "）", "e.html?type=editNamespace&id=" + id);
+    changeFrame("e.html?type=editNamespace&id=" + id + "&name=" + namespace);
     clearUrlParam();
 }
 

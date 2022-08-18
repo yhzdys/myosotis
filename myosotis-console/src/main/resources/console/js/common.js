@@ -2,6 +2,32 @@ const indexPage = window.location.protocol + "//" + window.location.host + "/con
 let defaultLoginPage = window.location.protocol + "//" + window.location.host + "/console/login.html";
 const passwordPage = window.location.protocol + "//" + window.location.host + "/console/password.html";
 
+const pages =
+    [
+        {"code": "namespace_manage", "page": "n.html"},
+        {"code": "config_manage", "page": "c.html"},
+        {"code": "server_manage", "page": "s.html"},
+        {"code": "user_manage", "page": "u.html"},
+    ];
+
+const page_map =
+    {
+        "namespace_manage": "n.html",
+        "config_manage": "c.html",
+        "server_manage": "s.html",
+        "user_manage": "u.html",
+    };
+
+const edit_map =
+    {
+        "addNamespace": "namespace_manage",
+        "editNamespace": "namespace_manage",
+        "addConfig": "config_manage",
+        "editConfig": "config_manage",
+        "addUser": "user_manage",
+        "editUser": "user_manage",
+    };
+
 const myosotis_user = "myosotis-user";
 
 function isEmpty(value) {
@@ -33,13 +59,7 @@ function errorIndex(message) {
 }
 
 function hiddenErrorIndex() {
-    let path = window.location.pathname;
-    let error_wrapper;
-    if (path.indexOf("index.html") < 0) {
-        error_wrapper = window.parent.document.getElementById("error_wrapper");
-    } else {
-        error_wrapper = document.getElementById("error_wrapper");
-    }
+    let error_wrapper = window.parent.document.getElementById("error_wrapper");
     error_wrapper.innerText = "";
     error_wrapper.style.display = "none";
 }
@@ -170,32 +190,28 @@ function confirmCheck(data, message) {
 }
 
 function namespaceMenu() {
-    changeFrame("命名空间", "n.html");
+    changeFrame(page_map["namespace_manage"]);
 }
 
 function configMenu(namespace) {
     if (isEmpty(namespace)) {
-        changeFrame("配置管理", "c.html");
+        changeFrame(page_map["config_manage"]);
     } else {
-        changeFrame("配置管理（" + namespace + "）", "c.html?namespace=" + namespace);
+        changeFrame(page_map["config_manage"] + "?namespace=" + namespace);
     }
 }
 
 function serverMenu() {
-    changeFrame("服务监测", "s.html");
+    changeFrame(page_map["server_manage"]);
 }
 
 function userMenu() {
-    changeFrame("用户管理", "u.html");
+    changeFrame(page_map["user_manage"]);
 }
 
-function changeFrame(title, src) {
-    let content_title = window.parent.document.getElementById("content_title");
-    content_title.innerText = title;
-
+function changeFrame(src) {
     let content_frame = window.parent.document.getElementById("content_frame");
     content_frame.setAttribute("src", src);
-
     clearUrlParam();
 }
 
