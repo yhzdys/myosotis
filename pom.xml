@@ -52,23 +52,21 @@
     </distributionManagement>
 
     <properties>
-        <jackson.version>2.12.7</jackson.version>
         <commons-lang.version>3.12.0</commons-lang.version>
         <commons-collections.version>4.4</commons-collections.version>
         <slf4j.version>1.7.36</slf4j.version>
         <lz4.version>1.3.0</lz4.version>
         <apache-httpclient.version>4.5.13</apache-httpclient.version>
-        <apache-avro.version>1.11.0</apache-avro.version>
-        <protostuff.version>1.8.0</protostuff.version>
         <commons-codec.version>1.15</commons-codec.version>
+        <apache-avro.version>1.11.1</apache-avro.version>
+        <protostuff.version>1.8.0</protostuff.version>
 
         <springboot.version>2.7.0</springboot.version>
         <spring.veriosn>5.3.20</spring.veriosn>
-        <servlet-api.version>4.0.1</servlet-api.version>
         <mybatis-starter.version>2.2.2</mybatis-starter.version>
 
-        <sqlite-jdbc.version>3.36.0.3</sqlite-jdbc.version>
-        <mysql-jdbc.version>8.0.29</mysql-jdbc.version>
+        <sqlite-jdbc.version>3.39.2.0</sqlite-jdbc.version>
+        <mysql-jdbc.version>8.0.30</mysql-jdbc.version>
 
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -106,19 +104,9 @@
                 <version>${commons-collections.version}</version>
             </dependency>
             <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>${commons-codec.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.jpountz.lz4</groupId>
@@ -137,19 +125,14 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro</artifactId>
                 <version>${apache-avro.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-databind</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.protostuff</groupId>
