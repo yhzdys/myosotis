@@ -139,7 +139,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
 
     private ConfigListener getListener(String namespace, String configKey, Object targetBean, Field targetField) {
         AutoConfigListener listener = listeners.computeIfAbsent(
-                namespace + ":" + configKey, bean -> new AutoConfigListener(namespace, targetBean, targetField)
+                namespace + ":" + configKey, k -> new AutoConfigListener(namespace, targetBean, targetField)
         );
         listener.addField(targetBean, targetField);
         return listener;

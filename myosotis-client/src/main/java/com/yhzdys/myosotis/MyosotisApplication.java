@@ -153,6 +153,9 @@ public final class MyosotisApplication {
             if (configValue != null) {
                 return configValue;
             }
+            if (configMetadata.isAbsent(namespace, configKey)) {
+                return null;
+            }
             // step.2 get from server
             MyosotisConfig config = serverProcessor.getConfig(namespace, configKey);
             if (config != null) {

@@ -26,9 +26,9 @@ public final class ConfigMetadata {
     private final Map<String, Set<String>> absentConfigs = new ConcurrentHashMap<>(0);
 
     /**
-     * threshold of clear absent config cache (ms.)
+     * intervals of clear absent config(s)
      */
-    private final long threshold = TimeUnit.MINUTES.toMillis(1);
+    private final long threshold = TimeUnit.MINUTES.toMillis(10);
     private long lastClearTime = 0L;
 
     public Collection<PollingData> pollingData() {
