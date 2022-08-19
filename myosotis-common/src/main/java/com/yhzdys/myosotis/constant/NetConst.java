@@ -1,6 +1,7 @@
 package com.yhzdys.myosotis.constant;
 
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.message.BasicHeader;
 
 public final class NetConst {
 
@@ -19,8 +20,10 @@ public final class NetConst {
     // myosotis-serialize-type 序列化方式
     public static final String serialize_type = "myosotis-st";
 
-    // default
-    public static final RequestConfig default_config = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(5000).build();
+    public static final BasicHeader header_long_connection = new BasicHeader("Connection", "keep-alive");
+    // 连接最终关闭时间由系统MSL(Max Segment Lifetime)决定
+    public static final BasicHeader header_short_connection = new BasicHeader("Connection", "close");
+
     // long-polling config
     public static final RequestConfig long_polling_config = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(20000).build();
 

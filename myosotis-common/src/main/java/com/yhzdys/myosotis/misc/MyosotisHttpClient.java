@@ -3,6 +3,7 @@ package com.yhzdys.myosotis.misc;
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
@@ -36,7 +37,11 @@ public final class MyosotisHttpClient {
             return HttpClientBuilder.create()
                     .setMaxConnTotal(1024)
                     .setMaxConnPerRoute(1024)
+                    .disableAutomaticRetries()
                     .evictIdleConnections(60, TimeUnit.SECONDS)
+                    .setDefaultRequestConfig(
+                            RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(5000).build()
+                    )
                     .setKeepAliveStrategy(new MyosotisKeepAliveStrategy())
                     .build();
         } catch (Throwable t) {
@@ -65,8 +70,7 @@ public final class MyosotisHttpClient {
                     }
                 }
             }
-            // 10min.
-            return TimeUnit.MINUTES.toMillis(10);
+            return -1;
         }
     }
 }

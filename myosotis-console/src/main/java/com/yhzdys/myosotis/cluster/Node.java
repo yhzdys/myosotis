@@ -15,7 +15,7 @@ public class Node {
 
     private static final Logger logger = LoggerFactory.getLogger(Node.class);
 
-    private static final String health_check = "/cluster/check";
+    private static final String health_check = "/cluster/health";
     private static final String polling_notify = "/cluster/polling/notify/";
 
     /**
@@ -33,6 +33,11 @@ public class Node {
 
     private boolean health;
 
+    /**
+     * client connections
+     */
+    private String state;
+
     private boolean lazyCheck;
 
     private long failCount;
@@ -40,8 +45,8 @@ public class Node {
     public Node(String address) {
         this.address = address;
         HttpGet request = new HttpGet("http://" + address + health_check);
-        request.setConfig(NetConst.default_config);
         request.setHeader(NetConst.client_ip, SystemConst.local_host);
+        request.setHeader(NetConst.header_short_connection);
         this.monitorRequest = request;
         this.health = true;
         this.lazyCheck = false;
@@ -57,15 +62,16 @@ public class Node {
         CloseableHttpResponse response = null;
         try {
             response = myosotisHttpClient.execute(monitorRequest);
-            if (response == null || response.getStatusLine() == null || response.getStatusLine().getStatusCode() != 200) {
+            if (response != null && response.getStatusLine().getStatusCode() == 200) {
+                this.state = EntityUtils.toString(response.getEntity());
+                this.success();
+            } else {
                 this.fail();
-                return;
             }
-            this.success();
         } catch (Exception e) {
             this.fail();
         } finally {
-            this.reuse(response);
+            this.consume(response);
             lastCheckTime = now;
             if (!health) {
                 logger.info("Cluster node[{}] health check {}", address, "failed");
@@ -79,14 +85,14 @@ public class Node {
         }
         HttpGet request = new HttpGet("http://" + address + polling_notify + namespace);
         request.setHeader(NetConst.client_ip, SystemConst.local_host);
-        request.setConfig(NetConst.default_config);
+        request.setHeader(NetConst.header_short_connection);
 
         CloseableHttpResponse response = null;
         try {
             response = myosotisHttpClient.execute(request);
         } catch (Exception ignored) {
         } finally {
-            this.reuse(response);
+            this.consume(response);
         }
     }
 
@@ -97,6 +103,7 @@ public class Node {
     }
 
     private void fail() {
+        this.state = "unknown";
         health = false;
         failCount++;
         if (!lazyCheck && failCount >= 10) {
@@ -104,7 +111,7 @@ public class Node {
         }
     }
 
-    private void reuse(CloseableHttpResponse response) {
+    private void consume(CloseableHttpResponse response) {
         if (response == null) {
             return;
         }
@@ -125,6 +132,14 @@ public class Node {
 
     public boolean isHealth() {
         return health;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public long getFailCount() {

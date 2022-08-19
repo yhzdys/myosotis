@@ -49,6 +49,10 @@ function fillServerTable(page) {
             health.innerText = element.health;
             row.appendChild(health);
 
+            let state = document.createElement("td");
+            state.innerText = element.state;
+            row.appendChild(state);
+
             let failCount = document.createElement("td");
             failCount.innerText = element.failCount;
             row.appendChild(failCount);

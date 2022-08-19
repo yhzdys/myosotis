@@ -12,6 +12,7 @@ public class NodeVO {
     private String address;
     private String lastCheckTime;
     private Long failCount;
+    private String state;
     private Boolean health;
 
     public NodeVO convert(Node node) {
@@ -19,6 +20,7 @@ public class NodeVO {
         this.lastCheckTime = node.getLastCheckTime() <= 0L ? StringUtils.EMPTY :
                 new SimpleDateFormat(InfraConst.default_time_format).format(new Date(node.getLastCheckTime()));
         this.failCount = node.getFailCount();
+        this.state = node.getState();
         this.health = node.isHealth();
         return this;
     }
@@ -45,6 +47,14 @@ public class NodeVO {
 
     public void setFailCount(Long failCount) {
         this.failCount = failCount;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public Boolean getHealth() {

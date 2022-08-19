@@ -2,6 +2,7 @@ package com.yhzdys.myosotis.web;
 
 import com.yhzdys.myosotis.config.server.ServerConfig;
 import com.yhzdys.myosotis.config.server.ServerConfigLoader;
+import com.yhzdys.myosotis.exception.MyosotisException;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,28 +13,36 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         ServerConfig config = ServerConfigLoader.get();
 
-        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
-        threadPoolTaskExecutor.setMaxPoolSize(config.getKeepAliveRequests());
-        threadPoolTaskExecutor.setQueueCapacity(Runtime.getRuntime().availableProcessors());
-        threadPoolTaskExecutor.setThreadNamePrefix("myosotis-polling-");
-        threadPoolTaskExecutor.initialize();
+        int processors = Runtime.getRuntime().availableProcessors();
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(processors);
+        executor.setQueueCapacity(0);
+        executor.setMaxPoolSize(config.getKeepAliveRequests());
+        executor.setThreadNamePrefix("Myosotis-Polling-");
+        executor.setRejectedExecutionHandler(new DefaultRejectedExecutionHandler());
+        executor.initialize();
 
         configurer.setDefaultTimeout(15 * 1000);
-        configurer.setTaskExecutor(threadPoolTaskExecutor);
+        configurer.setTaskExecutor(executor);
+        threadPoolTaskExecutor = executor;
     }
 
     @Override
@@ -51,15 +60,54 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
                     protocol.setConnectionTimeout(config.getConnectionTimeout());
                     protocol.setMaxConnections(config.getMaxConnections());
                     protocol.setMaxKeepAliveRequests(config.getKeepAliveRequests());
-                    // 30min.
-                    protocol.setKeepAliveTimeout(30 * 60 * 1000);
+                    // 30sec.
+                    protocol.setUseKeepAliveResponseHeader(true);
+                    protocol.setKeepAliveTimeout(30 * 1000);
                 }
         );
+    }
+
+    public int getConnections() {
+        return threadPoolTaskExecutor.getActiveCount();
+    }
+
+    private static class DefaultRejectedExecutionHandler implements RejectedExecutionHandler {
+
+        private static final Logger logger = LoggerFactory.getLogger(DefaultRejectedExecutionHandler.class);
+
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            ServerConfig config = ServerConfigLoader.get();
+            throw new MyosotisException(
+                    "Too many client connections(threshold: " + config.getKeepAliveRequests() +
+                            "), please check \"myosotis.server.keepAliveRequests\" in server.conf"
+            );
+        }
     }
 
     @ControllerAdvice
     public static class GlobalExceptionHandler {
         private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+        @ResponseBody
+        @ExceptionHandler(AsyncRequestTimeoutException.class)
+        public String handleAsyncRequestTimeoutException(HttpServletResponse response) {
+            logger.error("Async polling timeout, too many client connections");
+            if (response != null) {
+                response.setStatus(500);
+            }
+            return "Async polling timeout, too many client connections";
+        }
+
+        @ResponseBody
+        @ExceptionHandler(MyosotisException.class)
+        public String handleMyosotisException(MyosotisException e, HttpServletResponse response) {
+            logger.error(e.getMessage());
+            if (response != null) {
+                response.setStatus(500);
+            }
+            return e.getMessage();
+        }
 
         @ResponseBody
         @ExceptionHandler(Exception.class)

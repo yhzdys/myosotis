@@ -68,6 +68,8 @@ public final class ServerProcessor implements Processor {
             throw new MyosotisException(e);
         }
         this.addCommonHeader(pollingPost);
+        // 1.1默认为长连接 这里显式声明
+        this.pollingPost.setHeader(NetConst.header_long_connection);
         this.pollingPost.setConfig(NetConst.long_polling_config);
     }
 
@@ -90,7 +92,7 @@ public final class ServerProcessor implements Processor {
             LoggerFactory.getLogger().error("Polling failed, msg: {}", e.getMessage());
             counter.increase(500);
         } finally {
-            this.reuse(response);
+            this.consume(response);
         }
         return null;
     }
@@ -111,7 +113,7 @@ public final class ServerProcessor implements Processor {
         } catch (Throwable e) {
             LoggerFactory.getLogger().error("Get config failed, msg: {}", e.getMessage());
         } finally {
-            this.reuse(response);
+            this.consume(response);
         }
         return null;
     }
@@ -125,7 +127,7 @@ public final class ServerProcessor implements Processor {
         } catch (Throwable e) {
             LoggerFactory.getLogger().error("Get config(s) failed, msg: {}", e.getMessage());
         } finally {
-            this.reuse(response);
+            this.consume(response);
         }
         return null;
     }
@@ -161,7 +163,7 @@ public final class ServerProcessor implements Processor {
     public HttpGet queryGet(String namespace, String configKey) throws Exception {
         HttpGet request = new HttpGet(new URI(serverAddress + NetConst.URL.query(namespace, configKey)));
         this.addCommonHeader(request);
-        request.setConfig(NetConst.default_config);
+        request.setHeader(NetConst.header_short_connection);
         return request;
     }
 
@@ -197,11 +199,8 @@ public final class ServerProcessor implements Processor {
     }
 
     private byte[] getResponseData(HttpResponse response) throws Exception {
-        HttpEntity entity = response.getEntity();
-        if (entity == null) {
-            return null;
-        }
         Header header = response.getFirstHeader(NetConst.origin_data_length);
+        HttpEntity entity = response.getEntity();
         return header == null ? EntityUtils.toByteArray(entity) :
                 Lz4.decompress(EntityUtils.toByteArray(entity), Integer.parseInt(header.getValue()));
     }
@@ -211,7 +210,7 @@ public final class ServerProcessor implements Processor {
         return SerializeType.codeOf(header.getValue()).getSerializer();
     }
 
-    private void reuse(CloseableHttpResponse response) {
+    private void consume(CloseableHttpResponse response) {
         if (response == null) {
             return;
         }
