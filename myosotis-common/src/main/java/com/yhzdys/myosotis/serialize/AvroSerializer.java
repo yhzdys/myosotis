@@ -59,40 +59,30 @@ public final class AvroSerializer implements Serializer {
         try {
             Schema.Parser parser = new Schema.Parser();
 
-            this.polling_list_schema = parser.parse(loadAvsc("schema/polling_data.avsc"));
+            InputStream pis = loadAvsc("schema/polling_data.avsc");
+            this.polling_list_schema = parser.parse(pis);
+            pis.close();
+            InputStream eis = loadAvsc("schema/events.avsc");
+            this.events_schema = parser.parse(eis);
+            eis.close();
+            InputStream cis = loadAvsc("schema/configs.avsc");
+            this.configs_schema = parser.parse(cis);
+            cis.close();
+
             this.polling_schema = this.polling_list_schema.getElementType();
             this.polling_list_writer = new GenericDatumWriter<>(this.polling_list_schema);
             this.polling_list_reader = new GenericDatumReader<>(this.polling_list_schema);
 
-            this.events_schema = parser.parse(loadAvsc("schema/events.avsc"));
             this.event_schema = this.events_schema.getElementType();
             this.events_writer = new GenericDatumWriter<>(this.events_schema);
             this.events_reader = new GenericDatumReader<>(this.events_schema);
 
-            this.configs_schema = parser.parse(loadAvsc("schema/configs.avsc"));
             this.config_schema = this.configs_schema.getElementType();
             this.configs_writer = new GenericDatumWriter<>(this.configs_schema);
             this.configs_reader = new GenericDatumReader<>(this.configs_schema);
         } catch (Throwable e) {
             throw new MyosotisException("Initialize schemas failed.", e);
         }
-    }
-
-    private InputStream loadAvsc(String schemaPath) throws Throwable {
-        URL url = AvroSerializer.class.getClassLoader().getResource(schemaPath);
-        if (url == null) {
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            if (classLoader != null) {
-                url = classLoader.getResource(schemaPath);
-            }
-        }
-        if (url == null) {
-            url = ClassLoader.getSystemClassLoader().getResource(schemaPath);
-        }
-        if (url == null) {
-            throw new MyosotisException("Can not load avsc file: " + schemaPath);
-        }
-        return url.openStream();
     }
 
     @Override
@@ -241,5 +231,22 @@ public final class AvroSerializer implements Serializer {
             );
         }
         return configList;
+    }
+
+    private InputStream loadAvsc(String schemaPath) throws Throwable {
+        URL url = AvroSerializer.class.getClassLoader().getResource(schemaPath);
+        if (url == null) {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader != null) {
+                url = classLoader.getResource(schemaPath);
+            }
+        }
+        if (url == null) {
+            url = ClassLoader.getSystemClassLoader().getResource(schemaPath);
+        }
+        if (url == null) {
+            throw new MyosotisException("Can not load avsc file: " + schemaPath);
+        }
+        return url.openStream();
     }
 }
