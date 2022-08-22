@@ -2,7 +2,6 @@ package com.yhzdys.myosotis.web;
 
 import com.yhzdys.myosotis.config.server.ServerConfig;
 import com.yhzdys.myosotis.config.server.ServerConfigLoader;
-import com.yhzdys.myosotis.exception.MyosotisException;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
@@ -70,18 +68,6 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
 
     public int getConnections() {
         return threadPoolTaskExecutor.getActiveCount();
-    }
-
-    private static class DefaultRejectedExecutionHandler implements RejectedExecutionHandler {
-
-        @Override
-        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            ServerConfig config = ServerConfigLoader.get();
-            throw new MyosotisException(
-                    "Too many client connections(threshold: " + config.getKeepAliveRequests() +
-                            "), please check \"myosotis.server.keepAliveRequests\" in server.conf"
-            );
-        }
     }
 
     @ControllerAdvice
