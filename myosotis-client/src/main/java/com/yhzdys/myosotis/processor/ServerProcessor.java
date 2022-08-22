@@ -87,10 +87,13 @@ public final class ServerProcessor implements Processor {
                 counter.reset();
                 return this.deserializeEvents(response);
             }
-            counter.increase(statusCode);
+            if (statusCode == 503) {
+                LoggerFactory.getLogger().error("Too many client connections");
+            }
+            counter.increase();
         } catch (Exception e) {
             LoggerFactory.getLogger().error("Polling failed, msg: {}", e.getMessage());
-            counter.increase(500);
+            counter.increase();
         } finally {
             this.consume(response);
         }
@@ -224,18 +227,13 @@ public final class ServerProcessor implements Processor {
     private static class ExceptionCounter {
         private int count = 0;
 
-        public void increase(int statusCode) {
+        public void increase() {
             count++;
             if (count >= 10) {
-                LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(60));
+                LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(30));
                 return;
             }
-            if (statusCode == 500) {
-                LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
-            }
-            if (statusCode == 400) {
-                LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
-            }
+            LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
         }
 
         public void reset() {

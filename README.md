@@ -339,17 +339,17 @@ cd target
 
 ### server.conf
 
-| 参数                                | 释义                          | 默认值    | 参考值               |
-|-----------------------------------|-----------------------------|--------|-------------------|
-| myosotis.log.dir                  | 日志目录(绝对路径)                  | ./log  | /var/log/myosotis |
-| myosotis.server.port              | 内置tomcat端口                  | 7777   |                   |
-| myosotis.server.minThreads        | 内置tomcat最小线程数               | cpu核心数 |                   |
-| myosotis.server.maxThreads        | 内置tomcat最大线程数               | 512    |                   |
-| myosotis.server.connectionTimeout | 建立连接超时时间                    | 2000   |                   |
-| myosotis.server.maxConnections    | 最大连接数                       | 1024   |                   |
-| myosotis.server.keepAliveRequests | 最大keep-alive连接数(单机最大客户端连接数) | 128    |                   |
-| myosotis.server.acceptCount       | 最大等待连接数                     | 8      |                   |
-| myosotis.server.enableCompress    | 启用数据压缩                      | true   | true              |
-| myosotis.server.compressThreshold | 数据压缩阈值                      | 2048   | 2048              |
+| 参数                                | 释义                          | 默认值         | 参考值               |
+|-----------------------------------|-----------------------------|-------------|-------------------|
+| myosotis.log.dir                  | 日志目录(绝对路径)                  | ./log       | /var/log/myosotis |
+| myosotis.server.port              | 内置tomcat端口                  | 7777        |                   |
+| myosotis.server.minThreads        | 内置tomcat最小线程数               | cpu核心数      |                   |
+| myosotis.server.maxThreads        | 内置tomcat最大线程数               | 512         |                   |
+| myosotis.server.connectionTimeout | 建立连接超时时间                    | 2000        |                   |
+| myosotis.server.maxConnections    | 最大连接数                       | 1024        |                   |
+| myosotis.server.keepAliveRequests | 最大keep-alive连接数(单机最大客户端连接数) | cpu核心数 * 16 |                   |
+| myosotis.server.acceptCount       | 最大等待连接数                     | 8           |                   |
+| myosotis.server.enableCompress    | 启用数据压缩                      | true        | true              |
+| myosotis.server.compressThreshold | 数据压缩阈值                      | 2048        | 2048              |
 
 ---

@@ -15,6 +15,10 @@ public class ApplicationTest {
             MyosotisClient client = application.getClient("default");
             client.getString("test");
         }
+        Thread.sleep(10000);
+        MyosotisApplication application = new MyosotisApplication("http://127.0.0.1:7777");
+        MyosotisClient client = application.getClient("default");
+        client.getString("test");
         Thread.sleep(TimeUnit.HOURS.toMillis(1));
     }
 }

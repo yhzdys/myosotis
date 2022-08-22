@@ -19,6 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -37,7 +38,7 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
         executor.setQueueCapacity(0);
         executor.setMaxPoolSize(config.getKeepAliveRequests());
         executor.setThreadNamePrefix("Myosotis-Polling-");
-        executor.setRejectedExecutionHandler(new DefaultRejectedExecutionHandler());
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         executor.initialize();
 
         configurer.setDefaultTimeout(15 * 1000);
@@ -73,8 +74,6 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
 
     private static class DefaultRejectedExecutionHandler implements RejectedExecutionHandler {
 
-        private static final Logger logger = LoggerFactory.getLogger(DefaultRejectedExecutionHandler.class);
-
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
             ServerConfig config = ServerConfigLoader.get();
@@ -93,29 +92,25 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
         @ExceptionHandler(AsyncRequestTimeoutException.class)
         public String handleAsyncRequestTimeoutException(HttpServletResponse response) {
             logger.error("Async polling timeout, too many client connections");
-            if (response != null) {
-                response.setStatus(500);
-            }
+            response.setStatus(503);
             return "Async polling timeout, too many client connections";
         }
 
         @ResponseBody
-        @ExceptionHandler(MyosotisException.class)
-        public String handleMyosotisException(MyosotisException e, HttpServletResponse response) {
-            logger.error(e.getMessage());
-            if (response != null) {
-                response.setStatus(500);
-            }
-            return e.getMessage();
+        @ExceptionHandler(RejectedExecutionException.class)
+        public String handleRejectedExecutionException(HttpServletResponse response) {
+            ServerConfig config = ServerConfigLoader.get();
+            String message = "Too many client connections(threshold: " + config.getKeepAliveRequests() + "), please check \"myosotis.server.keepAliveRequests\" in server.conf";
+            logger.error(message);
+            response.setStatus(503);
+            return message;
         }
 
         @ResponseBody
         @ExceptionHandler(Exception.class)
         public String handleException(Exception e, HttpServletResponse response) {
             logger.error(e.getMessage(), e);
-            if (response != null) {
-                response.setStatus(500);
-            }
+            response.setStatus(500);
             return "Unexpected Error: " + e.getMessage();
         }
     }
