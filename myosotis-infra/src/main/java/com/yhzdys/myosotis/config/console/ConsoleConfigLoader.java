@@ -2,7 +2,7 @@ package com.yhzdys.myosotis.config.console;
 
 import com.yhzdys.myosotis.InfraConst;
 import com.yhzdys.myosotis.config.ConfigLoader;
-import com.yhzdys.myosotis.constant.SystemConst;
+import com.yhzdys.myosotis.constant.SysConst;
 import com.yhzdys.myosotis.exception.MyosotisException;
 
 import java.util.Map;
@@ -41,7 +41,7 @@ public class ConsoleConfigLoader {
         if (logDir == null) {
             config.setLogDir(InfraConst.default_log_dir);
         } else {
-            config.setLogDir(logDir.endsWith(SystemConst.separator) ? logDir.substring(0, logDir.length() - 1) : logDir);
+            config.setLogDir(logDir.endsWith(SysConst.separator) ? logDir.substring(0, logDir.length() - 1) : logDir);
         }
         config.setPort(Integer.parseInt(configs.getOrDefault("myosotis.console.port", "7776")));
 

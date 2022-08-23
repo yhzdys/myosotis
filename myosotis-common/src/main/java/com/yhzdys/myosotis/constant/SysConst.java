@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-public final class SystemConst {
+public final class SysConst {
+
     public static final String local_host;
+    public static final int processors = Runtime.getRuntime().availableProcessors();
 
     public static final String separator = System.getProperty("file.separator");
     public static final String myosotis_dir = System.getProperty("user.home") + separator + ".myosotis";

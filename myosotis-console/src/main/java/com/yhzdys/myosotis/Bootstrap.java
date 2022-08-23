@@ -11,9 +11,8 @@ public class Bootstrap implements ApplicationListener<ApplicationStartingEvent> 
     @Override
     public void onApplicationEvent(ApplicationStartingEvent event) {
         try {
-            // load customized config
             ConsoleConfig config = ConsoleConfigLoader.get();
-            // init log dir before application start
+            // init log dir
             System.setProperty("myosotis.log.dir", config.getLogDir());
         } catch (MyosotisException e) {
             throw e;

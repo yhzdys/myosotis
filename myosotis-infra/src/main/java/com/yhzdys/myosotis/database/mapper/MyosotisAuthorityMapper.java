@@ -10,8 +10,6 @@ import java.util.List;
 @Mapper
 public interface MyosotisAuthorityMapper {
 
-    int insert(MyosotisAuthorityDO record);
-
     int batchInsert(@Param("list") List<MyosotisAuthorityDO> list);
 
     List<MyosotisAuthorityDO> listByNamespace(String namespace);

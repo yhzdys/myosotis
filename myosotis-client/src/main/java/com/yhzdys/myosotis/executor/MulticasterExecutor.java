@@ -8,11 +8,7 @@ import java.util.concurrent.TimeUnit;
 public final class MulticasterExecutor extends ThreadPoolExecutor {
 
     public MulticasterExecutor() {
-        super(0, Runtime.getRuntime().availableProcessors() * 2,
-                60, TimeUnit.SECONDS,
-                new SynchronousQueue<>(true),
-                new EventMulticasterThreadFactory(),
-                new DiscardOldestPolicy());
+        super(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS, new SynchronousQueue<>(true), new EventMulticasterThreadFactory());
     }
 
     public static final class EventMulticasterThreadFactory implements ThreadFactory {

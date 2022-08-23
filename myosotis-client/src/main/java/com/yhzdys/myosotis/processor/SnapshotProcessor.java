@@ -1,6 +1,6 @@
 package com.yhzdys.myosotis.processor;
 
-import com.yhzdys.myosotis.constant.SystemConst;
+import com.yhzdys.myosotis.constant.SysConst;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
 import com.yhzdys.myosotis.misc.JsonUtil;
@@ -18,8 +18,8 @@ import java.util.List;
 
 public final class SnapshotProcessor implements Processor {
 
-    public static final String sn_dir = SystemConst.myosotis_dir + SystemConst.separator + "snapshot" + SystemConst.separator + "%s";
-    public static final String sn_file = sn_dir + SystemConst.separator + "%s" + ".snapshot";
+    public final String sn_dir = SysConst.myosotis_dir + SysConst.separator + "snapshot" + SysConst.separator + "%s";
+    public final String sn_file = sn_dir + SysConst.separator + "%s" + ".snapshot";
 
     private final boolean enable;
 
@@ -33,7 +33,7 @@ public final class SnapshotProcessor implements Processor {
             return;
         }
         File dir = new File(String.format(sn_dir, namespace));
-        boolean result = dir.mkdirs();
+        boolean b = dir.mkdirs();
     }
 
     @Override
@@ -53,7 +53,7 @@ public final class SnapshotProcessor implements Processor {
         try {
             return JsonUtil.toObject(this.readFile(file), MyosotisConfig.class);
         } catch (Exception e) {
-            LoggerFactory.getLogger().error("Parse snapshot config failed", e);
+            LoggerFactory.getLogger().error("Read snapshot config failed", e);
             return null;
         }
     }
@@ -64,11 +64,11 @@ public final class SnapshotProcessor implements Processor {
     }
 
     @Override
-    public void save(MyosotisConfig data) {
+    public void save(MyosotisConfig config) {
         if (!enable) {
             return;
         }
-        this.saveFile(JsonUtil.toString(data), String.format(sn_file, data.getNamespace(), data.getConfigKey()));
+        this.saveFile(JsonUtil.toString(config), String.format(sn_file, config.getNamespace(), config.getConfigKey()));
     }
 
     private String readFile(File file) {
@@ -89,16 +89,12 @@ public final class SnapshotProcessor implements Processor {
         File file = new File(path);
         Writer writer = null;
         try {
-            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-                LoggerFactory.getLogger().warn("Mkdir snapshot parent file failed, path: {}", path);
-                return;
-            }
             if (!file.exists() && !file.createNewFile()) {
-                LoggerFactory.getLogger().warn("Create snapshot file failed, path: {}", path);
+                LoggerFactory.getLogger().warn("Create snapshot file failed");
                 return;
             }
             writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8);
-            writer.write(data.trim());
+            writer.write(data);
         } catch (Exception e) {
             LoggerFactory.getLogger().error("Save file failed", e);
         } finally {

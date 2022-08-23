@@ -6,5 +6,5 @@ public interface Listener {
 
     String namespace();
 
-    void handle(MyosotisEvent event);
+    void handle(MyosotisEvent event) throws Exception;
 }

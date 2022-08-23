@@ -37,12 +37,12 @@ public final class MyosotisApplication {
     /**
      * cached config(s)
      */
-    private final CachedConfig cachedConfig;
+    private final CachedConfig cachedConfig = new CachedConfig();
 
     /**
      * metadata of cached config(s)
      */
-    private final ConfigMetadata configMetadata;
+    private final ConfigMetadata configMetadata = new ConfigMetadata();
 
     /**
      * config(s) processor
@@ -50,20 +50,15 @@ public final class MyosotisApplication {
     private final Processor serverProcessor;
     private final Processor snapshotProcessor;
 
-    private final EventMulticaster multicaster;
+    private final EventMulticaster multicaster = new EventMulticaster();
 
     public MyosotisApplication(String serverAddress) {
         this(new Config(serverAddress));
     }
 
     public MyosotisApplication(Config config) {
-        this.configMetadata = new ConfigMetadata();
-        this.cachedConfig = new CachedConfig();
-
         this.serverProcessor = new ServerProcessor(config, configMetadata);
         this.snapshotProcessor = new SnapshotProcessor(config.isEnableSnapshot());
-        this.multicaster = new EventMulticaster();
-
         this.start();
     }
 
@@ -104,7 +99,7 @@ public final class MyosotisApplication {
                 return;
             }
             // init namespace configs
-            this.initNamespace(namespace);
+            this.initConfigs(namespace);
             configMetadata.setPollingAll(namespace);
         }
         multicaster.addNamespaceListener(listener);
@@ -143,10 +138,13 @@ public final class MyosotisApplication {
      * fetch order: cache > server > snapshot
      */
     String getConfig(String namespace, String configKey) {
-        // step.1 get from local cache
+        // step.1 get from cache
         String configValue = cachedConfig.get(namespace, configKey);
         if (configValue != null) {
             return configValue;
+        }
+        if (configMetadata.isAbsent(namespace, configKey)) {
+            return null;
         }
         synchronized (LockStore.get(namespace + ":" + configKey)) {
             configValue = cachedConfig.get(namespace, configKey);
@@ -170,7 +168,8 @@ public final class MyosotisApplication {
             if (configMetadata.isAbsent(namespace, configKey)) {
                 return null;
             }
-            // step.3 get from snapshot file
+            // step.3 get from snapshot
+            LoggerFactory.getLogger().warn("Get config from server failed, fall-back to snapshot");
             config = snapshotProcessor.getConfig(namespace, configKey);
             if (config != null) {
                 cachedConfig.add(namespace, configKey, config.getConfigValue());
@@ -181,19 +180,20 @@ public final class MyosotisApplication {
         return null;
     }
 
-    private void initNamespace(String namespace) {
+    private void initConfigs(String namespace) {
         List<MyosotisConfig> configs = serverProcessor.getConfigs(namespace);
         if (CollectionUtils.isEmpty(configs)) {
             return;
         }
         for (MyosotisConfig config : configs) {
-            this.initLocalConfig(config);
+            this.initConfig(config);
         }
     }
 
-    private void initLocalConfig(MyosotisConfig config) {
+    private void initConfig(MyosotisConfig config) {
         String namespace = config.getNamespace();
         String configKey = config.getConfigKey();
+
         configMetadata.removeAbsent(namespace, configKey);
         configMetadata.addPolling(namespace, configKey, config.getVersion());
         if (config.getConfigValue() != null) {
@@ -210,7 +210,7 @@ public final class MyosotisApplication {
                 this.fetchEvents();
                 configMetadata.clearAbsent();
             } catch (Throwable e) {
-                LoggerFactory.getLogger().error("Polling config(s) failed, msg: {}", e.getMessage());
+                LoggerFactory.getLogger().error("Polling config(s) failed, {}", e.getMessage());
                 LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
             }
         }, 0, 1, TimeUnit.MILLISECONDS);
@@ -228,16 +228,15 @@ public final class MyosotisApplication {
             return;
         }
         for (MyosotisEvent event : events) {
-            MyosotisClient client = clients.get(event.getNamespace());
-            if (client == null) {
+            if (clients.get(event.getNamespace()) != null) {
                 continue;
             }
-            this.multicastEvents(client, event);
+            this.processEvent(event);
         }
     }
 
-    private void multicastEvents(MyosotisClient client, MyosotisEvent event) {
-        String namespace = client.getNamespace();
+    private void processEvent(MyosotisEvent event) {
+        String namespace = event.getNamespace();
         String configKey = event.getConfigKey();
         String configValue = event.getConfigValue();
 

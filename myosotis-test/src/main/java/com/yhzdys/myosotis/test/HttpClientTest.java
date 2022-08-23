@@ -1,7 +1,7 @@
 package com.yhzdys.myosotis.test;
 
 import com.yhzdys.myosotis.constant.NetConst;
-import com.yhzdys.myosotis.constant.SystemConst;
+import com.yhzdys.myosotis.constant.SysConst;
 import com.yhzdys.myosotis.misc.MyosotisHttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -15,7 +15,7 @@ public class HttpClientTest {
         MyosotisHttpClient myosotisHttpClient = MyosotisHttpClient.getInstance();
 
         HttpGet request = new HttpGet("http://127.0.0.1:7777/cluster/health");
-        request.setHeader(NetConst.client_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_ip, SysConst.local_host);
         request.setHeader(NetConst.header_short_connection);
         CloseableHttpResponse response = myosotisHttpClient.execute(request);
 
@@ -28,7 +28,7 @@ public class HttpClientTest {
         MyosotisHttpClient myosotisHttpClient = MyosotisHttpClient.getInstance();
 
         HttpGet request = new HttpGet("http://127.0.0.1:7777/cluster/health");
-        request.setHeader(NetConst.client_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_ip, SysConst.local_host);
         request.setHeader(NetConst.header_long_connection);
         CloseableHttpResponse response = myosotisHttpClient.execute(request);
 

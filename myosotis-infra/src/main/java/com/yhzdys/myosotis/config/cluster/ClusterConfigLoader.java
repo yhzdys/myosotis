@@ -57,7 +57,7 @@ public class ClusterConfigLoader {
         } catch (MyosotisException e) {
             throw e;
         } catch (Exception e) {
-            throw new MyosotisException("Load cluster config failed.", e);
+            throw new MyosotisException("Load cluster config failed", e);
         }
 
         config.initialized();

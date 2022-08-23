@@ -91,7 +91,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             try {
                 this.initFieldValue(namespace, targetBean, field);
             } catch (Exception e) {
-                logger.error("Init myosotis value [{}.{}] failed, msg: {}", targetBean.getClass().getName(), field.getName(), e.getMessage());
+                logger.error("Init myosotis value [{}.{}] failed, {}", targetBean.getClass().getName(), field.getName(), e.getMessage());
             }
         }
     }

@@ -19,5 +19,4 @@ public class Const {
     public static final String default_username = "myosotis";
 
     public static final String default_password = "123456";
-
 }

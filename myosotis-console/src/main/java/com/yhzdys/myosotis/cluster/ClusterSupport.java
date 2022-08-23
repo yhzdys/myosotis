@@ -2,6 +2,7 @@ package com.yhzdys.myosotis.cluster;
 
 import com.yhzdys.myosotis.config.cluster.ClusterConfig;
 import com.yhzdys.myosotis.config.cluster.ClusterConfigLoader;
+import com.yhzdys.myosotis.constant.SysConst;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class ClusterSupport {
         nodes = newNodes;
         if (pool == null) {
             pool = new ForkJoinPool(
-                    Math.min(Runtime.getRuntime().availableProcessors(), nodes.size()),
+                    Math.min(SysConst.processors, nodes.size()),
                     ForkJoinPool.defaultForkJoinWorkerThreadFactory,
                     (t, e) -> logger.error(e.getMessage(), e),
                     true

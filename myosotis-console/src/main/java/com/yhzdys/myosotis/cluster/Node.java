@@ -1,7 +1,7 @@
 package com.yhzdys.myosotis.cluster;
 
 import com.yhzdys.myosotis.constant.NetConst;
-import com.yhzdys.myosotis.constant.SystemConst;
+import com.yhzdys.myosotis.constant.SysConst;
 import com.yhzdys.myosotis.misc.MyosotisHttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -45,7 +45,7 @@ public class Node {
     public Node(String address) {
         this.address = address;
         HttpGet request = new HttpGet("http://" + address + health_check);
-        request.setHeader(NetConst.client_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_ip, SysConst.local_host);
         request.setHeader(NetConst.header_short_connection);
         this.monitorRequest = request;
         this.health = true;
@@ -84,7 +84,7 @@ public class Node {
             return;
         }
         HttpGet request = new HttpGet("http://" + address + polling_notify + namespace);
-        request.setHeader(NetConst.client_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_ip, SysConst.local_host);
         request.setHeader(NetConst.header_short_connection);
 
         CloseableHttpResponse response = null;

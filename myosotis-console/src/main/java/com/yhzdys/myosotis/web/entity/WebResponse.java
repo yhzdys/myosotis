@@ -1,6 +1,7 @@
 package com.yhzdys.myosotis.web.entity;
 
 public class WebResponse {
+
     private static final String success_message = "success";
     private static final WebResponse empty_success = new WebResponse().setSuccess(true).setMessage(success_message);
 

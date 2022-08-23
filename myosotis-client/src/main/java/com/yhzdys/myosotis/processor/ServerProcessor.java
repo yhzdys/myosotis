@@ -1,9 +1,9 @@
 package com.yhzdys.myosotis.processor;
 
 import com.yhzdys.myosotis.Config;
-import com.yhzdys.myosotis.compress.Lz4;
+import com.yhzdys.myosotis.compress.Compressor;
 import com.yhzdys.myosotis.constant.NetConst;
-import com.yhzdys.myosotis.constant.SystemConst;
+import com.yhzdys.myosotis.constant.SysConst;
 import com.yhzdys.myosotis.data.ConfigMetadata;
 import com.yhzdys.myosotis.entity.MyosotisConfig;
 import com.yhzdys.myosotis.entity.MyosotisEvent;
@@ -28,7 +28,6 @@ import org.apache.http.util.EntityUtils;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,17 +35,15 @@ import java.util.concurrent.locks.LockSupport;
 
 public final class ServerProcessor implements Processor {
 
-    private static final MyosotisHttpClient myosotisHttpClient = MyosotisHttpClient.getInstance();
-
+    private final MyosotisHttpClient myosotisHttpClient = MyosotisHttpClient.getInstance();
     private final String serverAddress;
+    private final SerializeType serializeType;
+    private final boolean enableCompress;
+    private final long compressThreshold;
 
     private final ExceptionCounter counter;
     private final ConfigMetadata configMetadata;
     private final HttpPost pollingPost;
-
-    private final SerializeType serializeType;
-    private final boolean enableCompress;
-    private final long compressThreshold;
 
     private long version = 0;
 
@@ -92,7 +89,7 @@ public final class ServerProcessor implements Processor {
             }
             counter.increase();
         } catch (Exception e) {
-            LoggerFactory.getLogger().error("Polling failed, msg: {}", e.getMessage());
+            LoggerFactory.getLogger().error("Polling failed, {}", e.getMessage());
             counter.increase();
         } finally {
             this.consume(response);
@@ -114,7 +111,7 @@ public final class ServerProcessor implements Processor {
             }
             return null;
         } catch (Throwable e) {
-            LoggerFactory.getLogger().error("Get config failed, msg: {}", e.getMessage());
+            LoggerFactory.getLogger().error("Get config failed, {}", e.getMessage());
         } finally {
             this.consume(response);
         }
@@ -128,7 +125,7 @@ public final class ServerProcessor implements Processor {
             response = myosotisHttpClient.execute(this.queryGet(namespace, null));
             return this.deserializeConfigs(response);
         } catch (Throwable e) {
-            LoggerFactory.getLogger().error("Get config(s) failed, msg: {}", e.getMessage());
+            LoggerFactory.getLogger().error("Get config(s) failed, {}", e.getMessage());
         } finally {
             this.consume(response);
         }
@@ -140,26 +137,24 @@ public final class ServerProcessor implements Processor {
     }
 
     private HttpPost pollingPost() throws Exception {
-        long currentModifiedVersion = configMetadata.pollingVersion();
-        // version not changed, reuse previous data
-        if (version >= currentModifiedVersion) {
+        long metaVersion = configMetadata.getVersion();
+        if (version >= metaVersion) {
             return pollingPost;
         }
-        version = currentModifiedVersion;
-        Collection<PollingData> pollingData = configMetadata.pollingData();
-        List<PollingData> pollingList = new ArrayList<>(pollingData);
+        version = metaVersion;
+        List<PollingData> pollingData = new ArrayList<>(configMetadata.pollingData());
         // serialization
-        byte[] data = serializeType.getSerializer().serializePollingData(pollingList);
+        byte[] data = serializeType.getSerializer().serializePollingData(pollingData);
         // data compress
-        ByteArrayEntity byteArrayEntity;
-        if (enableCompress && data.length >= compressThreshold) {
+        ByteArrayEntity entity;
+        if (enableCompress && data.length > compressThreshold) {
             pollingPost.setHeader(NetConst.origin_data_length, String.valueOf(data.length));
-            byteArrayEntity = new ByteArrayEntity(Lz4.compress(data));
+            entity = new ByteArrayEntity(Compressor.compress(data));
         } else {
             pollingPost.removeHeaders(NetConst.origin_data_length);
-            byteArrayEntity = new ByteArrayEntity(data);
+            entity = new ByteArrayEntity(data);
         }
-        pollingPost.setEntity(byteArrayEntity);
+        pollingPost.setEntity(entity);
         return pollingPost;
     }
 
@@ -171,7 +166,7 @@ public final class ServerProcessor implements Processor {
     }
 
     private void addCommonHeader(HttpRequestBase request) {
-        request.setHeader(NetConst.client_ip, SystemConst.local_host);
+        request.setHeader(NetConst.client_ip, SysConst.local_host);
         request.setHeader(NetConst.client_language, "java");
         request.setHeader(NetConst.serialize_type, serializeType.getCode());
         request.setHeader(NetConst.compress_support, NetConst.support_yes);
@@ -205,7 +200,7 @@ public final class ServerProcessor implements Processor {
         Header header = response.getFirstHeader(NetConst.origin_data_length);
         HttpEntity entity = response.getEntity();
         return header == null ? EntityUtils.toByteArray(entity) :
-                Lz4.decompress(EntityUtils.toByteArray(entity), Integer.parseInt(header.getValue()));
+                Compressor.decompress(EntityUtils.toByteArray(entity), Integer.parseInt(header.getValue()));
     }
 
     private Serializer getSerializer(HttpResponse response) {

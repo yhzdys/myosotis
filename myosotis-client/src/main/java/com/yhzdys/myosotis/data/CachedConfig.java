@@ -8,27 +8,29 @@ public final class CachedConfig {
     /**
      * <namespace, <configKey, configValue>>
      */
-    private final Map<String, Map<String, String>> configMap = new ConcurrentHashMap<>(2);
+    private final Map<String, Map<String, String>> configs = new ConcurrentHashMap<>(2);
 
     public void add(String namespace) {
-        configMap.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2));
+        configs.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2));
     }
 
     public void add(String namespace, String configKey, String configValue) {
-        Map<String, String> configs = configMap.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2));
-        configs.put(configKey, configValue);
+        configs.computeIfAbsent(namespace, k -> new ConcurrentHashMap<>(2)).put(configKey, configValue);
     }
 
     public void remove(String namespace, String configKey) {
-        Map<String, String> configs = configMap.get(namespace);
+        Map<String, String> configs = this.configs.get(namespace);
         if (configs == null) {
             return;
         }
         configs.remove(configKey);
+        if (configs.isEmpty()) {
+            this.configs.remove(namespace);
+        }
     }
 
     public String get(String namespace, String configKey) {
-        Map<String, String> configs = configMap.get(namespace);
+        Map<String, String> configs = this.configs.get(namespace);
         if (configs == null) {
             return null;
         }

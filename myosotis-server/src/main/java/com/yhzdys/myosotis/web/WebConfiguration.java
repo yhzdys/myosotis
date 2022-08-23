@@ -2,6 +2,7 @@ package com.yhzdys.myosotis.web;
 
 import com.yhzdys.myosotis.config.server.ServerConfig;
 import com.yhzdys.myosotis.config.server.ServerConfigLoader;
+import com.yhzdys.myosotis.constant.SysConst;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +31,8 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         ServerConfig config = ServerConfigLoader.get();
 
-        int processors = Runtime.getRuntime().availableProcessors();
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(processors);
+        executor.setCorePoolSize(SysConst.processors);
         executor.setQueueCapacity(0);
         executor.setMaxPoolSize(config.getKeepAliveRequests());
         executor.setThreadNamePrefix("Myosotis-Polling-");

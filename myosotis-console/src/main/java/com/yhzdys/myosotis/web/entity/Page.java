@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Page {
+
     private static final Page empty_page = new Page(new ArrayList<>(), 1, 0L, true);
 
     private List<?> list;

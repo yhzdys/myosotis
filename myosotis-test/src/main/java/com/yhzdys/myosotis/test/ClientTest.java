@@ -22,7 +22,7 @@ public class ClientTest {
         config.serializeType(SerializeType.AVRO);
         config.enableSnapshot(true);
         config.enableCompress(true);
-        config.compressThreshold(10);
+        config.compressThreshold(16);
         MyosotisApplication application = new MyosotisApplication(config);
 
         MyosotisClient client = application.getClient("default");
@@ -35,7 +35,7 @@ public class ClientTest {
 
             @Override
             public void handle(MyosotisEvent event) {
-                System.out.println("g event: " + JsonUtil.toString(event));
+                System.out.println("n event: " + JsonUtil.toString(event));
             }
         });
         application.addConfigListener(new ConfigListener() {
@@ -51,7 +51,7 @@ public class ClientTest {
 
             @Override
             public void handle(MyosotisEvent event) {
-                System.out.println("s event: " + JsonUtil.toString(event));
+                System.out.println("c event: " + JsonUtil.toString(event));
             }
         });
 

@@ -1,6 +1,6 @@
 package com.yhzdys.myosotis.web;
 
-import com.yhzdys.myosotis.compress.Lz4;
+import com.yhzdys.myosotis.compress.Compressor;
 import com.yhzdys.myosotis.config.server.ServerConfig;
 import com.yhzdys.myosotis.config.server.ServerConfigLoader;
 import com.yhzdys.myosotis.constant.NetConst;
@@ -84,7 +84,7 @@ public class ResponseSerializer {
 
     private static byte[] compress(byte[] data) {
         ServerConfig config = ServerConfigLoader.get();
-        if (!config.isEnableCompress() || data.length < config.getCompressThreshold()) {
+        if (!config.isEnableCompress() || data.length <= config.getCompressThreshold()) {
             return data;
         }
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -98,7 +98,7 @@ public class ResponseSerializer {
         }
         // client support data compress
         if (NetConst.support_yes.equalsIgnoreCase(request.getHeader(NetConst.compress_support))) {
-            byte[] compressed = Lz4.compress(data);
+            byte[] compressed = Compressor.compress(data);
             response.setHeader(NetConst.origin_data_length, String.valueOf(data.length));
             return compressed;
         }

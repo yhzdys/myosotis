@@ -1,6 +1,6 @@
 package com.yhzdys.myosotis.web;
 
-import com.yhzdys.myosotis.compress.Lz4;
+import com.yhzdys.myosotis.compress.Compressor;
 import com.yhzdys.myosotis.constant.NetConst;
 import com.yhzdys.myosotis.entity.PollingData;
 import com.yhzdys.myosotis.enums.SerializeType;
@@ -21,7 +21,7 @@ public class RequestDeserializer {
         HttpServletRequest request = attributes.getRequest();
         int length = request.getIntHeader(NetConst.origin_data_length);
         if (length > 0) {
-            data = Lz4.decompress(data, length);
+            data = Compressor.decompress(data, length);
         }
         String serializeType = request.getHeader(NetConst.serialize_type);
         try {
