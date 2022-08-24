@@ -158,12 +158,10 @@ public final class MyosotisApplication {
             MyosotisConfig config = serverProcessor.getConfig(namespace, configKey);
             if (config != null) {
                 configMetadata.addPolling(namespace, configKey, config.getVersion());
+                cachedConfig.add(namespace, configKey, config.getConfigValue());
                 configMetadata.removeAbsent(namespace, configKey);
-                if (config.getConfigValue() != null) {
-                    cachedConfig.add(namespace, configKey, config.getConfigValue());
-                    snapshotProcessor.save(config);
-                    return config.getConfigValue();
-                }
+                snapshotProcessor.save(config);
+                return config.getConfigValue();
             }
             if (configMetadata.isAbsent(namespace, configKey)) {
                 return null;
