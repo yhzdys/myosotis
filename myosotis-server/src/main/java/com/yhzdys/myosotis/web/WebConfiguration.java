@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
-    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private ThreadPoolTaskExecutor asyncPollingPool;
 
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
@@ -41,7 +41,7 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
 
         configurer.setDefaultTimeout(15 * 1000);
         configurer.setTaskExecutor(executor);
-        threadPoolTaskExecutor = executor;
+        asyncPollingPool = executor;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
     }
 
     public int getConnections() {
-        return threadPoolTaskExecutor.getActiveCount();
+        return asyncPollingPool.getActiveCount();
     }
 
     @ControllerAdvice

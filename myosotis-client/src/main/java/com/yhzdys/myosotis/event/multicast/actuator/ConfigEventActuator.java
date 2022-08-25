@@ -1,30 +1,31 @@
 package com.yhzdys.myosotis.event.multicast.actuator;
 
+import com.yhzdys.myosotis.event.multicast.EventExecutor;
 import com.yhzdys.myosotis.executor.MulticasterExecutor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
 public final class ConfigEventActuator implements Actuator {
 
-    private final MulticasterExecutor executor;
+    private final MulticasterExecutor mExecutor;
     private final Runnable runner;
     private boolean running;
-    private EventCommand command;
+    private EventExecutor executor;
 
-    public ConfigEventActuator(MulticasterExecutor executor) {
-        this.executor = executor;
+    public ConfigEventActuator(MulticasterExecutor mExecutor) {
+        this.mExecutor = mExecutor;
         this.runner = () -> {
             for (; ; ) {
-                EventCommand command;
+                EventExecutor currentExecutor;
                 synchronized (this) {
-                    if (this.command == null) {
+                    if (executor == null) {
                         running = false;
                         return;
                     }
-                    command = this.command;
-                    this.command = null;
+                    currentExecutor = executor;
+                    executor = null;
                 }
                 try {
-                    command.getRunner().run();
+                    currentExecutor.execute();
                 } catch (Throwable t) {
                     LoggerFactory.getLogger().error(t.getMessage(), t);
                 }
@@ -32,14 +33,15 @@ public final class ConfigEventActuator implements Actuator {
         };
     }
 
-    public void actuate(EventCommand command) {
+    @Override
+    public void actuate(EventExecutor executor) {
         synchronized (this) {
-            this.command = command;
+            this.executor = executor;
             if (running) {
                 return;
             }
             running = true;
-            executor.execute(runner);
+            mExecutor.execute(runner);
         }
     }
 }

@@ -34,18 +34,18 @@ public final class SysConst {
                     }
                 }
             }
-            String localHostAddress = null;
+            String net4Address = null;
             for (String ip : net4Ips) {
                 if (ip.startsWith("127.0")) {
                     continue;
                 }
-                localHostAddress = ip;
+                net4Address = ip;
                 break;
             }
-            if (localHostAddress == null) {
+            if (net4Address == null) {
                 throw new MyosotisException("Can not load local host");
             }
-            local_host = localHostAddress;
+            local_host = net4Address;
         } catch (MyosotisException e) {
             throw e;
         } catch (Exception e) {

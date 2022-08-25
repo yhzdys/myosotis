@@ -1,5 +1,6 @@
 package com.yhzdys.myosotis.event.multicast.actuator;
 
+import com.yhzdys.myosotis.event.multicast.EventExecutor;
 import com.yhzdys.myosotis.executor.MulticasterExecutor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
 
@@ -7,25 +8,25 @@ import java.util.LinkedList;
 
 public final class NamespaceEventActuator implements Actuator {
 
-    private final MulticasterExecutor executor;
+    private final MulticasterExecutor mExecutor;
     private final Runnable runner;
-    private final LinkedList<EventCommand> commands = new LinkedList<>();
+    private final LinkedList<EventExecutor> executors = new LinkedList<>();
     private boolean running;
 
-    public NamespaceEventActuator(MulticasterExecutor executor) {
-        this.executor = executor;
+    public NamespaceEventActuator(MulticasterExecutor mExecutor) {
+        this.mExecutor = mExecutor;
         this.runner = () -> {
             for (; ; ) {
-                final EventCommand command;
-                synchronized (commands) {
-                    command = commands.poll();
-                    if (command == null) {
+                EventExecutor currentExecutor;
+                synchronized (executors) {
+                    currentExecutor = executors.poll();
+                    if (currentExecutor == null) {
                         running = false;
                         return;
                     }
                 }
                 try {
-                    command.getRunner().run();
+                    currentExecutor.execute();
                 } catch (Throwable t) {
                     LoggerFactory.getLogger().error(t.getMessage(), t);
                 }
@@ -34,17 +35,17 @@ public final class NamespaceEventActuator implements Actuator {
     }
 
     @Override
-    public void actuate(EventCommand command) {
-        synchronized (commands) {
-            int index = commands.indexOf(command);
+    public void actuate(EventExecutor executor) {
+        synchronized (executors) {
+            int index = executors.indexOf(executor);
             if (index < 0) {
-                commands.add(command);
+                executors.add(executor);
             } else {
-                commands.get(index).setRunner(command.getRunner());
+                executors.set(index, executor);
             }
             if (!running) {
                 running = true;
-                executor.execute(runner);
+                this.mExecutor.execute(runner);
             }
         }
     }

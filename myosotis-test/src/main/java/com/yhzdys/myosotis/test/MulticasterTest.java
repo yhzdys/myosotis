@@ -73,7 +73,7 @@ public class MulticasterTest {
             multicaster.multicast(event);
         }
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
     }
 
     @Test
@@ -87,7 +87,8 @@ public class MulticasterTest {
             }
 
             @Override
-            public void handle(MyosotisEvent event) {
+            public void handle(MyosotisEvent event) throws Exception {
+                Thread.sleep(1000);
                 System.out.println("event1: " + JsonUtil.toString(event));
             }
         });
@@ -98,7 +99,8 @@ public class MulticasterTest {
             }
 
             @Override
-            public void handle(MyosotisEvent event) {
+            public void handle(MyosotisEvent event) throws Exception {
+                Thread.sleep(1000);
                 System.out.println("event2: " + JsonUtil.toString(event));
             }
         });
@@ -119,6 +121,6 @@ public class MulticasterTest {
             multicaster.multicast(event4);
         }
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
     }
 }

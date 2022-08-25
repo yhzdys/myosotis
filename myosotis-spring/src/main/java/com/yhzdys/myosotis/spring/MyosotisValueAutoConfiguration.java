@@ -54,7 +54,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         if (StringUtils.isBlank(configValue)) {
             return null;
         }
-        return JsonUtil.toObject(configValue.trim(), type);
+        return JsonUtil.toObject(configValue, type);
     }
 
     public void onApplicationEvent(ContextRefreshedEvent event) {

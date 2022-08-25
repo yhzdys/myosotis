@@ -6,7 +6,6 @@ import com.yhzdys.myosotis.event.listener.Listener;
 import com.yhzdys.myosotis.event.listener.NamespaceListener;
 import com.yhzdys.myosotis.event.multicast.actuator.Actuator;
 import com.yhzdys.myosotis.event.multicast.actuator.ConfigEventActuator;
-import com.yhzdys.myosotis.event.multicast.actuator.EventCommand;
 import com.yhzdys.myosotis.event.multicast.actuator.NamespaceEventActuator;
 import com.yhzdys.myosotis.executor.MulticasterExecutor;
 import com.yhzdys.myosotis.misc.LoggerFactory;
@@ -92,13 +91,13 @@ public final class EventMulticaster {
 
         private void actuate(MyosotisEvent event) {
             actuator.actuate(
-                    new EventCommand(() -> this.trigger(listener, event))
+                    new EventExecutor(() -> this.trigger(listener, event))
             );
         }
 
         private void actuate(String id, MyosotisEvent event) {
             actuator.actuate(
-                    new EventCommand(id, () -> this.trigger(listener, event))
+                    new EventExecutor(id, () -> this.trigger(listener, event))
             );
         }
 

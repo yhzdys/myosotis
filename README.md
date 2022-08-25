@@ -13,10 +13,10 @@ Myosotis（勿忘我)是基于java开发的一款轻量化、高性能的动态�
 
 客户端特性：
 
-- 轻量设计低占用
-- 配置实时更新
-- 本地快照备份
-- Spring解耦
+* 轻量设计低占用
+* 配置实时更新
+* 客户端本地快照
+* 像本地常量一样的使用体验
 
 ### 控制台样例
 
@@ -31,7 +31,48 @@ Myosotis（勿忘我)是基于java开发的一款轻量化、高性能的动态�
 
 [Maven](https://repo1.maven.org/maven2/com/yhzdys/myosotis/)
 
-### java
+### springframework + annotation
+
+~~~java
+/**
+ * spring启动之后，当MyosotisApplication容器中client的实例只有一个时，可不指定“namespace”属性，默认为该client的namespace
+ */
+@Myosotis(namespace = "defalut")
+public class Constant {
+
+    /**
+     * 默认以属性名称查询配置
+     */
+    @MyosotisValue
+    public static String configKey1;
+
+    /**
+     * 自动类型转换
+     */
+    @MyosotisValue
+    public User user;
+
+    /**
+     * 指定configKey
+     */
+    @MyosotisValue(configKey = "config_key2")
+    public static Map<String, String> configKey2;
+
+    /**
+     * 指定namepsace下的configKey
+     */
+    @MyosotisValue(namespace = "default2", configKey = "config_key3")
+    public static Long configKey3;
+
+    /**
+     * 当配置为空时，指定默认值
+     */
+    @MyosotisValue(defaultValue = "[1,2,3]")
+    public List<Long> configKey5;
+}
+~~~
+
+### java原生
 
 pom.xml添加client依赖
 
@@ -44,10 +85,15 @@ pom.xml添加client依赖
 ~~~
 
 ~~~java
-// MyosotisApplication 需要设置为单例
 MyosotisApplication application = new MyosotisApplication("http://127.0.0.1:7777");
 MyosotisClient client = application.getClient("namespace");
+
 String configValue = client.getString("configKey");
+Long configValue = client.getLong("configKey");
+Boolean configValue = client.getBoolean("configKey");
+// 支持自定义ValueParser
+? configValue = client.get("configKey", (configValue) -> {...});
+User user = client.get("user", (configValue) -> {return JSON.parseObject(configValue, User.class)});
 ~~~
 
 ### springframework
@@ -99,77 +145,27 @@ application.properties(yml)添加配置
 ~~~properties
 myosotis.client.namespace=default
 myosotis.server.address=http://127.0.0.1:7777
+myosotis.server.serializeType=PROTOSTUFF
+myosotis.server.enableSnapshot=true
+myosotis.server.enableCompress=true
+myosotis.server.compressThreshold=2048
 ~~~
 
 ---
-
-### java client
-
-~~~java
-MyosotisApplication application = new MyosotisApplication("http://127.0.0.1:7777");
-MyosotisClient client = application.getClient("namespace");
-
-String configValue = client.getString("configKey");
-Long configValue = client.getLong("configKey");
-Boolean configValue = client.getBoolean("configKey");
-// 自定义ValueParser，支持lambda表达式
-? configValue = client.get("configKey", (configValue) -> {...});
-~~~
-
-### annotation
-
-~~~java
-/**
- * 当client对象只有一个时，可不指定“namespace”属性，默认为该client下的namespace
- */
-@Myosotis(namespace = "defalut")
-public class Constant {
-
-    /**
-     * 默认匹配与属性名称一致的configKey
-     */
-    @MyosotisValue
-    public static String configKey1;
-
-    /**
-     * 自动类型转换
-     */
-    @MyosotisValue
-    public static User user;
-
-    /**
-     * 指定configKey
-     */
-    @MyosotisValue(configKey = "config_key2")
-    public static Map<String, String> configKey2;
-
-    /**
-     * 指定namepsace下的configKey
-     */
-    @MyosotisValue(namespace = "default", configKey = "config_key2")
-    public static Long configKey3;
-
-    /**
-     * 当配置为空时，手动指定默认值
-     */
-    @MyosotisValue(defaultValue = "[1,2,3]")
-    public List<Long> configKey5;
-}
-~~~
 
 ## 客户端进阶使用
 
 ### 自定义
 
 ~~~java
-Config config = new Config("http://myosotis-server.yhzdys.com");
+Config config = new Config("http://127.0.0.1:7777");
 // 自定义序列化协议，目前可支持JSON、AVRO、PROTOSTUFF(默认JSON)
 config.serializeType(SerializeType.JSON);
 // 开启本地快照保存(默认开启)
 config.enableSnapshot(true);
-// 开启数据压缩(默认开启)
+// 开启服务端通信数据压缩(默认开启)
 config.enableCompress(true);
-// 数据压缩阈值，当数据流长度大于设定值时对数据进行压缩处理(默认2048)
+// 数据传输压缩阈值，当数据流长度大于设定值时对数据进行压缩处理(默认2048)
 config.compressThreshold(2048L);
 MyosotisApplication application = new MyosotisApplication(config);
 ~~~
@@ -179,7 +175,7 @@ MyosotisApplication application = new MyosotisApplication(config);
 ~~~
 对最后一次获取到的服务端配置进行快照文件备份
 使用config.enableSnapshotFile(true)开启本地快照备份功能(默认开启)
-本地快照备份开启后，当服务端不可用时，会降级读取快照文件中的配置值，配置值为最后一次从服务端获取的有效配置
+本地快照备份开启后，当服务端不可用时，会降级读取快照文件中的配置值并缓存，配置值为最后一次从服务端获取的有效配置
 快照文件路径为：{user.home}/.myosotis/snapshot/{namespace}/{configKey}.snapshot
 ~~~
 
@@ -191,7 +187,17 @@ com.yhzdys.myosotis.event.listener.ConfigListener
 com.yhzdys.myosotis.event.listener.NamespaceListener
 
 ConfigListener提供单个命名空间下单个配置变动事件的订阅能力
-NamespaceListener提供单个命名空间下所有配置变动事件的订阅能力(若命名空间下存在较多配置，不建议使用)
+NamespaceListener提供单个命名空间下所有配置变动事件的订阅能力(开启命名空间监听，客户端会在启动时缓存该命名空间下所有的配置信息，会增加一定的内存占用)
+
+⚠️注意事项
+1.客户端事件发布采用线程池异步调度，线程池默认最大线程数为Integer.MAX_VALUE，实际最大线程数由注册的Listener个数决定，使用时需合理控制listener数量！
+  具体实现参阅：com.yhzdys.myosotis.event.multicast.EventMulticaster
+
+2.考虑到实际场景可能出现Listener处理事件耗时较长的情况，并且业务上往往只关心最新的配置；所以客户端将listener使用ActuatorWrapper进行二次封装来统一调度；在同一个配置的上一个事件未处理完成时，Actuator会丢弃最新事件之前的所有事件，以减少系统开支
+  举个例子：一个ConfigListener实例陆续收到了A、B、C、D 4个配置更新事件；由于一些原因，listener在处理事件A时消耗了较长时间，在listener处理事件A结束之前客户端又陆续收到了事件B、C、D，这时Actuator会抛弃B、C事件，当listener处理完事件A之后，再次收到的事件消息只有事件D！
+  具体实现参阅：com.yhzdys.myosotis.event.multicast.EventMulticaster.ActuatorWrapper
+              com.yhzdys.myosotis.event.multicast.actuator.ConfigEventActuator
+              com.yhzdys.myosotis.event.multicast.actuator.NamespaceEventActuator
 ~~~
 
 #### ConfigListener
@@ -276,15 +282,15 @@ cd target
   |- myosotis-console.jar         控制台应用
   |- myosotis-server.jar          服务端应用
 |config
-  |- cluster.conf                 集群配置
-  |- datasource.conf              数据源配置
-  |- console.conf                 控制台配置
-  |- server.conf                  服务端配置
+  |- console.conf                 控制台配置(console)
+  |- cluster.conf                 集群配置(console)
+  |- datasource.conf              数据源配置(console&server)
+  |- server.conf                  服务端配置(server)
 |database
   |- myosotis.db                  内置数据库(sqlite3)
 |support
   |- mysql.sql                    MySQL DDL
-  |- nginx.conf                   负载均衡配置参考
+  |- nginx_*.conf                 nginx负载均衡配置参考
 |README.md                        readme
 ~~~
 
@@ -313,8 +319,10 @@ cd target
 
 ### cluster.conf
 
+> server集群配置，myosotis-console启动时读取并加载，用于集群监控
+
 ~~~
-## 以一行为最小单位，填写节点的ip+port
+## 每行填写节点的ip+port
 ## eg: 
 192.168.1.1:7777
 192.168.1.2:7777
@@ -322,6 +330,8 @@ cd target
 ~~~
 
 ### datasource.conf
+
+> 数据源配置，myosotis-console和myosotis-server启动时读取并加载，用于存取系统相关数据
 
 | 参数                      | 释义                         | 默认值   | 参考值                       |
 |-------------------------|----------------------------|-------|---------------------------|
@@ -332,12 +342,16 @@ cd target
 
 ### console.conf
 
+> 控制台配置，myosotis-console启动时读取并加载
+
 | 参数                    | 释义         | 默认值   | 参考值               |
 |-----------------------|------------|-------|-------------------|
 | myosotis.log.dir      | 日志目录(绝对路径) | ./log | /var/log/myosotis |
 | myosotis.console.port | 内置tomcat端口 | 7776  | 7776              |
 
 ### server.conf
+
+> 服务端配置，myosotis-server启动时读取并加载
 
 | 参数                                | 释义                          | 默认值         | 参考值               |
 |-----------------------------------|-----------------------------|-------------|-------------------|
@@ -351,5 +365,3 @@ cd target
 | myosotis.server.acceptCount       | 最大等待连接数                     | 8           |                   |
 | myosotis.server.enableCompress    | 启用数据压缩                      | true        | true              |
 | myosotis.server.compressThreshold | 数据压缩阈值                      | 2048        | 2048              |
-
----
