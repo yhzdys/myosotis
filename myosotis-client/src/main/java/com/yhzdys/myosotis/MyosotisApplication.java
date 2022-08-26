@@ -255,7 +255,7 @@ public final class MyosotisApplication {
                     configMetadata.removeAbsent(namespace, configKey);
                     break;
                 case DELETE:
-                    if (multicaster.containsListener(namespace, configKey)) {
+                    if (multicaster.hasListener(namespace, configKey)) {
                         // reset polling version
                         configMetadata.addPolling(namespace, configKey, 0);
                     } else {

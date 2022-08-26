@@ -26,9 +26,9 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
     private static final Logger logger = LoggerFactory.getLogger(MyosotisValueAutoConfiguration.class);
 
     /**
-     * <namespace + configKey, AutoConfigListener.class>
+     * <namespace + configKey, autoConfigListener>
      */
-    private Map<String, AutoConfigListener> listeners;
+    private Map<String, AutoConfigListener> cache;
     private MyosotisApplication application;
     private String defaultNamespace = null;
 
@@ -73,31 +73,31 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         if (clients.size() == 1) {
             this.defaultNamespace = clients.get(0).getNamespace();
         }
-        listeners = new ConcurrentHashMap<>(2);
+        cache = new ConcurrentHashMap<>(2);
         for (Object bean : configBeanMap.values()) {
             this.initMyosotisBean(bean);
         }
     }
 
-    private void initMyosotisBean(Object targetBean) {
-        if (targetBean == null) {
+    private void initMyosotisBean(Object object) {
+        if (object == null) {
             return;
         }
-        Myosotis myosotis = targetBean.getClass().getAnnotation(Myosotis.class);
+        Myosotis myosotis = object.getClass().getAnnotation(Myosotis.class);
         String namespace = StringUtils.isEmpty(myosotis.namespace()) ? this.defaultNamespace : myosotis.namespace();
 
-        Field[] fields = targetBean.getClass().getDeclaredFields();
+        Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             try {
-                this.initFieldValue(namespace, targetBean, field);
+                this.initFieldValue(namespace, object, field);
             } catch (Exception e) {
-                logger.error("Init myosotis value [{}.{}] failed, {}", targetBean.getClass().getName(), field.getName(), e.getMessage());
+                logger.error("Init myosotis value [{}.{}] failed, {}", object.getClass().getName(), field.getName(), e.getMessage());
             }
         }
     }
 
-    private void initFieldValue(String namespace, Object targetBean, Field targetField) {
-        MyosotisValue myosotisValue = targetField.getAnnotation(MyosotisValue.class);
+    private void initFieldValue(String namespace, Object object, Field field) {
+        MyosotisValue myosotisValue = field.getAnnotation(MyosotisValue.class);
         if (myosotisValue == null) {
             return;
         }
@@ -105,43 +105,45 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             return;
         }
 
-        String namespaceForInit = namespace;
+        String namespace4Init = namespace;
         // MyosotisValue的namespace优先级高
         if (StringUtils.isNotEmpty(myosotisValue.namespace())) {
-            namespaceForInit = myosotisValue.namespace();
+            namespace4Init = myosotisValue.namespace();
         }
 
-        String configKeyForInit = myosotisValue.configKey();
-        if (StringUtils.isEmpty(configKeyForInit)) {
-            configKeyForInit = targetField.getName();
+        String configKey4Init = myosotisValue.configKey();
+        if (StringUtils.isEmpty(configKey4Init)) {
+            configKey4Init = field.getName();
         }
-        MyosotisClient client = application.getClient(namespaceForInit);
-        // add config listener
-        application.addConfigListener(
-                this.getListener(namespaceForInit, configKeyForInit, targetBean, targetField)
-        );
+        MyosotisClient client = application.getClient(namespace4Init);
+        application.addConfigListener(this.getListener(namespace4Init, configKey4Init, object, field));
         String configValue = null;
         try {
-            configValue = client.getString(configKeyForInit);
+            configValue = client.getString(configKey4Init);
         } catch (Exception e) {
-            logger.error("Get config value of " + namespaceForInit + ":" + configKeyForInit + " failed", e);
+            logger.error("Get config value of " + namespace4Init + ":" + configKey4Init + " failed", e);
         }
         String defaultValue = myosotisValue.defaultValue();
         if (configValue == null && StringUtils.isNotEmpty(defaultValue)) {
             configValue = defaultValue;
         }
         try {
-            setFieldValue(targetBean, targetField, configValue);
+            setFieldValue(object, field, configValue);
         } catch (Exception e) {
-            logger.error("Init config value of " + namespaceForInit + "." + configKeyForInit + " failed", e);
+            logger.error("Init config value of " + namespace4Init + "." + configKey4Init + " failed", e);
         }
     }
 
-    private ConfigListener getListener(String namespace, String configKey, Object targetBean, Field targetField) {
-        AutoConfigListener listener = listeners.computeIfAbsent(
-                namespace + ":" + configKey, k -> new AutoConfigListener(namespace, configKey)
-        );
-        listener.addField(targetBean, targetField);
+    private ConfigListener getListener(String namespace, String configKey, Object object, Field field) {
+        String key = namespace + ":" + configKey;
+        AutoConfigListener listener = cache.get(key);
+        if (listener != null) {
+            listener.addField(object, field);
+            return null;
+        }
+        listener = new AutoConfigListener(namespace, configKey);
+        listener.addField(object, field);
+        cache.put(key, listener);
         return listener;
     }
 
@@ -152,10 +154,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         private final String namespace;
         private final String configKey;
 
-        /**
-         * <targetBean, targetFiled[]>
-         */
-        private final Map<Object, List<Field>> fieldMap = new ConcurrentHashMap<>(2);
+        private final Map<Object, List<Field>> cache = new ConcurrentHashMap<>(2);
 
         private AutoConfigListener(String namespace, String configKey) {
             this.namespace = namespace;
@@ -177,16 +176,18 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             String configKey = event.getConfigKey();
             String configValue = event.getConfigValue();
 
-            for (Map.Entry<Object, List<Field>> entry : fieldMap.entrySet()) {
-                Object targetBean = entry.getKey();
+            for (Map.Entry<Object, List<Field>> entry : cache.entrySet()) {
+                Object object = entry.getKey();
                 List<Field> fields = entry.getValue();
-                for (Field targetField : fields) {
-                    if (StringUtils.isEmpty(configValue)) {
-                        MyosotisValue myosotisValue = targetField.getAnnotation(MyosotisValue.class);
-                        configValue = myosotisValue.defaultValue();
+                for (Field field : fields) {
+                    if (configValue == null) {
+                        MyosotisValue myosotisValue = field.getAnnotation(MyosotisValue.class);
+                        if (StringUtils.isNotEmpty(myosotisValue.defaultValue())) {
+                            configValue = myosotisValue.defaultValue();
+                        }
                     }
                     try {
-                        setFieldValue(targetBean, targetField, configValue);
+                        setFieldValue(object, field, configValue);
                     } catch (Exception e) {
                         logger.error("Update config value failed, configKey: {}", configKey, e);
                     }
@@ -194,8 +195,8 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
             }
         }
 
-        private void addField(Object bean, Field field) {
-            List<Field> fields = fieldMap.computeIfAbsent(bean, k -> new CopyOnWriteArrayList<>());
+        private void addField(Object object, Field field) {
+            List<Field> fields = cache.computeIfAbsent(object, k -> new CopyOnWriteArrayList<>());
             if (fields.contains(field)) {
                 return;
             }

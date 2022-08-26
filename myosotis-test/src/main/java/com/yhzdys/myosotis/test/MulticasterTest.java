@@ -11,68 +11,52 @@ import org.junit.Test;
 public class MulticasterTest {
 
     @Test
+    public void testAddNamespaceListener() throws Exception {
+        EventMulticaster multicaster = new EventMulticaster();
+
+        TestNamespaceListener listener1 = new TestNamespaceListener("1", "namespace");
+        TestNamespaceListener listener2 = new TestNamespaceListener("2", "namespace");
+        multicaster.addNamespaceListener(listener1);
+        multicaster.addNamespaceListener(listener1);
+        multicaster.addNamespaceListener(listener1);
+        multicaster.addNamespaceListener(listener2);
+        listener1.setName("111");
+
+        MyosotisEvent event = new MyosotisEvent("namespace", "test", EventType.UPDATE);
+        multicaster.multicast(event);
+        Thread.sleep(3000);
+    }
+
+    @Test
+    public void testAddConfigListener() throws Exception {
+        EventMulticaster multicaster = new EventMulticaster();
+
+        TestConfigListener listener1 = new TestConfigListener("1", "namespace", "test");
+        TestConfigListener listener2 = new TestConfigListener("2", "namespace", "test");
+        multicaster.addConfigListener(listener1);
+        multicaster.addConfigListener(listener1);
+        multicaster.addConfigListener(listener1);
+        multicaster.addConfigListener(listener2);
+        listener1.setName("111");
+
+        MyosotisEvent event = new MyosotisEvent("namespace", "test", EventType.UPDATE);
+        multicaster.multicast(event);
+        Thread.sleep(3000);
+    }
+
+    @Test
     public void testConfigMulticaster() throws Exception {
         EventMulticaster multicaster = new EventMulticaster();
 
-        multicaster.addConfigListener(new ConfigListener() {
-            @Override
-            public String configKey() {
-                return "test0";
-            }
-
-            @Override
-            public String namespace() {
-                return "namespace";
-            }
-
-            @Override
-            public void handle(MyosotisEvent event) throws Exception {
-                Thread.sleep(1000);
-                System.out.println("event: " + JsonUtil.toString(event));
-            }
-        });
-        multicaster.addConfigListener(new ConfigListener() {
-            @Override
-            public String configKey() {
-                return "test1";
-            }
-
-            @Override
-            public String namespace() {
-                return "namespace";
-            }
-
-            @Override
-            public void handle(MyosotisEvent event) throws Exception {
-                Thread.sleep(1000);
-                System.out.println("event: " + JsonUtil.toString(event));
-            }
-        });
-        multicaster.addConfigListener(new ConfigListener() {
-            @Override
-            public String configKey() {
-                return "test2";
-            }
-
-            @Override
-            public String namespace() {
-                return "namespace";
-            }
-
-            @Override
-            public void handle(MyosotisEvent event) throws Exception {
-                Thread.sleep(1000);
-                System.out.println("event: " + JsonUtil.toString(event));
-            }
-        });
-
+        multicaster.addConfigListener(new TestConfigListener("1", "namespace", "test0"));
+        multicaster.addConfigListener(new TestConfigListener("1", "namespace", "test1"));
+        multicaster.addConfigListener(new TestConfigListener("1", "namespace", "test2"));
         for (int i = 0; i < 100000; i++) {
             MyosotisEvent event = new MyosotisEvent("namespace", "test" + i % 3, EventType.UPDATE);
             event.setVersion(i);
 
             multicaster.multicast(event);
         }
-
         Thread.sleep(5000);
     }
 
@@ -80,30 +64,8 @@ public class MulticasterTest {
     public void testNamespaceMulticaster() throws Exception {
         EventMulticaster multicaster = new EventMulticaster();
 
-        multicaster.addNamespaceListener(new NamespaceListener() {
-            @Override
-            public String namespace() {
-                return "namespace1";
-            }
-
-            @Override
-            public void handle(MyosotisEvent event) throws Exception {
-                Thread.sleep(1000);
-                System.out.println("event1: " + JsonUtil.toString(event));
-            }
-        });
-        multicaster.addNamespaceListener(new NamespaceListener() {
-            @Override
-            public String namespace() {
-                return "namespace2";
-            }
-
-            @Override
-            public void handle(MyosotisEvent event) throws Exception {
-                Thread.sleep(1000);
-                System.out.println("event2: " + JsonUtil.toString(event));
-            }
-        });
+        multicaster.addNamespaceListener(new TestNamespaceListener("1", "namespace1"));
+        multicaster.addNamespaceListener(new TestNamespaceListener("1", "namespace2"));
 
         for (int i = 0; i < 100000; i++) {
             MyosotisEvent event1 = new MyosotisEvent("namespace1", "test1", EventType.UPDATE);
@@ -122,5 +84,59 @@ public class MulticasterTest {
         }
 
         Thread.sleep(5000);
+    }
+
+    static class TestNamespaceListener implements NamespaceListener {
+
+        private final String namespace;
+        private String name;
+
+        public TestNamespaceListener(String name, String namespace) {
+            this.name = name;
+            this.namespace = namespace;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String namespace() {
+            return namespace;
+        }
+
+        public void handle(MyosotisEvent event) throws Exception {
+            Thread.sleep(1000);
+            System.out.println(name + "> event: " + JsonUtil.toString(event));
+        }
+    }
+
+    static class TestConfigListener implements ConfigListener {
+
+        private final String namespace;
+        private final String configKey;
+        private String name;
+
+        public TestConfigListener(String name, String namespace, String configKey) {
+            this.name = name;
+            this.namespace = namespace;
+            this.configKey = configKey;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String configKey() {
+            return configKey;
+        }
+
+        public String namespace() {
+            return namespace;
+        }
+
+        public void handle(MyosotisEvent event) throws Exception {
+            Thread.sleep(1000);
+            System.out.println(name + "> event: " + JsonUtil.toString(event));
+        }
     }
 }
