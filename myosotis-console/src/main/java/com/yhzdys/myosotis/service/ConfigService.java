@@ -1,7 +1,9 @@
 package com.yhzdys.myosotis.service;
 
 import com.yhzdys.myosotis.database.mapper.MyosotisConfigMapper;
+import com.yhzdys.myosotis.database.mapper.MyosotisNamespaceMapper;
 import com.yhzdys.myosotis.database.object.MyosotisConfigDO;
+import com.yhzdys.myosotis.database.object.MyosotisNamespaceDO;
 import com.yhzdys.myosotis.misc.BizException;
 import com.yhzdys.myosotis.misc.Const;
 import com.yhzdys.myosotis.misc.PollingTool;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 @Service
 public class ConfigService {
 
+    @Resource
+    private MyosotisNamespaceMapper namespaceMapper;
     @Resource
     private MyosotisConfigMapper configMapper;
 
@@ -55,6 +59,10 @@ public class ConfigService {
         MyosotisConfigDO config = configMapper.selectByKey(request.getNamespace(), request.getName());
         if (config != null) {
             throw new BizException("配置已存在");
+        }
+        MyosotisNamespaceDO namespace = namespaceMapper.selectByNamespace(request.getNamespace());
+        if (namespace == null) {
+            throw new BizException("命名空间不存在");
         }
         config = new MyosotisConfigDO();
         config.setNamespace(request.getNamespace());
