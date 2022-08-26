@@ -68,6 +68,9 @@ content_frame.addEventListener("load", () => {
     let content_title = document.getElementById("content_title");
 
     let url = new URL(content_frame.contentWindow.location.href);
+    if (isEmpty(url.pathname)) {
+        return;
+    }
     if (url.pathname.endsWith("e.html")) {
         frameTitle = getEditFrameTitle(url);
     } else {
