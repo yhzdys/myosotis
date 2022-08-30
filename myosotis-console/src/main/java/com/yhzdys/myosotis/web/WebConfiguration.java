@@ -4,6 +4,7 @@ import com.yhzdys.myosotis.config.console.ConsoleConfig;
 import com.yhzdys.myosotis.config.console.ConsoleConfigLoader;
 import com.yhzdys.myosotis.misc.BizException;
 import com.yhzdys.myosotis.web.entity.WebResponse;
+import com.yhzdys.myosotis.web.interceptor.LogInterceptor;
 import com.yhzdys.myosotis.web.interceptor.PermissionInterceptor;
 import com.yhzdys.myosotis.web.interceptor.SessionInterceptor;
 import org.slf4j.Logger;
@@ -24,18 +25,18 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
 
     @Resource
     private SessionInterceptor sessionInterceptor;
-    @Resource
-    private PermissionInterceptor permissionInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/session/**", "/console/**");
-
-        registry.addInterceptor(permissionInterceptor)
+                .excludePathPatterns("/console/**", "/session/key", "/session/login", "/session/logout");
+        registry.addInterceptor(new PermissionInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/session/**", "/console/**");
+                .excludePathPatterns("/console/**", "/session/**");
+        registry.addInterceptor(new LogInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/console/**");
     }
 
     @Override

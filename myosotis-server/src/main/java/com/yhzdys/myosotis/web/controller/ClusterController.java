@@ -19,7 +19,7 @@ public class ClusterController {
 
     @GetMapping("/health")
     public String health() {
-        return webConfiguration.getConnections() + "/" + ServerConfigLoader.get().getKeepAliveRequests();
+        return webConfiguration.connections() + "/" + ServerConfigLoader.get().getKeepAliveRequests();
     }
 
     @GetMapping("/polling/notify/{namespace}")

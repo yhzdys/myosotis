@@ -40,11 +40,11 @@ public class SessionService {
 
     public String getLoginKey(String username) {
         MyosotisUserDO user = userMapper.selectByUsername(username);
+        Pair<String, String> keyPair = Encryptor.genRsaKeyPair();
         if (user == null) {
-            throw new BizException("用户不存在");
+            return keyPair.getLeft();
         }
         Date now = new Date();
-        Pair<String, String> keyPair = Encryptor.genRsaKeyPair();
         MyosotisSessionDO session = sessionMapper.selectByUsername(username);
         if (session != null) {
             MyosotisSessionDO update = new MyosotisSessionDO();
@@ -67,11 +67,11 @@ public class SessionService {
     }
 
     public UserSession login(String username, String password) {
+        MyosotisSessionDO session = this.checkSession(username);
         MyosotisUserDO user = userMapper.selectByUsername(username);
         if (user == null) {
             throw new BizException("用户不存在");
         }
-        MyosotisSessionDO session = checkSession(username);
         password = Encryptor.decryptByPrivateKey(password, session.getPrivateKey());
         String passwd = Encryptor.md5(password + user.getSalt());
         if (!Objects.equals(passwd, user.getPassword())) {
@@ -92,11 +92,11 @@ public class SessionService {
     }
 
     public void password(String username, String oldPassword, String password) {
+        MyosotisSessionDO session = this.checkSession(username);
         MyosotisUserDO user = userMapper.selectByUsername(username);
         if (user == null) {
             throw new BizException("用户不存在");
         }
-        MyosotisSessionDO session = checkSession(username);
         oldPassword = Encryptor.decryptByPrivateKey(oldPassword, session.getPrivateKey());
         String oldPasswd = Encryptor.md5(oldPassword + user.getSalt());
         if (!Objects.equals(oldPasswd, user.getPassword())) {
@@ -127,11 +127,11 @@ public class SessionService {
     private MyosotisSessionDO checkSession(String username) {
         MyosotisSessionDO session = sessionMapper.selectByUsername(username);
         if (session == null || StringUtils.isEmpty(session.getPrivateKey())) {
-            throw new BizException("用户会话不存在");
+            throw new BizException("会话已过期");
         }
         if (session.getExpireTime().before(new Date())) {
             sessionMapper.deleteById(session.getId());
-            throw new BizException("登录会话已经过期");
+            throw new BizException("会话已过期.");
         }
         return session;
     }

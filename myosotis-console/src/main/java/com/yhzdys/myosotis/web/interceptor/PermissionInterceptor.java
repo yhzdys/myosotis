@@ -5,16 +5,13 @@ import com.yhzdys.myosotis.service.domain.Menu;
 import com.yhzdys.myosotis.service.domain.Permission;
 import com.yhzdys.myosotis.web.entity.SessionContextHolder;
 import com.yhzdys.myosotis.web.entity.WebResponse;
-import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-@Component
 public class PermissionInterceptor implements HandlerInterceptor {
 
     @Override
@@ -33,13 +30,5 @@ public class PermissionInterceptor implements HandlerInterceptor {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
     }
 }

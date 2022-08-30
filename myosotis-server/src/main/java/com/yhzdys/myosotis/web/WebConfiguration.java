@@ -21,11 +21,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
+    private final long cacheTime = TimeUnit.SECONDS.toMillis(10);
     private ThreadPoolTaskExecutor asyncPollingPool;
+    private long timestamp = 0;
+    private int connections = 0;
 
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
@@ -66,8 +70,13 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
         );
     }
 
-    public int getConnections() {
-        return asyncPollingPool.getActiveCount();
+    public synchronized int connections() {
+        long now = System.currentTimeMillis();
+        if (now - timestamp >= cacheTime) {
+            connections = asyncPollingPool.getActiveCount();
+            timestamp = now;
+        }
+        return connections;
     }
 
     @ControllerAdvice

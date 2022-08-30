@@ -10,7 +10,6 @@ import com.yhzdys.myosotis.web.entity.SessionContextHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -62,10 +61,6 @@ public class SessionInterceptor implements HandlerInterceptor {
         context.setMenus(userRole.menus());
         SessionContextHolder.save(context);
         return true;
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
     }
 
     @Override

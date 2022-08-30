@@ -109,7 +109,6 @@ public final class ServerProcessor implements Processor {
             if (statusCode == 404) {
                 configMetadata.addAbsent(namespace, configKey);
             }
-            return null;
         } catch (Throwable e) {
             LoggerFactory.getLogger().error("Get config failed, {}", e.getMessage());
         } finally {

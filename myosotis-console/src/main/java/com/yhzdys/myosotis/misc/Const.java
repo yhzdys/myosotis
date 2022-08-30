@@ -19,4 +19,6 @@ public class Const {
     public static final String default_username = "myosotis";
 
     public static final String default_password = "123456";
+
+    public static final String log_template = ">> [%s] request[%s] parameters: %s";
 }
