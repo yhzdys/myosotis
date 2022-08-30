@@ -31,10 +31,10 @@ const edit_map =
 const myosotis_user = "myosotis-user";
 
 function isEmpty(value) {
-    return value == null || value === "" ||
-        value.toLowerCase() === "blank" ||
-        value.toLowerCase() === "undefined" ||
-        value.toLowerCase() === "null";
+    return !value || value === "" ||
+        String(value).toLowerCase() === "blank" ||
+        String(value).toLowerCase() === "undefined" ||
+        String(value).toLowerCase() === "null";
 }
 
 function isNotEmpty(value) {

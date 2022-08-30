@@ -24,28 +24,18 @@ let namespaces_input = document.getElementById("namespaces_input");
 
 window.addEventListener("load", () => {
     let type = getInnerUrlParam("type");
-    switch (type) {
-        case "addNamespace":
-            init4AddNamespace();
-            break;
-        case "editNamespace":
-            fillNamespaceData(getInnerUrlParam("id"));
-            break;
-        case "addConfig":
-            init4AddConfig();
-            break;
-        case "editConfig":
-            fillConfigData(getInnerUrlParam("id"));
-            break;
-        case "addUser":
-            init4AddUser();
-            break;
-        case "editUser":
-            fillUserData(getInnerUrlParam("id"));
-            break;
-        default:
-            errorIndex("无效参数");
-            return
+    if (type === "addNamespace") {
+        init4AddNamespace();
+    } else if (type === "editNamespace") {
+        fillNamespaceData(getInnerUrlParam("id"));
+    } else if (type === "addConfig") {
+        init4AddConfig();
+    } else if (type === "editConfig") {
+        fillConfigData(getInnerUrlParam("id"));
+    } else if (type === "addUser") {
+        init4AddUser();
+    } else if (type === "editUser") {
+        fillUserData(getInnerUrlParam("id"));
     }
 });
 
@@ -76,48 +66,30 @@ namespace_input.addEventListener("keydown", (event) => {
 
 document.getElementById("ok_button").addEventListener("click", () => {
     let type = getInnerUrlParam("type");
-    if ("addNamespace" === type) {
+    if (type === "addNamespace") {
         addNamespace();
-        return;
-    }
-    if ("editNamespace" === type) {
+    } else if (type === "editNamespace") {
         updateNamespace();
-        return;
-    }
-
-    if ("addConfig" === type) {
+    } else if (type === "addConfig") {
         addConfig();
-        return;
-    }
-    if ("editConfig" === type) {
+    } else if (type === "editConfig") {
         updateConfig();
-        return;
-    }
-
-    if ("addUser" === type) {
+    } else if (type === "addUser") {
         addUser();
-        return;
-    }
-    if ("editUser" === type) {
+    } else if (type === "editUser") {
         updateUser();
     }
 });
 
 document.getElementById("cancel_button").addEventListener("click", () => {
     let type = getInnerUrlParam("type");
-    if ("editNamespace" === type || "addNamespace" === type) {
+    if (type === "editNamespace" || type === "addNamespace") {
         namespaceMenu();
-        return;
-    }
-    if ("editConfig" === type || "addConfig" === type) {
+    } else if (type === "editConfig" || type === "addConfig") {
         configMenu();
-        return;
-    }
-    if ("editUser" === type || "addUser" === type) {
+    } else if (type === "editUser" || type === "addUser") {
         userMenu();
-        return;
     }
-    errorIndex("参数错误");
 });
 
 function fillNamespaceData(id) {

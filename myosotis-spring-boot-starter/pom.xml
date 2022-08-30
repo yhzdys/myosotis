@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.yhzdys</groupId>
         <artifactId>myosotis</artifactId>
-        <version>1.3.0</version>
+        <version>1.3.1</version>
     </parent>
     <artifactId>myosotis-spring-boot-starter</artifactId>
 

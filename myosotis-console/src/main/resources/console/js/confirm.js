@@ -9,31 +9,23 @@ window.parent.document.getElementById("ok_button").addEventListener("click", () 
         return;
     }
     let json = JSON.parse(confirmData);
-    if (isEmpty(json.type) || isEmpty(json.id)) {
+    let type = json.type;
+    if (isEmpty(type) || isEmpty(json.id)) {
         errorIndex("参数无效");
         hiddenConfirm();
         return;
     }
-    switch (json.type) {
-        case "deleteNamespace":
-            get("/namespace/delete/" + json.id);
-            break;
-        case "deleteConfig":
-            get("/config/delete/" + json.id);
-            break;
-        case "resetUser":
-            get("/user/reset/" + json.id);
-            break;
-        case "deleteUser":
-            get("/user/delete/" + json.id);
-            break;
-        default:
-            break;
+    if (type === "deleteNamespace") {
+        get("/namespace/delete/" + json.id);
+    } else if (type === "deleteConfig") {
+        get("/config/delete/" + json.id);
+    } else if (type === "resetUser") {
+        get("/user/reset/" + json.id);
+    } else if (type === "deleteUser") {
+        get("/user/delete/" + json.id);
     }
-    setTimeout(() => {
-        window.parent.document.getElementById('content_frame').contentWindow.location.reload();
-        hiddenConfirm();
-    }, 1000);
+    hiddenConfirm();
+    window.parent.document.getElementById('content_frame').contentWindow.location.reload();
 });
 
 window.parent.document.getElementById("cancel_button").addEventListener("click", () => {

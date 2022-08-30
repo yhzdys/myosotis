@@ -226,9 +226,6 @@ public final class MyosotisApplication {
             return;
         }
         for (MyosotisEvent event : events) {
-            if (clients.get(event.getNamespace()) != null) {
-                continue;
-            }
             this.processEvent(event);
         }
     }
