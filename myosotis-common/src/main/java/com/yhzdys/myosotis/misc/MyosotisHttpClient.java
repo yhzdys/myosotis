@@ -63,7 +63,7 @@ public final class MyosotisHttpClient {
                 Header header = iterator.nextHeader();
                 String name = header.getName();
                 String value = header.getValue();
-                if (value != null && name.equalsIgnoreCase("timeout")) {
+                if (value != null && "timeout".equalsIgnoreCase(name)) {
                     try {
                         return Long.parseLong(value) * 1000;
                     } catch (Exception ignore) {

@@ -3,7 +3,7 @@ package com.yhzdys.myosotis.web;
 import com.yhzdys.myosotis.config.server.ServerConfig;
 import com.yhzdys.myosotis.config.server.ServerConfigLoader;
 import com.yhzdys.myosotis.constant.SysConst;
-import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.coyote.http11.Http11Nio2Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -54,9 +54,10 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
 
         factory.setPort(config.getPort());
         factory.setUriEncoding(StandardCharsets.UTF_8);
+        factory.setProtocol("org.apache.coyote.http11.Http11Nio2Protocol");
         factory.addConnectorCustomizers(
                 connector -> {
-                    Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
+                    Http11Nio2Protocol protocol = (Http11Nio2Protocol) connector.getProtocolHandler();
                     protocol.setMinSpareThreads(config.getMinThreads());
                     protocol.setMaxThreads(config.getMaxThreads());
                     protocol.setAcceptCount(config.getAcceptCount());
