@@ -1,6 +1,5 @@
 package com.yhzdys.myosotis.misc;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yhzdys.myosotis.exception.MyosotisException;
@@ -9,7 +8,7 @@ import java.util.List;
 
 public final class JsonUtil {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static String toString(Object object) {
         try {

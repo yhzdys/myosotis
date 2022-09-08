@@ -14,7 +14,7 @@ MYOSOTIS_HOME="$(
 )"
 
 startup_console() {
-  CONSOLE_PID="$(pgrep -f -l -a "myosotis-console" | grep java | grep "${MYOSOTIS_HOME}" | awk '{print $1}')"
+  CONSOLE_PID="$(pgrep -f -l -a "myosotis-console" | grep java | grep "${MYOSOTIS_HOME}/" | awk '{print $1}')"
   if [ -z "${CONSOLE_PID}" ]; then
     echo "Myosotis-Console starting..."
     CMD="java -jar ${CONSOLE_JAVA_OPT} -Dmyosotis.home=${MYOSOTIS_HOME} ${MYOSOTIS_HOME}/application/myosotis-console.jar"
@@ -26,7 +26,7 @@ startup_console() {
 }
 
 startup_server() {
-  SERVER_PID="$(pgrep -f -l -a "myosotis-server" | grep java | grep "${MYOSOTIS_HOME}" | awk '{print $1}')"
+  SERVER_PID="$(pgrep -f -l -a "myosotis-server" | grep java | grep "${MYOSOTIS_HOME}/" | awk '{print $1}')"
   if [ -z "${SERVER_PID}" ]; then
     echo "Starting Myosotis-Server starting..."
     CMD="java -jar ${SERVER_JAVA_OPT} -Dmyosotis.home=${MYOSOTIS_HOME} ${MYOSOTIS_HOME}/application/myosotis-server.jar"

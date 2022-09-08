@@ -6,7 +6,7 @@ MYOSOTIS_HOME="$(
 )"
 
 shutdown_console() {
-  CONSOLE_PID="$(pgrep -f -l -a "myosotis-console" | grep java | grep "${MYOSOTIS_HOME}" | awk '{print $1}')"
+  CONSOLE_PID="$(pgrep -f -l -a "myosotis-console" | grep java | grep "${MYOSOTIS_HOME}/" | awk '{print $1}')"
   if [ -z "${CONSOLE_PID}" ]; then
     echo "No Myosotis-Console is running..."
   else
@@ -17,7 +17,7 @@ shutdown_console() {
 }
 
 shutdown_server() {
-  SERVER_PID="$(pgrep -f -l -a "myosotis-server" | grep java | grep "${MYOSOTIS_HOME}" | awk '{print $1}')"
+  SERVER_PID="$(pgrep -f -l -a "myosotis-server" | grep java | grep "${MYOSOTIS_HOME}/" | awk '{print $1}')"
   if [ -z "${SERVER_PID}" ]; then
     echo "No Myosotis-Server is running..."
   else

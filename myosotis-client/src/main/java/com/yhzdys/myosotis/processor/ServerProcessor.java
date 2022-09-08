@@ -36,36 +36,36 @@ import java.util.concurrent.locks.LockSupport;
 public final class ServerProcessor implements Processor {
 
     private final MyosotisHttpClient myosotisHttpClient = MyosotisHttpClient.getInstance();
+
     private final String serverAddress;
+
     private final SerializeType serializeType;
     private final boolean enableCompress;
     private final long compressThreshold;
 
-    private final ExceptionCounter counter;
     private final ConfigMetadata configMetadata;
     private final HttpPost pollingPost;
 
     private long version = 0;
+    private int failCount = 0;
 
     public ServerProcessor(Config config, ConfigMetadata configMetadata) {
         if (StringUtils.isEmpty(config.getServerAddress())) {
-            throw new MyosotisException("Myosotis server address may not be null");
+            throw new MyosotisException("Server address may not be null");
         }
         this.serverAddress = config.getServerAddress();
         this.serializeType = config.getSerializeType();
         this.enableCompress = config.isEnableCompress();
         this.compressThreshold = config.getCompressThreshold();
 
-        this.counter = new ExceptionCounter();
         this.configMetadata = configMetadata;
         this.pollingPost = new HttpPost();
         try {
             this.pollingPost.setURI(new URI(serverAddress + NetConst.URL.polling));
         } catch (Exception e) {
-            throw new MyosotisException(e);
+            throw new MyosotisException(e.getMessage());
         }
         this.addCommonHeader(pollingPost);
-        // 1.1默认为长连接 这里显式声明
         this.pollingPost.setHeader(NetConst.header_long_connection);
         this.pollingPost.setConfig(NetConst.long_polling_config);
     }
@@ -81,16 +81,16 @@ public final class ServerProcessor implements Processor {
             response = myosotisHttpClient.execute(this.pollingPost());
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 200) {
-                counter.reset();
+                this.onSuccess();
                 return this.deserializeEvents(response);
             }
             if (statusCode == 503) {
-                LoggerFactory.getLogger().error("Too many client connections");
+                throw new MyosotisException("Too many client connections");
             }
-            counter.increase();
+            this.onFail();
         } catch (Exception e) {
             LoggerFactory.getLogger().error("Polling failed, {}", e.getMessage());
-            counter.increase();
+            this.onFail();
         } finally {
             this.consume(response);
         }
@@ -142,9 +142,7 @@ public final class ServerProcessor implements Processor {
         }
         version = metaVersion;
         List<PollingData> pollingData = new ArrayList<>(configMetadata.pollingData());
-        // serialization
         byte[] data = serializeType.getSerializer().serializePollingData(pollingData);
-        // data compress
         ByteArrayEntity entity;
         if (enableCompress && data.length > compressThreshold) {
             pollingPost.setHeader(NetConst.origin_data_length, String.valueOf(data.length));
@@ -218,20 +216,18 @@ public final class ServerProcessor implements Processor {
         }
     }
 
-    private static class ExceptionCounter {
-        private int count = 0;
-
-        public void increase() {
-            count++;
-            if (count >= 10) {
-                LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(30));
-                return;
-            }
-            LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
+    private void onSuccess() {
+        if (failCount == 0) {
+            return;
         }
+        failCount = 0;
+    }
 
-        public void reset() {
-            count = 0;
+    private void onFail() {
+        failCount++;
+        LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
+        if (failCount >= 10) {
+            LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(10));
         }
     }
 }

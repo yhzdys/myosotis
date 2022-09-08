@@ -25,23 +25,16 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
 
     private static final Logger logger = LoggerFactory.getLogger(MyosotisValueAutoConfiguration.class);
 
-    /**
-     * <namespace + configKey, autoConfigListener>
-     */
-    private Map<String, AutoConfigListener> cache;
+    private Map<String, AutoConfigListener> listeners;
     private MyosotisApplication application;
     private String defaultNamespace = null;
 
     @SuppressWarnings("deprecation")
     private static void setFieldValue(Object object, Field field, String configValue) throws Exception {
-        boolean accessible = field.isAccessible();
-        if (!accessible) {
+        if (!field.isAccessible()) {
             field.setAccessible(true);
         }
         field.set(object, castType(field.getType(), configValue));
-        if (!accessible) {
-            field.setAccessible(false);
-        }
     }
 
     private static Object castType(Class<?> type, String configValue) {
@@ -73,7 +66,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         if (clients.size() == 1) {
             this.defaultNamespace = clients.get(0).getNamespace();
         }
-        cache = new ConcurrentHashMap<>(2);
+        listeners = new ConcurrentHashMap<>(2);
         for (Object bean : configBeanMap.values()) {
             this.initMyosotisBean(bean);
         }
@@ -106,7 +99,6 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         }
 
         String namespace4Init = namespace;
-        // MyosotisValue的namespace优先级高
         if (StringUtils.isNotEmpty(myosotisValue.namespace())) {
             namespace4Init = myosotisValue.namespace();
         }
@@ -136,14 +128,14 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
 
     private ConfigListener getListener(String namespace, String configKey, Object object, Field field) {
         String key = namespace + ":" + configKey;
-        AutoConfigListener listener = cache.get(key);
+        AutoConfigListener listener = listeners.get(key);
         if (listener != null) {
             listener.addField(object, field);
             return null;
         }
         listener = new AutoConfigListener(namespace, configKey);
         listener.addField(object, field);
-        cache.put(key, listener);
+        listeners.put(key, listener);
         return listener;
     }
 
@@ -154,7 +146,7 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
         private final String namespace;
         private final String configKey;
 
-        private final Map<Object, List<Field>> cache = new ConcurrentHashMap<>(2);
+        private final Map<Object, List<Field>> fields = new ConcurrentHashMap<>(2);
 
         private AutoConfigListener(String namespace, String configKey) {
             this.namespace = namespace;
@@ -173,10 +165,8 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
 
         @Override
         public void handle(MyosotisEvent event) {
-            String configKey = event.getConfigKey();
             String configValue = event.getConfigValue();
-
-            for (Map.Entry<Object, List<Field>> entry : cache.entrySet()) {
+            for (Map.Entry<Object, List<Field>> entry : fields.entrySet()) {
                 Object object = entry.getKey();
                 List<Field> fields = entry.getValue();
                 for (Field field : fields) {
@@ -189,14 +179,14 @@ public class MyosotisValueAutoConfiguration implements ApplicationListener<Conte
                     try {
                         setFieldValue(object, field, configValue);
                     } catch (Exception e) {
-                        logger.error("Update config value failed, configKey: {}", configKey, e);
+                        logger.error("Update config failed, filed: {}", field.getName(), e);
                     }
                 }
             }
         }
 
         private void addField(Object object, Field field) {
-            List<Field> fields = cache.computeIfAbsent(object, k -> new CopyOnWriteArrayList<>());
+            List<Field> fields = this.fields.computeIfAbsent(object, k -> new CopyOnWriteArrayList<>());
             if (fields.contains(field)) {
                 return;
             }
