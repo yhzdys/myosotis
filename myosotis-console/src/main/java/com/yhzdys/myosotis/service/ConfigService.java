@@ -92,6 +92,9 @@ public class ConfigService {
         update.setUpdateTime(new Date());
         configMapper.update(update);
 
+        if (Objects.equals(record.getConfigValue(), request.getValue())) {
+            return;
+        }
         PollingTool.wakeup(record.getNamespace());
     }
 

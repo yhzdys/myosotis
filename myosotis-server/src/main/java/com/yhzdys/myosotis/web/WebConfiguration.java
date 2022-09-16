@@ -10,9 +10,8 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -80,11 +79,10 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
         return connections;
     }
 
-    @ControllerAdvice
+    @RestControllerAdvice
     public static class GlobalExceptionHandler {
         private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-        @ResponseBody
         @ExceptionHandler(AsyncRequestTimeoutException.class)
         public String handleAsyncRequestTimeoutException(HttpServletResponse response) {
             logger.error("Async polling timeout, too many client connections");
@@ -92,7 +90,6 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
             return "Async polling timeout, too many client connections";
         }
 
-        @ResponseBody
         @ExceptionHandler(RejectedExecutionException.class)
         public String handleRejectedExecutionException(HttpServletResponse response) {
             ServerConfig config = ServerConfigLoader.get();
@@ -102,7 +99,6 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
             return message;
         }
 
-        @ResponseBody
         @ExceptionHandler(Exception.class)
         public String handleException(Exception e, HttpServletResponse response) {
             logger.error(e.getMessage(), e);
