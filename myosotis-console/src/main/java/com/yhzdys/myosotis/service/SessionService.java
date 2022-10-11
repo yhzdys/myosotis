@@ -49,7 +49,6 @@ public class SessionService {
         if (session != null) {
             MyosotisSessionDO update = new MyosotisSessionDO();
             update.setId(session.getId());
-            update.setSessionKey(StringUtils.EMPTY);
             update.setPrivateKey(keyPair.getRight());
             update.setExpireTime(SessionUtil.getLoginExpireDate());
             update.setUpdateTime(now);

@@ -120,18 +120,14 @@ function clearUrlParam() {
     window.parent.history.pushState("", "", newUrl);
 }
 
-function logout(loginPage) {
+function logout() {
     get("/session/logout", (json) => {
         if (json.success === false) {
             errorIndex(json.message);
             return;
         }
         localStorage.clear();
-        if (loginPage) {
-            window.parent.location.href = loginPage;
-        } else {
-            window.parent.location.href = defaultLoginPage;
-        }
+        window.parent.location.href = defaultLoginPage;
     })
 }
 
@@ -150,12 +146,7 @@ function request(method, url, body, callback, errorCallback) {
             return;
         }
         if (xhr.status === 401) {
-            let loginPage;
-            if (xhr.responseText) {
-                let json = JSON.parse(xhr.responseText);
-                loginPage = json.data;
-            }
-            logout(loginPage);
+            window.parent.location.href = defaultLoginPage;
             return;
         }
         if (xhr.status !== 200) {

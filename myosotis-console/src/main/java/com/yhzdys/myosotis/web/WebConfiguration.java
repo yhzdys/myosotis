@@ -30,7 +30,7 @@ public class WebConfiguration implements WebMvcConfigurer, WebServerFactoryCusto
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/console/**", "/session/key", "/session/login", "/session/logout");
+                .excludePathPatterns("/console/**", "/session/key", "/session/login");
         registry.addInterceptor(new PermissionInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns("/console/**", "/session/**");
