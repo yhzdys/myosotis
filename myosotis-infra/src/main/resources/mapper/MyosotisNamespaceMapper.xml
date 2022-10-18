@@ -49,6 +49,7 @@
         <if test="keyword != null">
             and namespace like #{keyword,jdbcType=VARCHAR}
         </if>
+        order by id
         limit #{offset,jdbcType=INTEGER}, #{length,jdbcType=INTEGER}
     </select>
 

@@ -82,6 +82,7 @@
         <if test="keyword != null">
             and config_key like #{keyword,jdbcType=VARCHAR}
         </if>
+        order by id
         limit #{offset,jdbcType=INTEGER}, #{length,jdbcType=INTEGER}
     </select>
 
